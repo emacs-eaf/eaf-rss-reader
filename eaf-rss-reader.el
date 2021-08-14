@@ -87,7 +87,7 @@
 (defcustom eaf-rss-reader-keybinding
   '(("M-p" . "add_subscription")
     )
-  "The keybinding of EAF Rss Reader."
+  "The keybinding of EAF RSS Reader."
   :type 'cons)
 
 ;;;###autoload
