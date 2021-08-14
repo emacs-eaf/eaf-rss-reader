@@ -1,25 +1,15 @@
 {
     "pacman": [
-        "taglib",
-        "python3-pyquery"
+        "python-pyquery"
     ],
     "apt": [
-        "libtag1-dev",
         "python3-pyquery"
-    ],
-    "dnf": [
-        "taglib-devel"
-    ],
-    "pkg": [
-        "taglib"
     ],
     "pip": {
         "linux": [
-            "pytaglib",
             "pyquery"
         ],
         "win32": [
-            "pytaglib",
             "pyquery"
         ]
     },
