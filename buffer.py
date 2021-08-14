@@ -1,0 +1,204 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import os
+import re
+import json
+import feedparser
+from PyQt5.QtCore import QUrl
+from pyquery import PyQuery as Pq
+from core.webengine import BrowserBuffer
+from html import unescape as html_unescape
+
+class AppBuffer(BrowserBuffer):
+    def __init__(self, buffer_id, url, arguments):
+        BrowserBuffer.__init__(self, buffer_id, url, arguments, False)
+
+        self.load_index_html(__file__)
+
+        self.index_file_dir = os.path.join(os.path.dirname(__file__), "dist")
+        self.index_file = os.path.join(self.index_file_dir, "index.html")
+
+        self.pic_file_dir = os.path.join(os.path.dirname(__file__), "src")
+        self.pic_file_dir = os.path.join(self.pic_file_dir, "assets")
+        self.pic_file = os.path.join(self.pic_file_dir, "logo.png")
+
+        self.json_file_dir = os.path.join(os.path.dirname(__file__), "public")
+        self.json_file = os.path.join(self.json_file_dir, "list.json")
+
+        self.url = url
+        self.rsshub = []
+        
+        
+        ''' self.sl_obj = SaveLoadFeeds(self.json_file)
+        self.pre_feeds = self.sl_obj.fetch_feeds
+        print("hello")
+        print(type(self.pre_feeds))
+        print("hello") '''
+        
+        ''' for feed in self.feeds:
+            self.rss = RssFeedParser(feed)
+            self.sl_obj.add_new_feed(self.rss.feed_info) '''
+
+
+        with open(self.index_file, "r", encoding='utf-8') as f:
+            html = self.convert_index_html(f.read(), self.index_file_dir)
+            self.buffer_widget.setHtml(html, QUrl("file://"))
+
+        ''' self.sl_obj.save_feeds;
+        self.feed_info = self.sl_obj.cur_feed; '''
+        
+        # 解析 feed, 在此添加 feed
+        self.feeds = [
+                      "https://www.with-emacs.com/rss.xml",
+                      "https://www.oschina.net/news/rss",
+                      "https://www.oschina.net/project/rss",
+                    ]
+        for item in self.feeds:
+            rss = RssFeedParser(item).feed_info
+            self.rsshub.append(rss)
+
+        # vue 注入数据
+        self.first_file = os.path.expanduser(arguments)
+        self.buffer_widget.loadFinished.connect(self.load_first_file)        
+        
+        # 写json
+        with open(self.json_file, "w") as f:
+            f.write(json.dumps(self.rsshub, ensure_ascii=False))
+
+    def load_first_file(self):
+        self.buffer_widget.execute_js('''addFiles({});'''.format(json.dumps(self.rsshub)))
+
+    def add_subscription(self):
+        self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
+
+    def handle_input_response(self, callback_tag, result_content):
+        print("hello")
+        if callback_tag == "add_subscription":
+            print("hello")
+            self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
+            self.buffer_widget.add_subscription(result_content)
+
+class SaveLoadFeeds:
+    def __init__(self, json_file):
+        self.json_file = json_file
+        self.pre_feed = self.fetch_feeds()
+        print(str(self.pre_feed)[:30])
+        self.cur_feed = []
+        if (len(self.pre_feed) != 0):
+            self.update_feeds()
+    
+    def add_subscription(self, feed_link):
+        print("feed_link = " + feed_link)
+
+    def fetch_feeds(self):
+        with open(self.json_file, "r") as feed_file:
+            feed_dict = json.loads(feed_file.read())
+        print(type(feed_dict))
+        return feed_dict
+    
+    def add_new_feed(self, feed_link):
+        new_feed = RssFeedParser(feed_link)
+        self.cur_feed.append(new_feed)
+
+    def update_feeds(self):
+        pass
+        '''for item in self.pre_feed:
+            self.add_new_feed(item.link)'''
+
+    def save_feeds(self):
+        with open(self.json_file, "w") as f:
+            f.write(json.dumps(self.cur_feed, ensure_ascii=False))
+        
+
+class RssFeedParser:
+    def __init__(self, feed):
+        self.feed = feed
+        self.d = feedparser.parse(self.feed)
+        self.title = self.d.feed.title
+        self.subtitle = self.d.feed.subtitle
+        self.article_list = self.get_article_list(self.d.entries)
+        self.feed_info = {
+            "feed_link" : self.feed,
+            "feed_title" : self.title,
+            "feed_subtitle" : self.subtitle,
+            "feed_article_list" : self.article_list
+        }
+
+    def get_article_list(self, article_entries):
+        article_list = []
+
+        for item in article_entries:
+            # 部分 entry 没有 author 属性
+            try:
+                author = item.author
+            except AttributeError:
+                author = ""
+            description = self.get_description(item.summary)
+
+            item = {
+                "title" : item.title,
+                "link" : item.link,
+                "time" : item.published,
+                "author" : author, 
+                "description" : description,
+                # 截取前 120 字放入 cardList 呈现
+                "shortDescription" : description if len(description) <= 120 else description[: 120] + "...",
+                "isRead" : False
+            }
+            article_list.append(item)
+
+        return article_list
+
+    def handel_html_tag(self, html):
+        rss_str = html_unescape(str(html))
+        html = Pq(html)
+        for ul in html("ul").items():
+            for li in ul("li").items():
+                li_str_search = re.search("<li>(.+)</li>", repr(str(li)))
+                rss_str = rss_str.replace(str(li), f"\n- {li_str_search.group(1)}").replace(
+                    "\\n", "\n"
+                ) 
+            
+        for ol in html("ol").items():
+            for index, li in enumerate(ol("li").items()):
+                li_str_search = re.search("<li>(.+)</li>", repr(str(li)))
+                rss_str = rss_str.replace(
+                    str(li), f"\n{index + 1}. {li_str_search.group(1)}"
+                ).replace("\\n", "\n")
+        rss_str = re.sub("</?(ul|ol)>", "", rss_str)
+        # 处理没有被 ul / ol 标签包围的 li 标签
+        rss_str = rss_str.replace("<li>", "- ").replace("</li>", "")
+
+        # <a> 标签处理
+        for a in html("a").items():
+            a_str = re.search(r"<a.+?</a>", html_unescape(str(a)), flags=re.DOTALL)[0]
+            if a.text() and str(a.text()) != a.attr("href"):
+                rss_str = rss_str.replace(a_str, f" {a.text()}: {a.attr('href')}\n")
+            else:
+                rss_str = rss_str.replace(a_str, f" {a.attr('href')}\n") 
+
+        # 处理一些 HTML 标签
+        html_tags = [
+            "a","b","i","p","s","h1","h2","h3","h4","h5","code","del","div","dd","dl","dt","em","font","iframe","pre","small","span","strong","sub","table","td","th","tr",
+        ]
+        # 直接去掉标签，留下内部文本信息
+        for i in html_tags:
+            rss_str = re.sub(rf'<{i} .+?"/?>', "", rss_str)
+            rss_str = re.sub(rf"</?{i}>", "", rss_str)
+
+        rss_str = re.sub('<br .+?"/>|<(br|hr) ?/?>', "\n", rss_str)
+        rss_str = re.sub(r"</?h\d>", "\n", rss_str)
+
+        # 删除图片、视频标签
+        rss_str = re.sub(r'<video .+?"?/>|</video>|<img.+?>', "", rss_str)
+
+        # 去掉多余换行
+        while re.search("\n\n", rss_str):
+            rss_str = re.sub("\n\n", "\n", rss_str)
+        rss_str = rss_str.strip()
+
+        return rss_str
+
+    def get_description(self, raw_description):
+        description = self.handel_html_tag(raw_description)
+        return description
