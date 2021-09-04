@@ -1,5 +1,18 @@
 <template>
-	<div class="listCard">
+	<div ref="listCard" class="listCard">
+		<!--测试滚动按钮，将会被移除-->
+		<mu-button 
+			@click="scrollUp"
+			color="blue"
+			textColor="white">
+				Up
+			</mu-button>
+			<mu-button 
+			@click="scrollDown"
+			color="blue"
+			textColor="white">
+				Down
+			</mu-button>
 		<mu-container
 		v-for="article in infolist"
 		:key="article.article_title"
@@ -31,9 +44,10 @@
 
 <script>
 import {mapGetters} from 'vuex';
+import { QWebChannel } from "qwebchannel";
 
 export default {
-	name: 'cardItemList',
+	name: 'listCard',
 	data () {
 		return {
 			backgroundColor: "",
@@ -48,6 +62,14 @@ export default {
 		window.initCardItemListColor = this.initCardItemListColor;
 		window.getpic = this.getpic
 		window.getitem = this.get_item
+		window.scrollUp = this.scrollUp;
+    window.scrollDown = this.scrollDown;
+  },
+	created() {
+		// eslint-disable-next-line no-undef
+		new QWebChannel(qt.webChannelTransport, channel => {
+			window.pyobject = channel.objects.pyobject;
+		});
   },
 	methods: {
 		initCardItemListColor(backgroundColor, foregroundColor) {
@@ -57,6 +79,14 @@ export default {
 		addFiles(files) {
 			this.$store.commit('updateFileInfos', files);
 		},
+		scrollUp() {
+			this.$refs.listCard.scrollTop = 30;
+			console.log(this.$refs.listCard.scrollTop)
+    },
+		scrollDown() {
+			this.$refs.listCard.scrollTop = 130;
+			console.log(this.$refs.listCard.scrollTop)
+		}
 	}
 }
 </script>
@@ -91,6 +121,6 @@ export default {
 
 .mu-card-text{
 	text-align:left;
-	
+
 }
 </style>

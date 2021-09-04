@@ -1,7 +1,7 @@
 <template>
-	<div class="article-page">
+	<div  class="article">
 		<GoBack />
-		<section class="article">
+		<div class="article-page" ref="article">
 			<mu-container class="button-wrapper">
 				<mu-button 
 				:disabled="article.isRead === false ? false : true"
@@ -19,7 +19,21 @@
 				>
 					unread
 				</mu-button>
-				
+				<!--测试滚动按钮，将会被移除-->
+				<mu-button 
+				@click="scrollUp"
+				color="blue"
+				textColor="white"
+				>
+					Up
+				</mu-button>
+				<mu-button 
+				@click="scrollDown"
+				color="blue"
+				textColor="white"
+				>
+					Down
+				</mu-button>
 			</mu-container>
 			
 			<h1>
@@ -39,8 +53,7 @@
 						View original page
 				</mu-button>
 			</span>
-			<router-view></router-view>
-		</section>
+		</div>
 	</div>
 </template>
 
@@ -48,7 +61,8 @@
 import GoBack from "@/components/GoBack.vue";
 import {mapGetters} from 'vuex';
 
-export default ({
+export default {
+	name: 'Article',
 	components: {
 		GoBack
 	},
@@ -64,7 +78,6 @@ export default ({
 			required: true
 		}
 	},
-	
 	computed: {
 		...mapGetters(['curFeedArticleList']),
 		article(){
@@ -72,6 +85,10 @@ export default ({
 				article => article.title === this.title
 			)
 		}
+	},
+	mounted() {
+		window.scrollUp = this.scrollUp;
+    window.scrollDown = this.scrollDown;
 	},
 	methods: {
 		changeReadStatus(key) {
@@ -84,16 +101,20 @@ export default ({
 		add() {
 			this.$store.commit('add');
 		},
-		go(src) {
-			window.location.href=src;
-		}
+		scrollUp() {
+			this.$refs.article.scrollTop += 30;
+			console.log(this.$refs.article.scrollTop)
+    },
+		scrollDown() {
+			this.$refs.article.scrollTop -= 30;
+			console.log(this.$refs.article.scrollTop)
+		},
 	}
-})
+}
 </script>
 
 <style scoped>
-
-.article-page{
+.Article{
 	background-color: white;
 }
 
