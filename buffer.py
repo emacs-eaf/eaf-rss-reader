@@ -4,6 +4,7 @@ import os
 import re
 import json
 import feedparser
+from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl
 from pyquery import PyQuery as Pq
 from core.webengine import BrowserBuffer
@@ -25,9 +26,14 @@ class AppBuffer(BrowserBuffer):
         self.json_file_dir = os.path.join(os.path.dirname(__file__), "public")
         self.json_file = os.path.join(self.json_file_dir, "list.json")
 
+        self.link_json_file_dir = os.path.join(os.path.dirname(__file__), "public")
+        self.link_json_file = os.path.join(self.link_json_file_dir, "link.json")
+
         self.url = url
+        self.link_list = []
         self.rsshub = []
-        
+
+        self.mainItem = SaveLoadFeeds(self.link_json_file, self.json_file)
         
         ''' self.sl_obj = SaveLoadFeeds(self.json_file)
         self.pre_feeds = self.sl_obj.fetch_feeds
@@ -38,7 +44,6 @@ class AppBuffer(BrowserBuffer):
         ''' for feed in self.feeds:
             self.rss = RssFeedParser(feed)
             self.sl_obj.add_new_feed(self.rss.feed_info) '''
-
 
         with open(self.index_file, "r", encoding='utf-8') as f:
             html = self.convert_index_html(f.read(), self.index_file_dir)
@@ -65,6 +70,38 @@ class AppBuffer(BrowserBuffer):
         with open(self.json_file, "w") as f:
             f.write(json.dumps(self.rsshub, ensure_ascii=False))
 
+    def fetch_lick_list(self):
+        self.mainItem.get_feed_link_list()
+        self.link_list = self.self.mainItem.link_list
+    
+    def fetch_rss_hub(self):
+        '''
+        这里需要一个更新rss_hub的算法
+        比较新的解析文件和已有的解析文件
+        将已读文章去除而保留未读文章
+        添加新解析文件的文章
+
+        或者，S(新的解析文件) - S(旧的解析文件中的已读)
+        S表示集合
+        '''
+        self.link_list = self.self.mainItem.rss_hub
+
+    @QtCore.pyqtSlot(str)
+    def add_feed_link(self, feed_link):
+        self.mainItem.add_feed_link_widget(feed_link)
+        
+    @QtCore.pyqtSlot(str)
+    def remove_feed_link(self, feed_link):
+        self.mainItem.remove_feed_link_widget(feed_link)
+
+    @QtCore.pyqtSlot(str)
+    def mark_as_read(self, article_title):
+        pass
+
+    @QtCore.pyqtSlot(str)
+    def mark_as_unread(self, article_title):
+        pass
+
     def load_first_file(self):
         self.buffer_widget.execute_js('''addFiles({});'''.format(json.dumps(self.rsshub)))
 
@@ -72,43 +109,73 @@ class AppBuffer(BrowserBuffer):
         self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
 
     def handle_input_response(self, callback_tag, result_content):
-        print("hello")
-        if callback_tag == "add_subscription":
-            print("hello")
+        # print 调试用
+        if callback_tag == "add_feed":
+            print("add_feed")
             self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
             self.buffer_widget.add_subscription(result_content)
+        elif callback_tag == "remove_feed":
+            print("remove_feed")
+        elif callback_tag == "mark_as_read":
+            print("mark_as_read")
+        elif callback_tag == "mark_as_un_read":
+            print("mark_as_un_read")
+        elif callback_tag == "show_list_status_all":
+            print("show_list_status_all")
+        elif callback_tag == "show_list_status_read":
+            print("show_list_status_red")
+        elif callback_tag == "show_list_status_unread":
+            print("show_list_status_unred")
+        elif callback_tag == "show_all_feed":
+            print("show_all_feed")
+        elif callback_tag == "origin":
+            print("origin")
+        elif callback_tag == "goback":
+            print("goback")
 
 class SaveLoadFeeds:
-    def __init__(self, json_file):
+    def __init__(self, link_json_file, json_file):
+        self.feed_link_list = []
+        self.rss_hub = []
+        self.link_json_file = link_json_file
         self.json_file = json_file
-        self.pre_feed = self.fetch_feeds()
-        print(str(self.pre_feed)[:30])
-        self.cur_feed = []
-        if (len(self.pre_feed) != 0):
-            self.update_feeds()
-    
-    def add_subscription(self, feed_link):
-        print("feed_link = " + feed_link)
 
-    def fetch_feeds(self):
-        with open(self.json_file, "r") as feed_file:
-            feed_dict = json.loads(feed_file.read())
-        print(type(feed_dict))
-        return feed_dict
-    
-    def add_new_feed(self, feed_link):
-        new_feed = RssFeedParser(feed_link)
-        self.cur_feed.append(new_feed)
-
-    def update_feeds(self):
-        pass
-        '''for item in self.pre_feed:
-            self.add_new_feed(item.link)'''
-
-    def save_feeds(self):
+    def save_json_file(self):
         with open(self.json_file, "w") as f:
-            f.write(json.dumps(self.cur_feed, ensure_ascii=False))
-        
+            f.write(json.dumps(self.rss_hub, ensure_ascii=False))
+
+    def save_link_json_file(self):
+        with open(self.link_json_file, "w") as f:
+            f.write(json.dumps(self.feed_link_list, ensure_ascii=False))
+
+    def get_feed_link_list(self):
+        with open(self.json_file, 'r') as f:
+            self.feed_link_list = json.load(f)
+    
+    def add_feed_link_widget(self, feed_link):
+        self.link_json_file.append(feed_link)
+        self.save_feed_link_file()
+        new_rss = RssFeedParser(feed_link).feed_info
+        self.rsshub.append(new_rss)
+        self.save_json_file()
+
+    def remove_feed_link_widget(self, feed_link):
+        self.feed_link_list.remove(feed_link)
+        self.save_feed_link_file()
+        for item in self.rss_hub:
+            if item.feed == feed_link:
+                self.rss_hub.remove(item)
+                break
+        self.save_json_file()
+
+    # 调试用，检查文件更新情况
+    def test_method(self):
+        print("**********show feed_link_list**********")
+        print(self.feed_link_list)
+        print('\n\n\n')
+        print("**********show rss_hub**********")
+        print(self.rss_hub)
+        print('\n\n\n')
 
 class RssFeedParser:
     def __init__(self, feed):
@@ -149,7 +216,7 @@ class RssFeedParser:
 
         return article_list
 
-    def handel_html_tag(self, html):
+    def handle_html_tag(self, html):
         rss_str = html_unescape(str(html))
         html = Pq(html)
         for ul in html("ul").items():
@@ -200,5 +267,5 @@ class RssFeedParser:
         return rss_str
 
     def get_description(self, raw_description):
-        description = self.handel_html_tag(raw_description)
+        description = self.handle_html_tag(raw_description)
         return description
