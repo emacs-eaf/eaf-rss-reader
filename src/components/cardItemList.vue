@@ -1,24 +1,26 @@
 <template>
 	<div ref="listCard" class="listCard">
 		<!--测试滚动按钮，将会被移除-->
+		
 		<mu-button 
-			@click="scrollUp"
+			@click="scrollUp()"
 			color="blue"
 			textColor="white">
 				Up
 			</mu-button>
 			<mu-button 
-			@click="scrollDown"
+			@click="scrollDown()"
 			color="blue"
 			textColor="white">
 				Down
 			</mu-button>
+			
 		<mu-container
 		v-for="article in infolist"
 		:key="article.article_title"
 		>
 			<mu-card>
-				<router-link :to="{name: 'Article', params:{title: article.title}}">
+				<router-link class="article" :to="{name: 'Article', params:{title: article.title}}">
 					<mu-card-title 
 						:title="article.title" 
 						class="title"
@@ -80,11 +82,11 @@ export default {
 			this.$store.commit('updateFileInfos', files);
 		},
 		scrollUp() {
-			this.$refs.listCard.scrollTop = 30;
+			this.$refs.listCard.scrollTop += 30;
 			console.log(this.$refs.listCard.scrollTop)
     },
 		scrollDown() {
-			this.$refs.listCard.scrollTop = 130;
+			this.$refs.listCard.scrollTop -= 30;
 			console.log(this.$refs.listCard.scrollTop)
 		}
 	}
@@ -121,6 +123,14 @@ export default {
 
 .mu-card-text{
 	text-align:left;
-
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.article {
+  overflow: scroll;
+}
+
 </style>

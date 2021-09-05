@@ -1,5 +1,5 @@
 <template>
-	<div class="home">
+	<div class="home" id="home">
 		<h1>{{ $store.state.curFeed }}</h1>
 		<div v-if="$store.state.curFeedIndex != -1 ">
 			<div class="view-bar">
@@ -46,17 +46,39 @@ export default {
 
 <style scoped>
 
+html, body {
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ }
+
 .view-bar {
 	position: fixed;
 }
-.home{
+#home{
 	max-width: 1400px;
 	margin:0 auto;
+
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  position: relative;
 }
 
 .h1 {
 	position: relative;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
 
+.cardItemList {
+  overflow: scroll;
+}
 </style>

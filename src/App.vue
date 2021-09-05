@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <TheNavigation />
     <transition name="slide" mode="out-in">
       <router-view :key="$route.path"/>
     </transition>
@@ -8,11 +7,11 @@
 </template>
 
 <script>
-import TheNavigation from '@/components/TheNavigation'
+import test from './components/test.vue'
 
 export default ({
   components: {
-    TheNavigation
+    test
   },
   mounted() {
 		window.addFiles = this.addFiles;
@@ -31,12 +30,28 @@ export default ({
 
 
 <style>
+html, body {
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ }
+ 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: black;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  position: relative;
 }
 
 #nav {
@@ -62,5 +77,13 @@ export default ({
 .slide-leave-to {
   opacity: 0;
   transform: translatX(-30);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.test {
+  overflow: scroll;
 }
 </style>

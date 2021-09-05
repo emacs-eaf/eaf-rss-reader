@@ -1,7 +1,13 @@
+<!--
+尝试使article页面也滚动起来，但是没有实现。
+目前可以尝试的解决方案是，保留一个空的article页面，然后写一个articlePanel的组建呈现文章。
+那么滚动方案就类似home页面的cardListItem了。
+-->
+
 <template>
-	<div  class="article">
+	<div  class="article" ref="article" id="article">
 		<GoBack />
-		<div class="article-page" ref="article">
+		<div class="article-page">
 			<mu-container class="button-wrapper">
 				<mu-button 
 				:disabled="article.isRead === false ? false : true"
@@ -21,14 +27,14 @@
 				</mu-button>
 				<!--测试滚动按钮，将会被移除-->
 				<mu-button 
-				@click="scrollUp"
+				@click="scrollUp()"
 				color="blue"
 				textColor="white"
 				>
 					Up
 				</mu-button>
 				<mu-button 
-				@click="scrollDown"
+				@click="scrollDown()"
 				color="blue"
 				textColor="white"
 				>
@@ -114,6 +120,28 @@ export default {
 </script>
 
 <style scoped>
+html, body {
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ }
+ ::-webkit-scrollbar {
+  display: none;
+}
+#article{
+	max-width: 1400px;
+	margin:0 auto;
+
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  position: relative;
+}
 .Article{
 	background-color: white;
 }
