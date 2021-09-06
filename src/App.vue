@@ -7,9 +7,17 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 
 export default ({
   components: {
+=======
+import test from './components/test.vue'
+
+export default ({
+  components: {
+    test
+>>>>>>> 936291adf39121e1c2f26dcbd3078b3a012b1e0e
   },
   mounted() {
 		window.addFiles = this.addFiles;
@@ -41,6 +49,19 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: black;
+<<<<<<< HEAD
+=======
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  position: relative;
+}
+>>>>>>> 936291adf39121e1c2f26dcbd3078b3a012b1e0e
 
   display: flex;
   flex-direction: column;
