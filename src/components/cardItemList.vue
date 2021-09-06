@@ -1,7 +1,6 @@
 <template>
 	<div ref="listCard" class="listCard">
 		<!--测试滚动按钮，将会被移除-->
-		
 		<mu-button 
 			@click="scrollUp()"
 			color="blue"

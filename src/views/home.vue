@@ -46,16 +46,7 @@ export default {
 
 <style scoped>
 
-<<<<<<< HEAD
 
-=======
-html, body {
-   width: 100%;
-   height: 100%;
-   margin: 0;
-   padding: 0;
- }
->>>>>>> 936291adf39121e1c2f26dcbd3078b3a012b1e0e
 
 .view-bar {
 	position: fixed;
@@ -66,12 +57,7 @@ html, body {
 
 	display: flex;
   flex-direction: column;
-<<<<<<< HEAD
   
-=======
-  align-items: center;
-  justify-content: center;
->>>>>>> 936291adf39121e1c2f26dcbd3078b3a012b1e0e
   width: 100%;
   height: 100%;
 
@@ -85,17 +71,12 @@ html, body {
 ::-webkit-scrollbar {
   display: none;
 }
-<<<<<<< HEAD
 
 .cardItemList {
   overflow: scroll;
 }
 
 .test {
-=======
-
-.cardItemList {
->>>>>>> 936291adf39121e1c2f26dcbd3078b3a012b1e0e
   overflow: scroll;
 }
 </style>
