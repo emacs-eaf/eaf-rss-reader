@@ -9,6 +9,9 @@
 
 <script>
 export default {
+	mounted() {
+		window.goBack = this.goBack;
+	},
 	methods: {
 		goBack() {
 			return this.$router.go(-1);

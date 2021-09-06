@@ -108,6 +108,9 @@ class AppBuffer(BrowserBuffer):
     def add_subscription(self):
         self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
 
+    def goBack(self):
+        self.buffer_widget.eval_js("goBack();")
+
     def handle_input_response(self, callback_tag, result_content):
         # print 调试用
         if callback_tag == "add_feed":
@@ -130,8 +133,8 @@ class AppBuffer(BrowserBuffer):
             print("show_all_feed")
         elif callback_tag == "origin":
             print("origin")
-        elif callback_tag == "goback":
-            print("goback")
+        elif callback_tag == "goBack":
+            self.goBack()
 
 class SaveLoadFeeds:
     def __init__(self, link_json_file, json_file):

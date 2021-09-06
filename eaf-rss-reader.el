@@ -92,7 +92,7 @@
     ("r" . "remove_feed")
     ("C-r" . "mark_as_read")
     ("C-u" . "mark_as_un_read")
-    ("b" . "goback")
+    ("b" . "goBack")
     )
   "The keybinding of EAF RSS Reader."
   :type 'cons)
