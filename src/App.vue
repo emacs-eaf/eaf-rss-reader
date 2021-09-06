@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <TheNavigation />
     <transition name="slide" mode="out-in">
       <router-view :key="$route.path"/>
     </transition>
@@ -8,11 +7,9 @@
 </template>
 
 <script>
-import TheNavigation from '@/components/TheNavigation'
 
 export default ({
   components: {
-    TheNavigation
   },
   mounted() {
 		window.addFiles = this.addFiles;
@@ -31,27 +28,29 @@ export default ({
 
 
 <style>
+html, body {
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ }
+ 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: black;
+
+  display: flex;
+  flex-direction: column;
+  
+  width: 100%;
+  height: 100%;
+
+  position: relative;
 }
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: lightseagreen;
-  padding: 0 10px;
-}
-
-#nav a.router-link-exact-active {
-  color: #9966ff;
-}
 
 .slide-enter-active,
 .slide-leave-active {
@@ -62,5 +61,13 @@ export default ({
 .slide-leave-to {
   opacity: 0;
   transform: translatX(-30);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.test {
+  overflow: scroll;
 }
 </style>
