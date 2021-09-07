@@ -53,12 +53,12 @@ class AppBuffer(BrowserBuffer):
         self.feed_info = self.sl_obj.cur_feed; '''
         
         # 解析 feed, 在此添加 feed
-        self.feeds = [
+        self.link_feeds_list = [
                       "https://www.with-emacs.com/rss.xml",
                       "https://www.oschina.net/news/rss",
                       "https://www.oschina.net/project/rss",
                     ]
-        for item in self.feeds:
+        for item in self.link_feeds_list:
             rss = RssFeedParser(item).feed_info
             self.rsshub.append(rss)
 
@@ -70,7 +70,7 @@ class AppBuffer(BrowserBuffer):
         with open(self.json_file, "w") as f:
             f.write(json.dumps(self.rsshub, ensure_ascii=False))
 
-    def fetch_lick_list(self):
+    def fetch_link_list(self):
         self.mainItem.get_feed_link_list()
         self.link_list = self.self.mainItem.link_list
     
@@ -87,8 +87,11 @@ class AppBuffer(BrowserBuffer):
         self.link_list = self.self.mainItem.rss_hub
 
     @QtCore.pyqtSlot(str)
-    def add_feed_link(self, feed_link):
-        self.mainItem.add_feed_link_widget(feed_link)
+    def add_feedlink(self, new_feedlink):
+        self.mainItem.add_feedlink_widget(new_feedlink)
+        self.rsshub = self.mainItem.rsshub_list
+        self.buffer_widget.execute_js('''updateFileInfos({});'''.format(json.dumps(self.rsshub)))
+
         
     @QtCore.pyqtSlot(str)
     def remove_feed_link(self, feed_link):
@@ -102,8 +105,12 @@ class AppBuffer(BrowserBuffer):
     def mark_as_unread(self, article_title):
         pass
 
+    @QtCore.pyqtSlot(str)
+    def refresh_feed_link_list(self):
+        pass
+
     def load_first_file(self):
-        self.buffer_widget.execute_js('''addFiles({});'''.format(json.dumps(self.rsshub)))
+        self.buffer_widget.execute_js('''updateFileInfos({});'''.format(json.dumps(self.rsshub)))
 
     def add_subscription(self):
         self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
@@ -128,7 +135,7 @@ class AppBuffer(BrowserBuffer):
         elif callback_tag == "show_list_status_read":
             print("show_list_status_red")
         elif callback_tag == "show_list_status_unread":
-            print("show_list_status_unred")
+            print("show_list_status_unrrefreshed")
         elif callback_tag == "show_all_feed":
             print("show_all_feed")
         elif callback_tag == "origin":
@@ -137,39 +144,39 @@ class AppBuffer(BrowserBuffer):
             self.goBack()
 
 class SaveLoadFeeds:
-    def __init__(self, link_json_file, json_file):
-        self.feed_link_list = []
-        self.rss_hub = []
-        self.link_json_file = link_json_file
-        self.json_file = json_file
+    def __init__(self, feedlink_json, rsshub_json):
+        self.feedlink_list = []
+        self.rsshub_list = []
 
-    def save_json_file(self):
-        with open(self.json_file, "w") as f:
-            f.write(json.dumps(self.rss_hub, ensure_ascii=False))
+        self.feedlink_json = feedlink_json
+        self.rsshub_json = rsshub_json
 
-    def save_link_json_file(self):
-        with open(self.link_json_file, "w") as f:
-            f.write(json.dumps(self.feed_link_list, ensure_ascii=False))
+    def save_rsshub_json(self):
+        with open(self.rsshub_json, "w") as f:
+            f.write(json.dumps(self.rsshub_json, ensure_ascii=False))
 
-    def get_feed_link_list(self):
-        with open(self.json_file, 'r') as f:
-            self.feed_link_list = json.load(f)
+    def save_feedlink_json(self):
+        with open(self.feedlink_json, "w") as f:
+            f.write(json.dumps(self.feedlink_json, ensure_ascii=False))
+
+    def fetch_rsshub_list(self):
+        with open(self.rsshub_json, "r") as f:
+            self.rsshub_list = json.load(f)
+
+    def fetch_feedlink_list(self):
+        with open(self.feedlink_json, 'r') as f:
+            self.feedlink_list = json.load(f)
     
-    def add_feed_link_widget(self, feed_link):
-        self.link_json_file.append(feed_link)
-        self.save_feed_link_file()
-        new_rss = RssFeedParser(feed_link).feed_info
-        self.rsshub.append(new_rss)
-        self.save_json_file()
+    def add_feedlink_widget(self, new_feedlink):
+        self.feedlink_list.append(feed_link)
+        self.save_feedlink_json()
+        new_rss = RssFeedParser(new_feedlink).feed_info
+        self.rsshub_list.append(new_rss)
+        self.save_rsshub_json()
+
 
     def remove_feed_link_widget(self, feed_link):
-        self.feed_link_list.remove(feed_link)
-        self.save_feed_link_file()
-        for item in self.rss_hub:
-            if item.feed == feed_link:
-                self.rss_hub.remove(item)
-                break
-        self.save_json_file()
+        pass
 
     # 调试用，检查文件更新情况
     def test_method(self):

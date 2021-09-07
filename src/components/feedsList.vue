@@ -56,7 +56,7 @@ export default ({
 			this.$store.commit('changeCurFeedIndex')
 		},
 		addFeedLink() {
-			window.pyobject.add_feed_link(this.feedLink);
+			window.pyobject.add_feedlink(this.feedLink);
 		},
 		removeFeedLink() {
 			window.pyobject.remove_feed_link(this.feedLink);
