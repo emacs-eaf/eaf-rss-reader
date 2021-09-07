@@ -13,13 +13,17 @@ export default ({
   },
   mounted() {
 		window.addFiles = this.addFiles;
+    window.addFeedsLinkListFiles = this.addFeedsLinkListFiles;
 	},
   created() {
 		this.$store.dispatch('getList');
 	},
   methods: {
-    addFiles(files) {
+    addFeedsListFiles(files) {
 			this.$store.commit("updateFileInfos", files);
+		},
+    addFeedsLinkListFiles(files) {
+			this.$store.commit("updateFeedsLinkList", files);
 		},
   }
   

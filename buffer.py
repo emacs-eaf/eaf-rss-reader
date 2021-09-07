@@ -151,13 +151,16 @@ class SaveLoadFeeds:
         self.feedlink_json = feedlink_json
         self.rsshub_json = rsshub_json
 
+        self.fetch_feedlink_list()
+        self.fetch_rsshub_list()
+
     def save_rsshub_json(self):
         with open(self.rsshub_json, "w") as f:
-            f.write(json.dumps(self.rsshub_json, ensure_ascii=False))
+            f.write(json.dumps(self.rsshub_list, ensure_ascii=False))
 
     def save_feedlink_json(self):
         with open(self.feedlink_json, "w") as f:
-            f.write(json.dumps(self.feedlink_json, ensure_ascii=False))
+            f.write(json.dumps(self.feedlink_list, ensure_ascii=False))
 
     def fetch_rsshub_list(self):
         with open(self.rsshub_json, "r") as f:
@@ -168,23 +171,23 @@ class SaveLoadFeeds:
             self.feedlink_list = json.load(f)
     
     def add_feedlink_widget(self, new_feedlink):
-        self.feedlink_list.append(feed_link)
+        self.feedlink_list.append(new_feedlink)
         self.save_feedlink_json()
-        new_rss = RssFeedParser(new_feedlink).feed_info
+        # new_rss = RssFeedParser(new_feedlink).feed_info
+        new_rss = 'hello!'
         self.rsshub_list.append(new_rss)
         self.save_rsshub_json()
 
-
-    def remove_feed_link_widget(self, feed_link):
+    def remove_feed_link_widget(self, feedlink):
         pass
 
     # 调试用，检查文件更新情况
     def test_method(self):
         print("**********show feed_link_list**********")
-        print(self.feed_link_list)
+        print(self.feedlink_list)
         print('\n\n\n')
         print("**********show rss_hub**********")
-        print(self.rss_hub)
+        print(self.rsshub_list)
         print('\n\n\n')
 
 class RssFeedParser:
