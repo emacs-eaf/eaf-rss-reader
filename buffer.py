@@ -63,8 +63,8 @@ class AppBuffer(BrowserBuffer):
             rss = RssFeedParser(item).feed_info
             self.rsshub.append(rss)
         '''
-        self.mainItem.add_feedlink_widget("https://www.with-emacs.com/rss.xml")
-        self.mainItem.add_feedlink_widget("https://www.oschina.net/news/rss")
+        # self.mainItem.add_feedlink_widget("https://www.with-emacs.com/rss.xml")
+        # self.mainItem.add_feedlink_widget("https://www.oschina.net/news/rss")
         # self.mainItem.test_method()
         # vue 注入数据
         self.first_file = os.path.expanduser(arguments)
@@ -90,11 +90,11 @@ class AppBuffer(BrowserBuffer):
         '''
         self.link_list = self.self.mainItem.rss_hub
 
+
     @QtCore.pyqtSlot(str)
     def add_feedlink(self, new_feedlink):
         self.mainItem.add_feedlink_widget(new_feedlink)
-        self.rsshub = self.mainItem.rsshub_list
-        self.buffer_widget.execute_js('''updateFileInfos({});'''.format(json.dumps(self.rsshub)))
+        self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
 
         
     @QtCore.pyqtSlot(str)
