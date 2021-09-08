@@ -12,7 +12,7 @@ export default ({
   components: {
   },
   mounted() {
-		window.addFiles = this.addFiles;
+		window.addFeedsListFiles = this.addFeedsListFiles;
     window.addFeedsLinkListFiles = this.addFeedsLinkListFiles;
 	},
   created() {
@@ -20,7 +20,7 @@ export default ({
 	},
   methods: {
     addFeedsListFiles(files) {
-			this.$store.commit("updateFileInfos", files);
+			this.$store.commit("updateFeedsList", files);
 		},
     addFeedsLinkListFiles(files) {
 			this.$store.commit("updateFeedsLinkList", files);

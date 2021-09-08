@@ -23,18 +23,18 @@ class AppBuffer(BrowserBuffer):
         self.pic_file_dir = os.path.join(self.pic_file_dir, "assets")
         self.pic_file = os.path.join(self.pic_file_dir, "logo.png")
 
-        self.json_file_dir = os.path.join(os.path.dirname(__file__), "public")
-        self.json_file = os.path.join(self.json_file_dir, "list.json")
+        self.rsshub_json_dir = os.path.join(os.path.dirname(__file__), "public")
+        self.rsshub_json = os.path.join(self.rsshub_json_dir, "list.json")
 
-        self.link_json_file_dir = os.path.join(os.path.dirname(__file__), "public")
-        self.link_json_file = os.path.join(self.link_json_file_dir, "link.json")
+        self.feedlink_json_dir = os.path.join(os.path.dirname(__file__), "public")
+        self.feedlink_json = os.path.join(self.feedlink_json_dir, "link.json")
 
         self.url = url
-        self.link_list = []
-        self.rsshub = []
+        self.feedlink_list = []
+        self.rsshub_list = []
 
-        self.mainItem = SaveLoadFeeds(self.link_json_file, self.json_file)
-        
+        self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
+
         ''' self.sl_obj = SaveLoadFeeds(self.json_file)
         self.pre_feeds = self.sl_obj.fetch_feeds
         print("hello")
@@ -52,6 +52,7 @@ class AppBuffer(BrowserBuffer):
         ''' self.sl_obj.save_feeds;
         self.feed_info = self.sl_obj.cur_feed; '''
         
+        '''
         # 解析 feed, 在此添加 feed
         self.link_feeds_list = [
                       "https://www.with-emacs.com/rss.xml",
@@ -61,14 +62,17 @@ class AppBuffer(BrowserBuffer):
         for item in self.link_feeds_list:
             rss = RssFeedParser(item).feed_info
             self.rsshub.append(rss)
-
+        '''
+        self.mainItem.add_feedlink_widget("https://www.with-emacs.com/rss.xml")
+        self.mainItem.add_feedlink_widget("https://www.oschina.net/news/rss")
+        # self.mainItem.test_method()
         # vue 注入数据
         self.first_file = os.path.expanduser(arguments)
         self.buffer_widget.loadFinished.connect(self.load_first_file)        
         
         # 写json
-        with open(self.json_file, "w") as f:
-            f.write(json.dumps(self.rsshub, ensure_ascii=False))
+        # with open(self.json_file, "w") as f:
+        #    f.write(json.dumps(self.mainItem.rsshub_list, ensure_ascii=False))
 
     def fetch_link_list(self):
         self.mainItem.get_feed_link_list()
@@ -110,7 +114,9 @@ class AppBuffer(BrowserBuffer):
         pass
 
     def load_first_file(self):
-        self.buffer_widget.execute_js('''updateFileInfos({});'''.format(json.dumps(self.rsshub)))
+        self.buffer_widget.eval_js(
+            '''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list))
+            )
 
     def add_subscription(self):
         self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
@@ -158,23 +164,30 @@ class SaveLoadFeeds:
         with open(self.rsshub_json, "w") as f:
             f.write(json.dumps(self.rsshub_list, ensure_ascii=False))
 
-    def save_feedlink_json(self):
+    def save_feedlink_json(self): 
         with open(self.feedlink_json, "w") as f:
             f.write(json.dumps(self.feedlink_list, ensure_ascii=False))
 
     def fetch_rsshub_list(self):
         with open(self.rsshub_json, "r") as f:
-            self.rsshub_list = json.load(f)
+            # self.rsshub_list = json.load(f)
+            try:
+                self.rsshub_list = json.load(f)
+            except json.decoder.JSONDecodeError:
+                pass
 
     def fetch_feedlink_list(self):
         with open(self.feedlink_json, 'r') as f:
-            self.feedlink_list = json.load(f)
+            # self.feedlink_list = json.load(f)
+            try:
+                self.feedlink_list = json.load(f)
+            except json.decoder.JSONDecodeError:
+                pass
     
     def add_feedlink_widget(self, new_feedlink):
         self.feedlink_list.append(new_feedlink)
         self.save_feedlink_json()
-        # new_rss = RssFeedParser(new_feedlink).feed_info
-        new_rss = 'hello!'
+        new_rss = RssFeedParser(new_feedlink).feed_info
         self.rsshub_list.append(new_rss)
         self.save_rsshub_json()
 
@@ -282,3 +295,4 @@ class RssFeedParser:
     def get_description(self, raw_description):
         description = self.handle_html_tag(raw_description)
         return description
+
