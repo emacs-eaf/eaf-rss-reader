@@ -34,7 +34,6 @@
 import { QWebChannel } from "qwebchannel";
 
 export default ({
-	
 	data() {
 		return {
 			feedLink: '',
@@ -53,7 +52,7 @@ export default ({
 	methods: {
 		changeCurFeed(feed_title) {
 			this.$store.commit('changeCurFeed', feed_title);
-			this.$store.commit('changeCurFeedIndex')
+			this.$store.commit('changeCurFeedIndex');
 		},
 		addFeedLink(new_feedlink) {
 			const index = this.$store.state.feedsList.findIndex(x => x.feed_link === new_feedlink);

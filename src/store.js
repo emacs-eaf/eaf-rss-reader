@@ -22,29 +22,26 @@ export default new Vuex.Store({
     changeReadStatus(state, param) {
       const cur_feed = state.feedsList[state.curFeedIndex];
       const index = cur_feed.feed_article_list.findIndex(x => x.title === param.title);
-      console.log(index);
       if (index != -1) {
         cur_feed.feed_article_list[index].isRead = param.status;
-        console.log(cur_feed.feed_article_list[index].isRead);
       }
     },
     
     changeCurFeed(state, feed_title) {
       state.curFeed = feed_title;
-      console.log(state.curFeed);
     },
     changeCurFeedIndex(state) {
       const index = state.feedsList.findIndex(x => x.feed_title === state.curFeed);
       if (index != -1) {
         state.curFeedIndex = index;
       }
-      console.log(state.curFeedIndex);
     },
     changeViewKey(state, key) {
       state.viewKey = key;
     }
   },
   actions: {
+    // test in localhost
 		getList(context) {
 			axios.get('/list.json').then(({data}) => {
 				context.commit('updateFeedsList', data);
