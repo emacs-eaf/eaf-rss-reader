@@ -7,13 +7,17 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     feedsList: [],
+    feedsLinkList: [],
     curFeed: null,
     curFeedIndex: -1,
     viewKey: "all"
   },
   mutations: {
-    updateFileInfos(state, infos) {
+    updateFeedsList(state, infos) {
       state.feedsList = infos;
+    },
+    updateFeedsLinkList(state, infos) {
+      state.feedsLinkList = infos;
     },
     changeReadStatus(state, param) {
       const cur_feed = state.feedsList[state.curFeedIndex];
@@ -43,7 +47,7 @@ export default new Vuex.Store({
   actions: {
 		getList(context) {
 			axios.get('/list.json').then(({data}) => {
-				context.commit('updateFileInfos', data);
+				context.commit('updateFeedsList', data);
 			})
 		}
 	},
@@ -68,7 +72,6 @@ export default new Vuex.Store({
         }
         return state.feedsList[index].feed_article_list;
       }
-      
 			
 		}
   }
