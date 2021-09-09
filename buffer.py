@@ -9,6 +9,7 @@ from PyQt5.QtCore import QUrl
 from pyquery import PyQuery as Pq
 from core.webengine import BrowserBuffer
 from html import unescape as html_unescape
+from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result
 
 class AppBuffer(BrowserBuffer):
     def __init__(self, buffer_id, url, arguments):
@@ -117,19 +118,25 @@ class AppBuffer(BrowserBuffer):
         self.buffer_widget.eval_js(
             '''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list))
             )
+    
+    @interactive
+    def add_feed(self):
+        self.send_input_message("Add new feed: ", "add_feed")
 
-    def add_subscription(self):
-        self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
+    def handle_add_feed(self, new_feedlink):
+        if new_feedlink in self.mainItem.feedlink_list:
+            message_to_emacs("Feedlink '{}' exists.".format(new_feedlink))
+        else: 
+            self.mainItem.add_feedlink_widget(new_feedlink)
+            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
+            message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
 
     def goBack(self):
         self.buffer_widget.eval_js("goBack();")
 
     def handle_input_response(self, callback_tag, result_content):
-        # print 调试用
         if callback_tag == "add_feed":
-            print("add_feed")
-            self.send_input_message("Subscribe to RSS feed: ", "add_subscription")
-            self.buffer_widget.add_subscription(result_content)
+            self.handle_add_feed(result_content)
         elif callback_tag == "remove_feed":
             print("remove_feed")
         elif callback_tag == "mark_as_read":
