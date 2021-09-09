@@ -55,8 +55,14 @@ export default ({
 			this.$store.commit('changeCurFeed', feed_title);
 			this.$store.commit('changeCurFeedIndex')
 		},
-		addFeedLink() {
-			window.pyobject.add_feedlink(this.feedLink);
+		addFeedLink(new_feedlink) {
+			const index = this.$store.state.feedsList.findIndex(x => x.feed_link === new_feedlink);
+			if (index != -1){
+				alert("Feedlink '"+new_feedlink+"' exists.");
+			}
+			else{
+				window.pyobject.add_feedlink(new_feedlink);
+			}
 		},
 		removeFeedLink() {
 			window.pyobject.remove_feed_link(this.feedLink);
