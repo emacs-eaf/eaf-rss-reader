@@ -21,8 +21,6 @@
 					unread
 				</mu-button>
 			</mu-container>
-
-			<h1>{{article.isRead}}</h1>
 			<h1>
 				{{article.title}}
 			</h1>
@@ -46,11 +44,9 @@
 
 <script>
 import GoBack from "@/components/GoBack.vue";
-import {mapGetters} from 'vuex';
 
 export default {
   name: 'ArticlePanel',
-
   components: {
     GoBack,
   },
@@ -61,10 +57,15 @@ export default {
   },
   props:{
     article:[],
-		
 	},
 	computed: {
 	},
+	created() {
+		// eslint-disable-next-line no-undef
+		new QWebChannel(qt.webChannelTransport, channel => {
+			window.pyobject = channel.objects.pyobject;
+		});
+  },
 	mounted() {
 		window.scrollUp = this.scrollUp;
     window.scrollDown = this.scrollDown;
@@ -75,22 +76,15 @@ export default {
 				title : this.title,
 				status : key
 			}
-			console.log(this.title)
       this.$store.commit('changeReadStatus', param);
-		},
-		add() {
-			this.$store.commit('add');
+			window.pyobject.change_read_status('feedlink','article', key);
 		},
     scrollUp() {
 			this.$refs.articlePanel.scrollTop += 30;
-			console.log(this.$refs.articlePanel.scrollTop)
     },
 		scrollDown() {
 			this.$refs.articlePanel.scrollTop -= 30;
-			console.log(this.$refs.articlePanel.scrollTop)
 		}
-
-
 	}
 }
 </script>

@@ -102,13 +102,15 @@ class AppBuffer(BrowserBuffer):
     def remove_feed_link(self, feed_link):
         self.mainItem.remove_feed_link_widget(feed_link)
 
-    @QtCore.pyqtSlot(str)
-    def mark_as_read(self, article_title):
-        pass
-
-    @QtCore.pyqtSlot(str)
-    def mark_as_unread(self, article_title):
-        pass
+    # 时间复杂度较高当前为O(n * m)
+    @QtCore.pyqtSlot(str, str, bool)
+    def change_read_status(self, feedlink, article, status):
+        for feed_item in self.mainItem.rsshub_list:
+            if feed_item.feed_link == feedlink:
+                for article_item in self.mainItem.rsshub_list.feed_article_list:
+                    if article_item.title == article:
+                        article_item.isRead = status
+        self.mainItem.save_rsshub_json()
 
     @QtCore.pyqtSlot(str)
     def refresh_feed_link_list(self):
