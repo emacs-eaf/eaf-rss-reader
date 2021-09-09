@@ -1,8 +1,8 @@
 <template>
   <div class="articlePanel" ref="articlePanel">
     <GoBack />
+		{{this.title}}
     <div class="article-page">
-      
 			<mu-container class="button-wrapper">
 				<mu-button
 				:disabled="article.isRead === false ? false : true"
@@ -20,23 +20,9 @@
 				>
 					unread
 				</mu-button>
-				<!--测试滚动按钮，将会被移除-->
-				<mu-button
-				@click="scrollUp()"
-				color="blue"
-				textColor="white"
-				>
-					Up
-				</mu-button>
-				<mu-button
-				@click="scrollDown()"
-				color="blue"
-				textColor="white"
-				>
-					Down
-				</mu-button>
 			</mu-container>
 
+			<h1>{{article.isRead}}</h1>
 			<h1>
 				{{article.title}}
 			</h1>
@@ -70,14 +56,12 @@ export default {
   },
   data() {
     return {
+			title: this.article.title
     }
   },
   props:{
     article:[],
-		title: {
-			type: String,
-			required: true
-		}
+		
 	},
 	computed: {
 	},
@@ -91,6 +75,7 @@ export default {
 				title : this.title,
 				status : key
 			}
+			console.log(this.title)
       this.$store.commit('changeReadStatus', param);
 		},
 		add() {
