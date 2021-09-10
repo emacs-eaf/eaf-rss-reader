@@ -44,6 +44,7 @@
 
 <script>
 import GoBack from "@/components/GoBack.vue";
+import { QWebChannel } from "qwebchannel";
 
 export default {
   name: 'ArticlePanel',
@@ -77,7 +78,7 @@ export default {
 				status : key
 			}
       this.$store.commit('changeReadStatus', param);
-			window.pyobject.change_read_status('feedlink','article', key);
+			window.pyobject.change_read_status(this.$store.state.curFeedIndex, this.article.index, key);
 		},
     scrollUp() {
 			this.$refs.articlePanel.scrollTop += 30;

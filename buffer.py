@@ -102,14 +102,11 @@ class AppBuffer(BrowserBuffer):
     def remove_feed_link(self, feed_link):
         self.mainItem.remove_feed_link_widget(feed_link)
 
-    # 时间复杂度较高当前为O(n * m)
     @QtCore.pyqtSlot(str, str, bool)
-    def change_read_status(self, feedlink, article, status):
-        for feed_item in self.mainItem.rsshub_list:
-            if feed_item.feed_link == feedlink:
-                for article_item in self.mainItem.rsshub_list.feed_article_list:
-                    if article_item.title == article:
-                        article_item.isRead = status
+    def change_read_status(self, feedlink_index, article_index, status):
+        feedlink_index = int(feedlink_index)
+        article_index = int(article_index)
+        self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = status
         self.mainItem.save_rsshub_json()
 
     @QtCore.pyqtSlot(str)
@@ -228,7 +225,7 @@ class RssFeedParser:
 
     def get_article_list(self, article_entries):
         article_list = []
-
+        article_index = 0
         for item in article_entries:
             # 部分 entry 没有 author 属性
             try:
@@ -242,12 +239,14 @@ class RssFeedParser:
                 "link" : item.link,
                 "time" : item.published,
                 "author" : author, 
+                "index" : article_index,
                 "description" : description,
                 # 截取前 120 字放入 cardList 呈现
                 "shortDescription" : description if len(description) <= 120 else description[: 120] + "...",
                 "isRead" : False
             }
             article_list.append(item)
+            article_index += 1
 
         return article_list
 

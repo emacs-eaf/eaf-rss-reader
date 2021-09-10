@@ -53,6 +53,7 @@ export default new Vuex.Store({
       const index = state.feedsList.findIndex(x => x.feed_title === state.curFeed);
       if (index != -1) {
         return state.feedsList[index].feed_article_list;
+        
       }
     },
     infolist(state) {
