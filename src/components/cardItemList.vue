@@ -1,19 +1,5 @@
 <template>
 	<div ref="listCard" class="listCard">
-		<!--测试滚动按钮，将会被移除-->
-		<mu-button 
-			@click="scrollUp()"
-			color="blue"
-			textColor="white">
-				Up
-			</mu-button>
-			<mu-button 
-			@click="scrollDown()"
-			color="blue"
-			textColor="white">
-				Down
-			</mu-button>
-			
 		<mu-container
 		v-for="article in infolist"
 		:key="article.article_title"

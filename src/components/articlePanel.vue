@@ -1,12 +1,11 @@
 <template>
   <div class="articlePanel" ref="articlePanel">
     <GoBack />
-		{{this.title}}
     <div class="article-page">
 			<mu-container class="button-wrapper">
 				<mu-button
 				:disabled="article.isRead === false ? false : true"
-				@click="changeReadStatus(true)"
+				@click="changeReadStatus(article.title, true, 0)"
 				color="blue"
 				textColor="white"
 				>
@@ -14,7 +13,7 @@
 				</mu-button>
 				<mu-button
 				:disabled="article.isRead === true ? false : true"
-				@click="changeReadStatus(false)"
+				@click="changeReadStatus(article.title, false, 0)"
 				color="blue"
 				textColor="white"
 				>
@@ -70,22 +69,49 @@ export default {
 	mounted() {
 		window.scrollUp = this.scrollUp;
     window.scrollDown = this.scrollDown;
+		window.getCurFeedIndex = this.getCurFeedIndex;
+		window.getCurArticleIndex = this.getCurArticleIndex;
+		window.getCurArticleStatus = this.getCurArticleStatus;
+		window.getCurArticleTitle = this.getCurArticleTitle;
+		window.changeReadStatus = this.changeReadStatus;
 	},
 	methods: {
-		changeReadStatus(key) {
-			const param = {
-				title : this.title,
-				status : key
+		// from === 0 : vue.js call pyhon
+		// from === 1 : python call vue.js
+		changeReadStatus(title, status, from) {
+			if (from === '1')
+			{
+				if (status === 'False') status = false;
+				else if (status === 'True') status = true;
 			}
-      this.$store.commit('changeReadStatus', param);
-			window.pyobject.change_read_status(this.$store.state.curFeedIndex, this.article.index, key);
+			var param = {
+				title : title,
+				status : status
+			}
+			this.$store.commit('changeReadStatus', param);
+			if (from === 0)
+			{
+				window.pyobject.change_read_status(this.$store.state.curFeedIndex, this.article.index, param.status);
+			}				
 		},
     scrollUp() {
 			this.$refs.articlePanel.scrollTop += 30;
     },
 		scrollDown() {
 			this.$refs.articlePanel.scrollTop -= 30;
-		}
+		},
+		getCurFeedIndex() {
+			return this.$store.state.curFeedIndex;
+		},
+		getCurArticleTitle() {
+			return this.article.title;
+		},
+		getCurArticleIndex() {
+			return this.article.index;
+		},
+		getCurArticleStatus() {
+			return this.article.isRead;
+		},
 	}
 }
 </script>

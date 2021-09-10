@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import sys
 import json
 import feedparser
 from PyQt5 import QtCore
@@ -113,6 +114,26 @@ class AppBuffer(BrowserBuffer):
     def refresh_feed_link_list(self):
         pass
 
+    def alter_read_status(self):
+        feedlink_index = self.buffer_widget.execute_js("getCurFeedIndex()")
+        article_index = self.buffer_widget.execute_js("getCurArticleIndex()")
+        article_status = self.buffer_widget.execute_js("getCurArticleStatus()")
+        article_title = self.buffer_widget.execute_js("getCurArticleTitle()")
+        
+        self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
+        self.mainItem.save_rsshub_json()
+
+        # method1 : reload the list.json to javascript
+        # self.buffer_widget.eval_js(
+        #    '''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list))
+        #    )
+
+        # method2 : call articlePanel.vue -> changeReadStatus(key)
+        article_status = self.buffer_widget.execute_js("getCurArticleStatus()")
+        self.buffer_widget.eval_js(
+            '''changeReadStatus(\"{}\", \"{}\", \"{}\");'''.format(article_title, not article_status, 1)
+            )
+
     def load_first_file(self):
         self.buffer_widget.eval_js(
             '''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list))
@@ -121,7 +142,7 @@ class AppBuffer(BrowserBuffer):
     @interactive
     def add_feed(self):
         self.send_input_message("Add new feed: ", "add_feed")
-
+    
     def handle_add_feed(self, new_feedlink):
         if new_feedlink in self.mainItem.feedlink_list:
             message_to_emacs("Feedlink '{}' exists.".format(new_feedlink))
@@ -138,22 +159,19 @@ class AppBuffer(BrowserBuffer):
             self.handle_add_feed(result_content)
         elif callback_tag == "remove_feed":
             print("remove_feed")
-        elif callback_tag == "mark_as_read":
-            print("mark_as_read")
-        elif callback_tag == "mark_as_un_read":
-            print("mark_as_un_read")
+        
         elif callback_tag == "show_list_status_all":
             print("show_list_status_all")
         elif callback_tag == "show_list_status_read":
             print("show_list_status_red")
         elif callback_tag == "show_list_status_unread":
             print("show_list_status_unrrefreshed")
+        
         elif callback_tag == "show_all_feed":
             print("show_all_feed")
         elif callback_tag == "origin":
             print("origin")
-        elif callback_tag == "goBack":
-            self.goBack()
+        
 
 class SaveLoadFeeds:
     def __init__(self, feedlink_json, rsshub_json):
