@@ -32,6 +32,7 @@ class AppBuffer(BrowserBuffer):
         self.feedlink_json = os.path.join(self.feedlink_json_dir, "link.json")
 
         self.url = url
+        
         self.feedlink_list = []
         self.rsshub_list = []
 
@@ -147,9 +148,10 @@ class AppBuffer(BrowserBuffer):
         if new_feedlink in self.mainItem.feedlink_list:
             message_to_emacs("Feedlink '{}' exists.".format(new_feedlink))
         else: 
-            self.mainItem.add_feedlink_widget(new_feedlink)
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
-            message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
+            success_flag = self.mainItem.add_feedlink_widget(new_feedlink)
+            if (success_flag == 1):
+                self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
+                message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
 
     def goBack(self):
         self.buffer_widget.eval_js("goBack();")
@@ -171,7 +173,6 @@ class AppBuffer(BrowserBuffer):
             print("show_all_feed")
         elif callback_tag == "origin":
             print("origin")
-        
 
 class SaveLoadFeeds:
     def __init__(self, feedlink_json, rsshub_json):
@@ -180,9 +181,15 @@ class SaveLoadFeeds:
 
         self.feedlink_json = feedlink_json
         self.rsshub_json = rsshub_json
+        self.last_feed_index = -1
 
         self.fetch_feedlink_list()
         self.fetch_rsshub_list()
+        
+        if len(self.feedlink_list) == 0:
+            self.last_feed_index = -1
+        else:
+            self.last_feed_index = len(self.feedlink_list) - 1
 
     def save_rsshub_json(self):
         with open(self.rsshub_json, "w") as f:
@@ -193,29 +200,44 @@ class SaveLoadFeeds:
             f.write(json.dumps(self.feedlink_list, ensure_ascii=False))
 
     def fetch_rsshub_list(self):
+        if not os.path.exists(self.rsshub_json):
+            file = open(self.rsshub_json, 'w')
+            file.write("")
+            file.close()
         with open(self.rsshub_json, "r") as f:
-            # self.rsshub_list = json.load(f)
             try:
                 self.rsshub_list = json.load(f)
             except json.decoder.JSONDecodeError:
                 pass
 
     def fetch_feedlink_list(self):
+        if not os.path.exists(self.feedlink_json):
+            file = open(self.feedlink_json, 'w')
+            file.write("")
+            file.close()
         with open(self.feedlink_json, 'r') as f:
-            # self.feedlink_list = json.load(f)
             try:
                 self.feedlink_list = json.load(f)
             except json.decoder.JSONDecodeError:
                 pass
     
+    # 0 : add feedlink faild
+    # 1 : add feedlink success
     def add_feedlink_widget(self, new_feedlink):
+        try:
+            self.last_feed_index += 1
+            new_rss = RssFeedParser(new_feedlink, self.last_feed_index).feed_info
+        except AttributeError:
+            self.last_feed_index -= 1
+            return 0
         self.feedlink_list.append(new_feedlink)
         self.save_feedlink_json()
-        new_rss = RssFeedParser(new_feedlink).feed_info
+
         self.rsshub_list.append(new_rss)
         self.save_rsshub_json()
+        return 1
 
-    def remove_feed_link_widget(self, feedlink):
+    def remove_feedlink_widget(self, feedlink):
         pass
 
     # 调试用，检查文件更新情况
@@ -225,19 +247,24 @@ class SaveLoadFeeds:
         print('\n\n\n')
         print("**********show rss_hub**********")
         print(self.rsshub_list)
-        print('\n\n\n')
+        print('\n\n\n')        
 
 class RssFeedParser:
-    def __init__(self, feed):
+    def __init__(self, feed, index):
         self.feed = feed
         self.d = feedparser.parse(self.feed)
-        self.title = self.d.feed.title
+        try:
+            self.title = self.d.feed.title
+        except AttributeError:
+            message_to_emacs("AttributeError please check your link {}".format(self.feed))
+            return 
         self.subtitle = self.d.feed.subtitle
         self.article_list = self.get_article_list(self.d.entries)
         self.feed_info = {
             "feed_link" : self.feed,
             "feed_title" : self.title,
             "feed_subtitle" : self.subtitle,
+            "feed_index" : index,
             "feed_article_list" : self.article_list
         }
 
