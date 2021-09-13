@@ -99,7 +99,9 @@ class AppBuffer(BrowserBuffer):
         self.mainItem.add_feedlink_widget(new_feedlink)
         self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
 
-        
+        # this.selectFeedByIndex(newIndex-1) is faster than window.pyobject.add_feedlink(new_feedlink);
+        self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
+
     @QtCore.pyqtSlot(str)
     def remove_feed_link(self, feed_link):
         self.mainItem.remove_feed_link_widget(feed_link)
@@ -151,6 +153,7 @@ class AppBuffer(BrowserBuffer):
             success_flag = self.mainItem.add_feedlink_widget(new_feedlink)
             if (success_flag == 1):
                 self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
+                self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
                 message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
 
     def goBack(self):
