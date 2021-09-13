@@ -1,9 +1,8 @@
 <template>
 	<span class="go-back">
-		<mu-button 
-		@click="goBack"
-		color="blue"
-		>goback</mu-button>
+		<mu-button  @click="goBack" color="blue">
+			goback
+		</mu-button>
 	</span>
 </template>
 
