@@ -8,8 +8,8 @@ export default new Vuex.Store({
   state: {
     feedsList: [],
     feedsLinkList: [],
-    curFeed: null,
     curFeedIndex: -1,
+    curArticleIndex:-1,
     viewKey: "all"
   },
   mutations: {
@@ -26,15 +26,8 @@ export default new Vuex.Store({
         cur_feed.feed_article_list[index].isRead = param.status;
       }
     },
-    
-    changeCurFeed(state, feed_title) {
-      state.curFeed = feed_title;
-    },
-    changeCurFeedIndex(state) {
-      const index = state.feedsList.findIndex(x => x.feed_title === state.curFeed);
-      if (index != -1) {
-        state.curFeedIndex = index;
-      }
+    changeCurFeedIndex(state, feed_index) {
+      state.curFeedIndex = feed_index;
     },
     changeViewKey(state, key) {
       state.viewKey = key;
@@ -50,14 +43,12 @@ export default new Vuex.Store({
 	},
   getters: {
     curFeedArticleList(state) {
-      const index = state.feedsList.findIndex(x => x.feed_title === state.curFeed);
-      if (index != -1) {
-        return state.feedsList[index].feed_article_list;
-        
+      if (state.curFeedIndex != -1) {
+        return state.feedsList[state.curFeedIndex].feed_article_list;
       }
     },
     infolist(state) {
-      const index = state.feedsList.findIndex(x => x.feed_title === state.curFeed);
+      const index = state.curFeedIndex;
       if (index != -1) {
         if (state.viewKey === 'all') {
           return state.feedsList[index].feed_article_list;
