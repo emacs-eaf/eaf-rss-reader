@@ -2,8 +2,7 @@
 	<div class="feedsList">
 		<div class="content">
 			
-			<button @click="selectPrevFeed()">prev</button>
-			<button @click="selectNextFeed()">next</button>
+			
 			
 			<div class="mu-appbars-title">
 				<mu-menu cover>
@@ -57,9 +56,8 @@ export default ({
 	},
 	mounted() {
 		window.addFeedLink = this.addFeedLink;
-		window.selectNextFeed = this.selectNextFeed;
-		window.selectPrevFeed = this.selectPrevFeed;
 		window.removeFeedLink = this.removeFeedLink;
+		window.selectFeedByIndex = this.selectFeedByIndex;
 	},
 	created() {
 		// eslint-disable-next-line no-undef
@@ -104,12 +102,7 @@ export default ({
 			}
 			this.keepSelectVisible();
 		},
-		selectNextFeed() {
-			this.selectFeedByIndex(this.$store.state.curFeedIndex + 1);
-		},
-		selectPrevFeed() {
-			this.selectFeedByIndex(this.$store.state.curFeedIndex - 1);
-		}
+		
 	}
 })
 </script>
