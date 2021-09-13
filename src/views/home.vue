@@ -1,6 +1,8 @@
 <template>
 	<div class="home" id="home">
 		<h1>{{ $store.state.curFeed }}</h1>
+		<button @click="selectPrevFeed()">prev</button>
+		<button @click="selectNextFeed()">next</button>
 		<div v-if="$store.state.curFeedIndex != -1 ">
 			<div class="view-bar">
 			<mu-button 
@@ -17,7 +19,7 @@
 			>unread</mu-button>
 			</div>
 		</div>
-		<feedsList class="feedsList"> </feedsList>
+		<feedsList class="feedsList" ref="feedslist" > </feedsList>
 		<cardItemList class="cardItemList"></cardItemList>
 	</div>
 </template>
@@ -28,17 +30,27 @@ import feedsList from "@/components/feedsList.vue"
 
 export default {
 	name: "home",
-	components:{
-		cardItemList,
-		feedsList,
-	},
 	data () {
 		return {
 		};
 	},
+	components:{
+		cardItemList,
+		feedsList,
+	},
+	mounted() {
+		window.selectNextFeed = this.selectNextFeed;
+		window.selectPrevFeed = this.selectPrevFeed;
+	},
 	methods: {
 		changeViewKey(key) {
 			this.$store.commit('changeViewKey', key)
+		},
+		selectNextFeed() {
+			this.$refs.feedslist.selectFeedByIndex(this.$store.state.curFeedIndex + 1);
+		},
+		selectPrevFeed() {
+			this.$refs.feedslist.selectFeedByIndex(this.$store.state.curFeedIndex - 1);
 		}
 	}
 };
@@ -70,6 +82,10 @@ export default {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.feedsList {
+	overflow: scroll;
 }
 
 .cardItemList {
