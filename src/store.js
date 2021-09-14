@@ -8,11 +8,19 @@ export default new Vuex.Store({
   state: {
     feedsList: [],
     feedsLinkList: [],
+    openFeed: false,
+    openArticle: false,
     curFeedIndex: -1,
     curArticleIndex:-1,
     viewKey: "all"
   },
   mutations: {
+    changeOpenFeed(state, status) {
+      state.openFeed = status;
+    },
+    changeOpenArticle(state, status) {
+      state.openArticle = status;
+    },
     updateFeedsList(state, infos) {
       state.feedsList = infos;
     },
@@ -28,6 +36,9 @@ export default new Vuex.Store({
     },
     changeCurFeedIndex(state, feed_index) {
       state.curFeedIndex = feed_index;
+    },
+    changeCurArticleIndex(state, article_index) {
+      state.curArticleIndex = article_index;
     },
     changeViewKey(state, key) {
       state.viewKey = key;
