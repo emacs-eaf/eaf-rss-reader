@@ -94,6 +94,10 @@
     ("C-r" . "mark_as_read")
     ("C-u" . "mark_as_un_read")
     ("b" . "goBack")
+    ("<down>" . "js_select_next_item")
+    ("<up>" . "js_select_prev_item")
+    ("<right>" . "js_open_current_item")
+    ("<left>". "js_up_item")
     )
   "The keybinding of EAF RSS Reader."
   :type 'cons)
