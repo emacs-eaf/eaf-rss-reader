@@ -1,9 +1,7 @@
 <template>
 	<div class="feedsList">
 		<div class="content">
-			
-			
-			
+		<div class="list-area">
 			<div class="mu-appbars-title">
 				<mu-menu cover>
 					<mu-appbar 
@@ -31,14 +29,15 @@
 				<div 
 				v-for="feed in $store.state.feedsList" 
 				class="mu-appbars"
-				@click="changeCurFeedByIndex(feed.feed_index)"
+				@click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)"
 				:key="feed.feed_index">
 					<mu-appbar  textColor="black" :style="{'background':itemBackgroundColor(feed)}">
 						{{feed.feed_title}}
 					</mu-appbar>
 				</div>
-				
 			</div>
+
+		</div>
 		</div>
 	</div>
 </template>
@@ -102,52 +101,66 @@ export default ({
 			}
 			this.keepSelectVisible();
 		},
-		
+		changeOpenFeed(status) {
+			this.$store.commit('changeOpenFeed', status);
+		},
+		cleanArticle()
+		{
+			this.$store.commit('changeCurArticleIndex', -1);
+		}
 	}
 })
 </script>
 
 <style scoped>
 
+.feedsList {
+	width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+	
+}
+
+.list-area {
+   flex: 1 1 0px;
+   height: 100%;
+   display: flex;
+   flex-direction: column;
+ }
+
 .content {
 	position: fixed;
 	width: 35%;
 	margin-top: 100px;
-
-  flex-direction: row;
-
-	flex: 1 1 0px;
-  height: 100%;
-  display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .mu-appbars-title {
 	width: 100%;
-	position: relative;
+	
 	display: flex;
 	flex-direction: column;
 }
 
 .mu-appbars {
 	width: 100%;
-	position: relative;
 	display: flex;
 }
 
 .mu-appbar {
 	width: 100%;
-	position: relative;
 }
 
 .mu-appbars-button {
-	position: relative;
 	float: right;
 }
 
 .feeds-list {
 	width: 100%;
-	height: 75%;
+	height: 70%;
 	overflow: scroll;
 }
 </style>
