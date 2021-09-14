@@ -1,31 +1,17 @@
 <template>
 	<div class="home" id="home">
-		<h1>{{ $store.state.curFeed }}</h1>
-		<button @click="selectPrevFeed()">prev</button>
-		<button @click="selectNextFeed()">next</button>
-		<div v-if="$store.state.curFeedIndex != -1 ">
-			<div class="view-bar">
-			<mu-button 
-			:color="$store.state.viewKey === 'all' ? 'blue' : 'grey'"
-			@click="changeViewKey('all')"
-			>all</mu-button>
-			<mu-button 
-			:color="$store.state.viewKey === 'read' ? 'blue' : 'grey'"
-			@click="changeViewKey('read')"
-			>read</mu-button>
-			<mu-button 
-			@click="changeViewKey('unread')"
-			:color="$store.state.viewKey === 'unread' ? 'blue' : 'grey'"
-			>unread</mu-button>
-			</div>
-		</div>
-		<feedsList class="feedsList" ref="feedslist" > </feedsList>
-		<cardItemList class="cardItemList"></cardItemList>
+		<button @click="selectPrevItem()">prev</button>
+		<button @click="selectNextItem()">next</button>
+		<button @click="openCurrentItem()">right</button>
+		<button @click="upItem()">left</button>
+		
+		<feedsList class="feedsList" ref="feedslist"> </feedsList>
+		<articlesList v-if="$store.state.curFeedIndex!=-1"  class="articlesList" ref="articlelist"></articlesList>
 	</div>
 </template>
 
 <script>
-import cardItemList from "@/components/cardItemList.vue"
+import articlesList from "@/components/articlesList.vue"
 import feedsList from "@/components/feedsList.vue"
 
 export default {
@@ -34,31 +20,86 @@ export default {
 		return {
 		};
 	},
+	computed: {
+	},
 	components:{
-		cardItemList,
+		articlesList,
 		feedsList,
 	},
 	mounted() {
-		window.selectNextFeed = this.selectNextFeed;
-		window.selectPrevFeed = this.selectPrevFeed;
+		window.selectNextItem = this.selectNextItem;
+		window.selectPrevItem = this.selectPrevItem;
+		window.openCurrentItem = this.openCurrentItem;
+		window.upItem = this.upItem;
 	},
 	methods: {
 		changeViewKey(key) {
 			this.$store.commit('changeViewKey', key)
 		},
-		selectNextFeed() {
-			this.$refs.feedslist.selectFeedByIndex(this.$store.state.curFeedIndex + 1);
+		selectNextItem() {
+			const isOpenFeed = this.$store.state.openFeed;
+			const isOpenArticle = this.$store.state.openArticle;
+			const curFeedIndex = this.$store.state.curFeedIndex;
+			const curArticleIndex = this.$store.state.curArticleIndex;
+			if (!isOpenFeed && !isOpenArticle) {
+				this.$refs.feedslist.selectFeedByIndex(curFeedIndex + 1);
+			} else if (isOpenFeed && !isOpenArticle) {
+				this.$refs.articlelist.selectArticleByIndex(curArticleIndex + 1);
+			} 
 		},
-		selectPrevFeed() {
-			this.$refs.feedslist.selectFeedByIndex(this.$store.state.curFeedIndex - 1);
+		selectPrevItem() {
+			const isOpenFeed = this.$store.state.openFeed;
+			const isOpenArticle = this.$store.state.openArticle;
+			const curFeedIndex = this.$store.state.curFeedIndex;
+			const curArticleIndex = this.$store.state.curArticleIndex;
+			if (!isOpenFeed && !isOpenArticle) {
+				this.$refs.feedslist.selectFeedByIndex(curFeedIndex - 1);
+			} else if (isOpenFeed && !isOpenArticle) {
+				this.$refs.articlelist.selectArticleByIndex(curArticleIndex - 1);
+			}
+		},
+		openCurrentItem() {
+			const isOpenFeed = this.$store.state.openFeed;
+			const isOpenArticle = this.$store.state.openArticle;
+			const curFeedIndex = this.$store.state.curFeedIndex;
+			const curArticleIndex = this.$store.state.curArticleIndex;
+			if (!isOpenFeed && !isOpenArticle) {
+				if (curFeedIndex != -1 && curArticleIndex === -1) {
+					this.$store.commit('changeOpenFeed', true);
+				}
+			} else if (isOpenFeed && !isOpenArticle) {
+				if (curFeedIndex != -1 && curArticleIndex != -1) {
+					this.$store.commit('changeOpenArticle', true);
+				}
+			}
+		},
+		upItem() {
+			const isOpenFeed = this.$store.state.openFeed;
+			const isOpenArticle = this.$store.state.openArticle;
+			const curFeedIndex = this.$store.state.curFeedIndex;
+			const curArticleIndex = this.$store.state.curArticleIndex;
+			if (isOpenFeed && isOpenArticle) {
+				if (curFeedIndex != -1 && curArticleIndex != -1) {
+					this.$store.commit('changeOpenArticle', false);
+					this.$store.commit('changeCurArticleIndex', -1);
+				}
+			} else if (isOpenFeed && !isOpenArticle) {
+				if (curFeedIndex != -1) {
+					this.$store.commit('changeOpenFeed', false);
+					this.$store.commit('changeCurArticleIndex', -1);
+				}
+			} else if (!isOpenFeed && !isOpenArticle) {
+				if (curFeedIndex != -1) {
+					this.$store.commit('changeCurFeedIndex', -1);
+					this.$store.commit('changeCurArticleIndex', -1);
+				}
+			}
 		}
 	}
 };
 </script>
 
 <style scoped>
-
-
 
 .view-bar {
 	position: fixed;
@@ -74,25 +115,5 @@ export default {
   height: 100%;
 
   position: relative;
-}
-
-.h1 {
-	position: relative;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-.feedsList {
-	overflow: scroll;
-}
-
-.cardItemList {
-  overflow: scroll;
-}
-
-.test {
-  overflow: scroll;
 }
 </style>
