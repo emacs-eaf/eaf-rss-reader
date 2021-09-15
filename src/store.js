@@ -72,7 +72,7 @@ export default new Vuex.Store({
         }
         return state.feedsList[index].feed_article_list;
       }
-			
-		}
+		},
+
   }
 })

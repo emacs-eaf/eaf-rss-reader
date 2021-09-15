@@ -44,6 +44,7 @@
 
 <script>
 import { QWebChannel } from "qwebchannel";
+import {mapState} from 'vuex';
 
 export default ({
 	data() {
@@ -52,6 +53,12 @@ export default ({
 			backgroundColor:"white",
 			selectColor: "grey",
 		};	
+	},
+	computed: {
+		...mapState([
+		'curFeedIndex', 
+		'curArticleIndex', 
+		])
 	},
 	mounted() {
 		window.addFeedLink = this.addFeedLink;
@@ -78,7 +85,7 @@ export default ({
 			this.newFeedLink = '';
 		},
 		itemBackgroundColor(feed) {
-			if (feed.feed_index == this.$store.state.curFeedIndex) {
+			if (feed.feed_index == this.curFeedIndex) {
 				return this.selectColor;
 			} else {
 				return this.backgroundColor;
@@ -88,7 +95,7 @@ export default ({
 			window.pyobject.remove_feed_link(this.feedLink);
 		},
 		keepSelectVisible() {
-			this.$refs.feedlist.children[this.$store.state.curFeedIndex].scrollIntoViewIfNeeded(false);
+			this.$refs.feedlist.children[this.curFeedIndex].scrollIntoViewIfNeeded(false);
     },
 		selectFeedByIndex(index) {
 			var len = this.$store.state.feedsList.length;

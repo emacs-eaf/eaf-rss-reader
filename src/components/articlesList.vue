@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import {mapGetters, mapState} from 'vuex';
 import { QWebChannel } from "qwebchannel";
 
 export default {
@@ -60,7 +60,11 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['curFeedArticleList', 'infolist'])
+		...mapGetters(['curFeedArticleList', 'infolist']),
+		...mapState([
+		'curFeedIndex', 
+		'curArticleIndex', 
+		])
 	},
 	mounted() {
 		window.initCardItemListColor = this.initCardItemListColor;
@@ -82,18 +86,17 @@ export default {
 			this.$store.commit('updateFileInfos', files);
 		},
 		itemBackgroundColor(article) {
-			if (article.index == this.$store.state.curArticleIndex) {
+			if (article.index == this.curArticleIndex) {
 				return this.selectColor;
 			} else {
 				return this.backgroundColor;
 			}
     },
 		keepSelectVisible() {
-			this.$refs.articlelist.children[this.$store.state.curArticleIndex].scrollIntoViewIfNeeded(false);
+			this.$refs.articlelist.children[this.curArticleIndex].scrollIntoViewIfNeeded(false);
     },
 		selectArticleByIndex(index) {
-			const curFeedIndex = this.$store.state.curFeedIndex;
-			var len = this.$store.state.feedsList[curFeedIndex].feed_article_list.length;
+			var len = this.$store.state.feedsList[this.curFeedIndex].feed_article_list.length;
 			if (index >= len) {
 				this.changeCurArticleByIndex(len - 1)
 			} else if (index <= 0) {
