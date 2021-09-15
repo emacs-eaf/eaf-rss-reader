@@ -5,8 +5,9 @@
 			<div class="article-list-title">
 				<mu-appbar 
 				color="white" 
-				textColor="black" >
-					{{$store.state.feedsList[$store.state.curFeedIndex].feed_title}}
+				textColor="black"
+				:style="{'background':highlightTitle()}">
+					{{$store.state.feedsList[curFeedIndex].feed_title}}
 				</mu-appbar>
 			</div>
 
@@ -19,9 +20,12 @@
 
 				<mu-container>
 					<mu-card>
-						<router-link  :to="{name: 'Article', params:{title: article.title}}">
-							<mu-card-title :title="article.title" class="title"/>
-						</router-link>
+						<mu-card-title 
+						:title="article.title" 
+						class="title" 
+						@click="changeCurArticleByIndex(article.index), 
+										changeOpenArticle(true),
+										changeOpenFeed(true)"/>
 						<mu-card-header 
 						:title="article.author" 
 						:sub-title="article.time"
@@ -31,11 +35,13 @@
 							{{article.shortDescription}}
 						</mu-card-text>
 					
-						<mu-card-actions>
-							<router-link :to="{name: 'Article', params:{title: article.title}}">
-								<mu-button flat>Read</mu-button>
-							</router-link>
-						</mu-card-actions>
+						<mu-button 
+						@click="changeCurArticleByIndex(article.index), 
+										changeOpenArticle(true),
+										changeOpenFeed(true)" flat>
+							Read
+						</mu-button>
+						
 					</mu-card>
 				</mu-container>
 				</div>
@@ -64,6 +70,7 @@ export default {
 		...mapState([
 		'curFeedIndex', 
 		'curArticleIndex', 
+		'openFeed',
 		])
 	},
 	mounted() {
@@ -84,6 +91,13 @@ export default {
     },
 		addFiles(files) {
 			this.$store.commit('updateFileInfos', files);
+		},
+		highlightTitle() {
+			if (this.openFeed && this.curArticleIndex === -1) {
+				return this.selectColor;
+			} else {
+				return this.backgroundColor;
+			}
 		},
 		itemBackgroundColor(article) {
 			if (article.index == this.curArticleIndex) {
@@ -108,6 +122,12 @@ export default {
 		},
 		changeCurArticleByIndex(article_index) {
 			this.$store.commit('changeCurArticleIndex', article_index);
+		},
+		changeOpenFeed(status) {
+			this.$store.commit('changeOpenFeed', status);
+		},
+		changeOpenArticle(status) {
+			this.$store.commit('changeOpenArticle', status);
 		},
 	}
 }
