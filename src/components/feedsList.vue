@@ -9,7 +9,7 @@
 					textColor="black" 
 					style="text-align: center;">
 						Feeds List
-						<mu-button style="float: right;">add feed</mu-button>
+						<mu-button style="float: right;" >add feed</mu-button>
 					</mu-appbar>
 
 				<mu-list slot="content">
@@ -34,6 +34,9 @@
 					<mu-appbar  textColor="black" :style="{'background':itemBackgroundColor(feed)}">
 						{{feed.feed_title}}
 					</mu-appbar>
+					<mu-button style="float: right" @click="removeFeed(feed.feed_index)">
+						remove
+					</mu-button>
 				</div>
 			</div>
 
@@ -64,6 +67,7 @@ export default ({
 		window.addFeedLink = this.addFeedLink;
 		window.removeFeedLink = this.removeFeedLink;
 		window.selectFeedByIndex = this.selectFeedByIndex;
+		window.removeFeed = this.removeFeed;
 	},
 	created() {
 		// eslint-disable-next-line no-undef
@@ -75,6 +79,9 @@ export default ({
 		changeCurFeedByIndex(feed_index) {
 			this.$store.commit('changeCurFeedIndex', feed_index);
 		},
+		addIcon (iconFile) {
+			return ''
+		},
 		addFeedLink(new_feedlink) {
 			const index = this.$store.state.feedsList.findIndex(x => x.feed_link === new_feedlink);
 			if (index != -1) {
@@ -83,6 +90,13 @@ export default ({
 				window.pyobject.add_feedlink(new_feedlink);
 			}
 			this.newFeedLink = '';
+		},
+		// from === 0 : vue.js call pyhon
+		// from === 1 : python call vue.js
+		removeFeed(feedlink_index) {
+
+			window.pyobject.remove_feedlink(feedlink_index);
+			
 		},
 		itemBackgroundColor(feed) {
 			if (feed.feed_index == this.curFeedIndex) {
