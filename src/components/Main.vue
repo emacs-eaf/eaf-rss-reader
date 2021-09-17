@@ -8,7 +8,7 @@
         <button @click="upItem()">left</button>
       </div>
       <check></check>
-    </div>
+		</div>
 		<feedsList 
 		v-if="!openArticle"
 		class="feedsList"
@@ -58,6 +58,11 @@ export default {
 		window.selectPrevItem = this.selectPrevItem;
 		window.openCurrentItem = this.openCurrentItem;
 		window.upItem = this.upItem;
+		window.giveCurFeedIndex = this.giveCurFeedIndex;
+		window.giveCurArticleIndex = this.giveCurArticleIndex;
+		window.giveOpenFeed = this.giveOpenFeed;
+		window.giveOpenArticle = this.giveOpenFeed;
+		
 	},
 	methods: {
 		changeViewKey(key) {
@@ -85,7 +90,6 @@ export default {
 		openCurrentItem() {
 			if (!this.openFeed && !this.openArticle) {
 				if (this.curFeedIndex != -1 && this.curArticleIndex === -1) {
-					
 					this.$store.commit('changeOpenFeed', true);
 				}
 			} else if (this.openFeed && !this.openArticle) {
@@ -110,7 +114,23 @@ export default {
 					this.$store.commit('changeCurArticleIndex', -1);
 				}
 			}
+		},
+		
+		giveCurFeedIndex() {
+			return this.$store.state.curFeedIndex;
+		},
+		giveCurArticleIndex() {
+			return this.curArticleIndex;
+		},
+		giveOpenFeed() {
+			if (this.openFeed === false) return 'false';
+			return 'true';
+		},
+		giveOpenArticle() {
+			if (this.openArticle === 'false') return 'false';
+			return 'true';
 		}
+		
 	}
 };
 </script>

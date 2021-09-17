@@ -77,6 +77,9 @@ export default {
 		window.initCardItemListColor = this.initCardItemListColor;
 		window.getpic = this.getpic
 		window.getitem = this.get_item
+		window.changeOpenFeed = this.changeOpenFeed;
+		window.changeOpenArticle = this.changeOpenArticle;
+		window.changeCurArticleByIndex = this.changeCurArticleByIndex;
   },
 	created() {
 		// eslint-disable-next-line no-undef
@@ -124,9 +127,13 @@ export default {
 			this.$store.commit('changeCurArticleIndex', article_index);
 		},
 		changeOpenFeed(status) {
+			if (status === 'false') status = false;
+			else if (status === 'true') status = true;
 			this.$store.commit('changeOpenFeed', status);
 		},
 		changeOpenArticle(status) {
+			if (status === 'false') status = false;
+			else if (status === 'true') status = true;
 			this.$store.commit('changeOpenArticle', status);
 		},
 	}
