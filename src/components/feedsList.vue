@@ -29,11 +29,14 @@
 				<div 
 				v-for="feed in $store.state.feedsList" 
 				class="mu-appbars"
-				@click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)"
+						
 				:key="feed.feed_index">
-					<mu-appbar  textColor="black" :style="{'background':itemBackgroundColor(feed)}">
+					<div class="feed-title" @click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)">
+					<mu-appbar 
+					textColor="black" :style="{'background':itemBackgroundColor(feed)}">
 						{{feed.feed_title}}
 					</mu-appbar>
+					</div>
 					<mu-button style="float: right" @click="removeFeed(feed.feed_index)">
 						remove
 					</mu-button>
@@ -61,6 +64,7 @@ export default ({
 		...mapState([
 		'curFeedIndex', 
 		'curArticleIndex', 
+		'openFeed',
 		])
 	},
 	mounted() {
@@ -68,6 +72,7 @@ export default ({
 		window.removeFeedLink = this.removeFeedLink;
 		window.selectFeedByIndex = this.selectFeedByIndex;
 		window.removeFeed = this.removeFeed;
+		window.changeCurFeedByIndex = this.changeCurFeedByIndex;
 	},
 	created() {
 		// eslint-disable-next-line no-undef
@@ -91,12 +96,9 @@ export default ({
 			}
 			this.newFeedLink = '';
 		},
-		// from === 0 : vue.js call pyhon
-		// from === 1 : python call vue.js
+		
 		removeFeed(feedlink_index) {
-
-			window.pyobject.remove_feedlink(feedlink_index);
-			
+			window.pyobject.remove_feedlink(feedlink_index, this.curFeedIndex);
 		},
 		itemBackgroundColor(feed) {
 			if (feed.feed_index == this.curFeedIndex) {
@@ -105,9 +107,7 @@ export default ({
 				return this.backgroundColor;
 			}
     },
-		removeFeedLink() {
-			window.pyobject.remove_feed_link(this.feedLink);
-		},
+		
 		keepSelectVisible() {
 			this.$refs.feedlist.children[this.curFeedIndex].scrollIntoViewIfNeeded(false);
     },
@@ -127,6 +127,7 @@ export default ({
 		},
 		cleanArticle()
 		{
+			alert('hello');
 			this.$store.commit('changeCurArticleIndex', -1);
 		}
 	}
@@ -171,9 +172,11 @@ export default ({
 	display: flex;
 }
 
-.mu-appbar {
+.feed-title {
 	width: 100%;
 }
+
+
 
 .mu-appbars-button {
 	float: right;

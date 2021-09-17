@@ -52,30 +52,10 @@ class AppBuffer(BrowserBuffer):
             html = self.convert_index_html(f.read(), self.index_file_dir)
             self.buffer_widget.setHtml(html, QUrl("file://"))
 
-        ''' self.sl_obj.save_feeds;
-        self.feed_info = self.sl_obj.cur_feed; '''
-        
-        '''
-        # 解析 feed, 在此添加 feed
-        self.link_feeds_list = [
-                      "https://www.with-emacs.com/rss.xml",
-                      "https://www.oschina.net/news/rss",
-                      "https://www.oschina.net/project/rss",
-                    ]
-        for item in self.link_feeds_list:
-            rss = RssFeedParser(item).feed_info
-            self.rsshub.append(rss)
-        '''
-        # self.mainItem.add_feedlink_widget("https://www.with-emacs.com/rss.xml")
-        # self.mainItem.add_feedlink_widget("https://www.oschina.net/news/rss")
-        # self.mainItem.test_method()
         # vue 注入数据
         self.first_file = os.path.expanduser(arguments)
         self.buffer_widget.loadFinished.connect(self.load_first_file)        
         
-        # 写json
-        # with open(self.json_file, "w") as f:
-        #    f.write(json.dumps(self.mainItem.rsshub_list, ensure_ascii=False))
 
     def fetch_link_list(self):
         self.mainItem.get_feed_link_list()
@@ -102,9 +82,11 @@ class AppBuffer(BrowserBuffer):
         # this.selectFeedByIndex(newIndex-1) is faster than window.pyobject.add_feedlink(new_feedlink);
         self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
 
-    @QtCore.pyqtSlot(int)
-    def remove_feedlink(self, feedlink):
-        self.handle_remove_feed(feedlink)
+    @QtCore.pyqtSlot(str, str)
+    def remove_feedlink(self, feedlink_index, curFeedIndex):
+        feedlink_index = int(feedlink_index)
+        curFeedIndex = int(curFeedIndex)
+        self.remove_feed_widget(feedlink_index, curFeedIndex)
 
     @QtCore.pyqtSlot(str, str, bool)
     def change_read_status(self, feedlink_index, article_index, status):
@@ -122,7 +104,10 @@ class AppBuffer(BrowserBuffer):
         article_index = self.buffer_widget.execute_js("getCurArticleIndex()")
         article_status = self.buffer_widget.execute_js("getCurArticleStatus()")
         article_title = self.buffer_widget.execute_js("getCurArticleTitle()")
-        
+        print('article_title')
+        print(article_title)
+        print('article_status')
+        print(article_status)
         self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
         self.mainItem.save_rsshub_json()
 
@@ -157,25 +142,47 @@ class AppBuffer(BrowserBuffer):
                 self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
                 message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
 
-    def handle_remove_feed(self, feedlink_index):
+    def remove_feed_widget(self, feedlink_index, curFeedIndex):
         # 先确认是否删除
         # ...
-
-        # 选中状态，下移；没有选中就不变
-
+        
         feed_title = self.mainItem.rsshub_list[feedlink_index]['feed_title']
-        feed_num = len(self.mainItem.feedlink_list) - 1
-        success_flag = self.mainItem.remove_feedlink_widget(feedlink_index)
-        if success_flag:
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
-            if feed_num == 1:
-                self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(-1)))
+        feed_link = self.mainItem.rsshub_list[feedlink_index]['feed_link']
+        # feed selected, select next feed
+        if curFeedIndex != -1:
+            feed_count = len(self.mainItem.feedlink_list)
+            success_flag = self.mainItem.remove_feedlink_widget(feedlink_index)
+            if success_flag:
+                self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
+                if feed_count == 1:
+                    self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
+                    self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
+                    self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('false')))
+                    self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
+                else:
+                    self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index)))
+                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(-1)))
+                    self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
+                message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, feedlink_index))
             else:
-                self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index - 1)))
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
-            message_to_emacs("Remove Feed-Index {} success.".format(feed_title))
+                message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
+        # feed not selected
         else:
-            message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
+            success_flag = self.mainItem.remove_feedlink_widget(feedlink_index)    
+            if success_flag:
+                self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
+                self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
+                self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
+                self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
+                self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('false')))
+                message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, feedlink_index))
+            else:
+                message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
+
+
+    def handle_remove_feed(self):
+        curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
+        self.remove_feed_widget(curFeedIndex, curFeedIndex)
 
     def goBack(self):
         self.buffer_widget.eval_js("goBack();")
@@ -214,6 +221,17 @@ class SaveLoadFeeds:
             self.last_feed_index = -1
         else:
             self.last_feed_index = len(self.feedlink_list) - 1
+
+        # self.reget()
+
+    def reget(self):
+        self.last_feed_index = -1
+        for item in self.feedlink_list:
+            self.last_feed_index += 1
+            rss = RssFeedParser(item, self.last_feed_index).feed_info
+            self.rsshub_list.append(rss)
+            print('{} load finished!'.format(item))
+        self.save_rsshub_json()
 
     def save_rsshub_json(self):
         with open(self.rsshub_json, "w") as f:
@@ -277,6 +295,7 @@ class SaveLoadFeeds:
 
         for item in self.rsshub_list[feedlink_index::]:
             item['feed_index'] -= 1
+
         self.rsshub_list.pop(feedlink_index)
         self.save_rsshub_json()
 
