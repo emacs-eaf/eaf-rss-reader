@@ -1,15 +1,14 @@
 <template>
   <div id="app">
-    <transition name="slide" mode="out-in">
-      <router-view :key="$route.path"/>
-    </transition>
+    <Main></Main>
   </div>
 </template>
 
 <script>
-
+import Main from "@/components/Main.vue"
 export default ({
   components: {
+    Main
   },
   mounted() {
 		window.addFeedsListFiles = this.addFeedsListFiles;
