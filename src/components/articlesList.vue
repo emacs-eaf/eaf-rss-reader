@@ -80,6 +80,7 @@ export default {
 		window.changeOpenFeed = this.changeOpenFeed;
 		window.changeOpenArticle = this.changeOpenArticle;
 		window.changeCurArticleByIndex = this.changeCurArticleByIndex;
+		window.selectArticleByIndex = this.selectArticleByIndex;
   },
 	created() {
 		// eslint-disable-next-line no-undef

@@ -127,7 +127,6 @@ export default ({
 		},
 		cleanArticle()
 		{
-			alert('hello');
 			this.$store.commit('changeCurArticleIndex', -1);
 		}
 	}
