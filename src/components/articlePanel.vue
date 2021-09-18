@@ -2,27 +2,29 @@
   <div class="articlePanel" ref="articlePanel">
     <GoBack />
     <div class="article-page">
-			<mu-container class="button-wrapper">
-				<mu-button
-				:disabled="article.isRead === false ? false : true"
-				@click="changeReadStatus(article.title, true, 0)"
-				color="blue"
-				textColor="white"
-				>
-					read
-				</mu-button>
-				<mu-button
-				:disabled="article.isRead === true ? false : true"
-				@click="changeReadStatus(article.title, false, 0)"
-				color="blue"
-				textColor="white"
-				>
-					unread
-				</mu-button>
-			</mu-container>
-			<h1>
-				{{article.title}}
-			</h1>
+			<div class="title-bar">
+				<mu-container class="button-wrapper">
+					<mu-button
+					:disabled="article.isRead === false ? false : true"
+					@click="changeReadStatus(article.title, true, 0)"
+					color="blue"
+					textColor="white"
+					>
+						read
+					</mu-button>
+					<mu-button
+					:disabled="article.isRead === true ? false : true"
+					@click="changeReadStatus(article.title, false, 0)"
+					color="blue"
+					textColor="white"
+					>
+						unread
+					</mu-button>
+				</mu-container>
+				<h1>
+					{{article.title}}
+				</h1>
+			</div>
 			<p class="author">
 				{{article.author}}
 			</p>
@@ -56,7 +58,7 @@ export default {
     }
   },
   props:{
-    article:'',
+    article:null,
 	},
 	computed: {
 	},
@@ -145,4 +147,12 @@ p {
 .mu-button{
   margin: 8px;
 }
+
+.title-bar{
+	position:fixed;
+	margin:10 auto;
+	left:0;
+	right:0;
+}
+
 </style>

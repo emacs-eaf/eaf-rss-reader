@@ -67,9 +67,7 @@ export default {
 		
 	},
 	methods: {
-		changeViewKey(key) {
-			this.$store.commit('changeViewKey', key)
-		},
+		
 		articleInfoList(){
 			return this.curFeedArticleList.find(
 				article => article.title === this.title

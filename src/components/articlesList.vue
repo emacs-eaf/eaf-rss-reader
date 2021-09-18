@@ -3,14 +3,29 @@
 		<div class="content">
 		<div class="list-area">
 			<div class="article-list-title">
-				<mu-appbar 
-				color="white" 
-				textColor="black"
-				:style="{'background':highlightTitle()}">
-					{{$store.state.feedsList[curFeedIndex].feed_title}}
-				</mu-appbar>
+				<div class="feed-title">
+					<mu-appbar 
+					color="white" 
+					textColor="black"
+					:style="{'background':highlightTitle()}">
+						{{$store.state.feedsList[curFeedIndex].feed_title}}
+					</mu-appbar>
+				</div>
+				<div class="view-bar">
+					<mu-button 
+					:color="$store.state.viewKey === 'all' ? 'blue' : 'grey'"
+					@click="changeViewKey('all')"
+					>all</mu-button>
+					<mu-button 
+					:color="$store.state.viewKey === 'read' ? 'blue' : 'grey'"
+					@click="changeViewKey('read')"
+					>read</mu-button>
+					<mu-button 
+					@click="changeViewKey('unread')"
+					:color="$store.state.viewKey === 'unread' ? 'blue' : 'grey'"
+					>unread</mu-button>
+				</div>
 			</div>
-
 			<div  class="article-list" ref="articlelist">
 				<div
 				class="article-card"
@@ -89,6 +104,9 @@ export default {
 		});
   },
 	methods: {
+		changeViewKey(key) {
+			this.$store.commit('changeViewKey', key)
+		},
 		initCardItemListColor(backgroundColor, foregroundColor) {
 			this.backgroundColor = backgroundColor;
 			this.foregroundColor = foregroundColor;
@@ -114,7 +132,7 @@ export default {
 			this.$refs.articlelist.children[this.curArticleIndex].scrollIntoViewIfNeeded(false);
     },
 		selectArticleByIndex(index) {
-			var len = this.$store.state.feedsList[this.curFeedIndex].feed_article_list.length;
+			var len = this.infolist.length;
 			if (index >= len) {
 				this.changeCurArticleByIndex(len - 1)
 			} else if (index <= 0) {
@@ -151,7 +169,6 @@ export default {
 }
 
 .content {
-	margin-top: 110px;
 	margin-left: 700px;
 	width: 100%;
 	height: 100%;
@@ -168,9 +185,13 @@ export default {
  }
 
 .article-list-title {
-	width: 100%;
+	width: 50%;
 	display: flex;
 	flex-direction: column;
+}
+
+.feed-title{
+	width: 100%;
 }
 
 .article-list {
@@ -180,7 +201,7 @@ export default {
 }
 
 .article-card {
-	margin-top: 20px;
+	margin-top: 10px;
 	width: 100%; 
 	max-width: 575px; 
 	flex-direction: column;
@@ -200,4 +221,8 @@ export default {
 	margin-bottom: -10px;
 }
 
+.view-bar{
+	display:table;
+  margin:0 auto;
+}
 </style>
