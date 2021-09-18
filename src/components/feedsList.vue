@@ -153,7 +153,6 @@ export default ({
 .content {
 	position: fixed;
 	width: 35%;
-	margin-top: 100px;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
