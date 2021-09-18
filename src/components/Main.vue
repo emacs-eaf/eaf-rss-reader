@@ -21,7 +21,9 @@
 		
 		<articlePanel
 		v-if="openArticle && curArticleIndex != -1"
-		:article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"/>
+		:article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"
+		class="articlePanel" 
+		ref="articlePanel"/>
 		
 	</div>
 </template>
@@ -78,13 +80,17 @@ export default {
 				this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
 			} else if (this.openFeed && !this.openArticle) {
 				this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
-			} 
+			} else if (this.openFeed && this.openArticle) {
+				this.$refs.articlePanel.scrollUp();
+			}
 		},
 		selectPrevItem() {
 			if (!this.openFeed && !this.openArticle) {
 				this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
 			} else if (this.openFeed && !this.openArticle) {
 				this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
+			} else if (this.openFeed && this.openArticle) {
+				this.$refs.articlePanel.scrollDown();
 			}
 		},
 		openCurrentItem() {
@@ -157,5 +163,9 @@ export default {
 }
 .button-list {
   flex-direction: row;
+}
+
+.articlePanel {
+	overflow: scroll;
 }
 </style>

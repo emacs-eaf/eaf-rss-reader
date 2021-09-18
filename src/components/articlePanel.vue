@@ -56,7 +56,7 @@ export default {
     }
   },
   props:{
-    article:[],
+    article:'',
 	},
 	computed: {
 	},
@@ -96,8 +96,10 @@ export default {
 		},
     scrollUp() {
 			this.$refs.articlePanel.scrollTop += 30;
+			console.log(this.$refs.articlePanel.scrollTop)
     },
 		scrollDown() {
+			console.log(this.$refs.articlePanel.scrollTop)
 			this.$refs.articlePanel.scrollTop -= 30;
 		},
 		getCurFeedIndex() {
