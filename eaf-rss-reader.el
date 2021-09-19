@@ -86,18 +86,18 @@
 
 (defcustom eaf-rss-reader-keybinding
   '(("M-p" . "add_subscription")
-    ("C-p" . "js_scroll_up")
-    ("C-n" . "js_scroll_down")
     ("A" . "add_feed")
     ("R" . "remove_feed")
     ("r" . "alter_read_status")
-    ("C-r" . "mark_as_read")
-    ("C-u" . "mark_as_un_read")
     ("b" . "goBack")
     ("<down>" . "js_select_next_item")
     ("<up>" . "js_select_prev_item")
     ("<right>" . "js_open_current_item")
     ("<left>". "js_up_item")
+    ("C-n" . "js_select_next_item")
+    ("C-p" . "js_select_prev_item")
+    ("<" . "select_prev_view_key")
+    (">". "select_next_view_key")
     )
   "The keybinding of EAF RSS Reader."
   :type 'cons)

@@ -96,7 +96,6 @@ export default ({
 			}
 			this.newFeedLink = '';
 		},
-		
 		removeFeed(feedlink_index) {
 			window.pyobject.remove_feedlink(feedlink_index, this.curFeedIndex);
 		},
@@ -107,7 +106,6 @@ export default ({
 				return this.backgroundColor;
 			}
     },
-		
 		keepSelectVisible() {
 			this.$refs.feedlist.children[this.curFeedIndex].scrollIntoViewIfNeeded(false);
     },

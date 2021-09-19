@@ -94,6 +94,7 @@ export default {
 		window.getitem = this.get_item
 		window.changeOpenFeed = this.changeOpenFeed;
 		window.changeOpenArticle = this.changeOpenArticle;
+		window.changeViewKey = this.changeViewKey;
 		window.changeCurArticleByIndex = this.changeCurArticleByIndex;
 		window.selectArticleByIndex = this.selectArticleByIndex;
   },

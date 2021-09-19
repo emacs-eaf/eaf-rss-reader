@@ -71,8 +71,6 @@ export default {
 	mounted() {
 		window.scrollUp = this.scrollUp;
     window.scrollDown = this.scrollDown;
-		window.getCurFeedIndex = this.getCurFeedIndex;
-		window.getCurArticleIndex = this.getCurArticleIndex;
 		window.getCurArticleStatus = this.getCurArticleStatus;
 		window.getCurArticleTitle = this.getCurArticleTitle;
 		window.changeReadStatus = this.changeReadStatus;
@@ -98,20 +96,12 @@ export default {
 		},
     scrollUp() {
 			this.$refs.articlePanel.scrollTop += 30;
-			console.log(this.$refs.articlePanel.scrollTop)
     },
 		scrollDown() {
-			console.log(this.$refs.articlePanel.scrollTop)
 			this.$refs.articlePanel.scrollTop -= 30;
-		},
-		getCurFeedIndex() {
-			return this.$store.state.curFeedIndex;
 		},
 		getCurArticleTitle() {
 			return this.article.title;
-		},
-		getCurArticleIndex() {
-			return this.article.index;
 		},
 		getCurArticleStatus() {
 			return this.article.isRead;

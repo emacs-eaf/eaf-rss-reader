@@ -46,7 +46,8 @@ export default {
 		'curFeedIndex', 
 		'curArticleIndex', 
 		'openFeed', 
-		'openArticle']),
+		'openArticle',
+		'viewKey']),
 		...mapGetters(['curFeedArticleList']),
 	},
 	components:{
@@ -64,7 +65,7 @@ export default {
 		window.giveCurArticleIndex = this.giveCurArticleIndex;
 		window.giveOpenFeed = this.giveOpenFeed;
 		window.giveOpenArticle = this.giveOpenFeed;
-		
+		window.giveViewKey = this.giveViewKey;
 	},
 	methods: {
 		
@@ -133,8 +134,10 @@ export default {
 		giveOpenArticle() {
 			if (this.openArticle === 'false') return 'false';
 			return 'true';
+		},
+		giveViewKey() {
+			return this.viewKey;
 		}
-		
 	}
 };
 </script>

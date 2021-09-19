@@ -28,7 +28,9 @@ class AppBuffer(BrowserBuffer):
         self.feedlink_json = os.path.join(self.feedlink_json_dir, "link.json")
 
         self.url = url
-        
+        self.view_key_map = {'all':0, 'read': 1, 'unread':2}
+        self.view_key_list = ['all', 'read', 'unread']
+
         self.feedlink_list = []
         self.rsshub_list = []
 
@@ -89,10 +91,17 @@ class AppBuffer(BrowserBuffer):
         pass
 
     def alter_read_status(self):
-        feedlink_index = self.buffer_widget.execute_js("getCurFeedIndex()")
-        article_index = self.buffer_widget.execute_js("getCurArticleIndex()")
+        feedlink_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
+        article_index = self.buffer_widget.execute_js("giveCurArticleIndex()")
+        
+
+        # 尝试改成从python获取而不是vue获取
+
         article_status = self.buffer_widget.execute_js("getCurArticleStatus()")
         article_title = self.buffer_widget.execute_js("getCurArticleTitle()")
+
+        # 
+
         self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
         self.mainItem.save_rsshub_json()
 
@@ -102,7 +111,6 @@ class AppBuffer(BrowserBuffer):
         #    )
 
         # method2 : call articlePanel.vue -> changeReadStatus(key)
-        article_status = self.buffer_widget.execute_js("getCurArticleStatus()")
         self.buffer_widget.eval_js(
             '''changeReadStatus(\"{}\", \"{}\", \"{}\");'''.format(article_title, not article_status, 1)
             )
@@ -173,7 +181,22 @@ class AppBuffer(BrowserBuffer):
         self.remove_feed_widget(curFeedIndex, curFeedIndex)
 
     def goBack(self):
-        self.buffer_widget.eval_js("goBack();")
+        message_to_emacs("You press b.")
+
+    def select_next_view_key(self):
+        cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
+        cur_view_num = self.view_key_map[cur_view_key]
+        cur_view_num = (cur_view_num + 1) % 3
+        selected_key = self.view_key_list[cur_view_num]
+        self.buffer_widget.eval_js('''changeViewKey({});'''.format(json.dumps(selected_key)))
+
+    def select_prev_view_key(self):
+        cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
+        cur_view_num = self.view_key_map[cur_view_key]
+        cur_view_num = (cur_view_num - 1) % 3
+        selected_key = self.view_key_list[cur_view_num]
+        self.buffer_widget.eval_js('''changeViewKey({});'''.format(json.dumps(selected_key)))
+
 
     def handle_input_response(self, callback_tag, result_content):
         if callback_tag == "add_feed":
