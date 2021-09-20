@@ -45,23 +45,26 @@ class AppBuffer(BrowserBuffer):
         self.first_file = os.path.expanduser(arguments)
         self.buffer_widget.loadFinished.connect(self.load_first_file)        
         
-
-    def fetch_link_list(self):
-        self.mainItem.get_feed_link_list()
-        self.link_list = self.self.mainItem.link_list
     
-    def fetch_rss_hub(self):
-        '''
-        这里需要一个更新rss_hub的算法
-        比较新的解析文件和已有的解析文件
-        将已读文章去除而保留未读文章
-        添加新解析文件的文章
+    @QtCore.pyqtSlot(str)
+    def refresh_rsshub_list(self, feedlink_index):
+        feedlink = self.mainItem.rsshub_list[feedlink_index].feed_link 
 
-        或者，S(新的解析文件) - S(旧的解析文件中的已读)
-        S表示集合
-        '''
-        self.link_list = self.self.mainItem.rss_hub
+        old_rss = self.mainItem.rsshub_list[feedlink_index].article_list
+        old_rss_map = {}
+        for item in old_rss:
+            title = item.title
+            status = item.isRead
+            old_rss_map[title] = status
 
+        new_rss = RssFeedParser(feedlink, feedlink_index)
+        for item in new_rss.article_list:
+            new_title = item.title
+            if new_title in old_rss_map:
+                item['isRead'] = old_rss_map[new_title]
+
+        
+    
     # call add from vue
     @QtCore.pyqtSlot(str)
     def add_feedlink(self, new_feedlink):
@@ -73,34 +76,33 @@ class AppBuffer(BrowserBuffer):
 
     # call remove from vue
     @QtCore.pyqtSlot(str, str)
+    @interactive
     def remove_feedlink(self, feedlink_index, curFeedIndex):
         feedlink_index = int(feedlink_index)
         curFeedIndex = int(curFeedIndex)
         self.remove_feed_widget(feedlink_index, curFeedIndex)
+        
 
     @QtCore.pyqtSlot(str, str, bool)
     def change_read_status(self, feedlink_index, article_index, status):
         feedlink_index = int(feedlink_index)
         article_index = int(article_index)
-        self.send_input_message("Are you sure you want to remove this feed?", "remove_feed", "yes-or-no")
+        article_title = self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
+
         self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = status
         self.mainItem.save_rsshub_json()
 
-    @QtCore.pyqtSlot(str)
-    def refresh_feed_link_list(self):
-        pass
+        if status == True:
+            message_to_emacs("Set {} as read.".format(article_title))
+        else:
+            message_to_emacs("Set {} as unread.".format(article_title))
+
 
     def alter_read_status(self):
         feedlink_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
         article_index = self.buffer_widget.execute_js("giveCurArticleIndex()")
-        
-
-        # 尝试改成从python获取而不是vue获取
-
-        article_status = self.buffer_widget.execute_js("getCurArticleStatus()")
-        article_title = self.buffer_widget.execute_js("getCurArticleTitle()")
-
-        # 
+        article_status = self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead']
+        article_title = self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
 
         self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
         self.mainItem.save_rsshub_json()
@@ -114,6 +116,12 @@ class AppBuffer(BrowserBuffer):
         self.buffer_widget.eval_js(
             '''changeReadStatus(\"{}\", \"{}\", \"{}\");'''.format(article_title, not article_status, 1)
             )
+
+        if article_status == False:
+            message_to_emacs("Set {} as read.".format(article_title))
+        else:
+            message_to_emacs("Set {} as unread.".format(article_title))
+        
 
     def load_first_file(self):
         self.buffer_widget.eval_js(
@@ -186,6 +194,7 @@ class AppBuffer(BrowserBuffer):
     def select_next_view_key(self):
         cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
         cur_view_num = self.view_key_map[cur_view_key]
+        # use mod to make the line to a cycle
         cur_view_num = (cur_view_num + 1) % 3
         selected_key = self.view_key_list[cur_view_num]
         self.buffer_widget.eval_js('''changeViewKey({});'''.format(json.dumps(selected_key)))
@@ -203,17 +212,6 @@ class AppBuffer(BrowserBuffer):
             self.handle_add_feed(result_content)
         elif callback_tag == "remove_feed":
             self.handle_remove_feed()
-        elif callback_tag == "show_list_status_all":
-            print("show_list_status_all")
-        elif callback_tag == "show_list_status_read":
-            print("show_list_status_red")
-        elif callback_tag == "show_list_status_unread":
-            print("show_list_status_unrrefreshed")
-        
-        elif callback_tag == "show_all_feed":
-            print("show_all_feed")
-        elif callback_tag == "origin":
-            print("origin")
 
 class SaveLoadFeeds:
     def __init__(self, feedlink_json, rsshub_json):
@@ -297,7 +295,7 @@ class SaveLoadFeeds:
         self.last_feed_index -= 1
         return 1
 
-    def reget(self):
+    def reget_all(self):
         file = open(self.rsshub_json, 'w')
         file.write("")
         file.close()
@@ -306,17 +304,9 @@ class SaveLoadFeeds:
             self.last_feed_index += 1
             rss = RssFeedParser(item, self.last_feed_index).feed_info
             self.rsshub_list.append(rss)
-            print('{} load finished!'.format(item))
+            message_to_emacs('{} load finished!'.format(item))
         self.save_rsshub_json()
-
-    # 调试用，检查文件更新情况
-    def test_method(self):
-        print("**********show feed_link_list**********")
-        print(self.feedlink_list)
-        print('\n\n\n')
-        print("**********show rss_hub**********")
-        print(self.rsshub_list)
-        print('\n\n\n')        
+    
 
 class RssFeedParser:
     def __init__(self, feed, index):
@@ -417,4 +407,3 @@ class RssFeedParser:
     def get_description(self, raw_description):
         description = self.handle_html_tag(raw_description)
         return description
-
