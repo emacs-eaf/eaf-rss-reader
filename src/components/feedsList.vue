@@ -40,6 +40,9 @@
 					<mu-button style="float: right" @click="removeFeed(feed.feed_index)">
 						remove
 					</mu-button>
+					<mu-button style="float: right" @click="refreshFeed(feed.feed_index)">
+						refresh
+					</mu-button>
 				</div>
 			</div>
 
@@ -72,6 +75,7 @@ export default ({
 		window.removeFeedLink = this.removeFeedLink;
 		window.selectFeedByIndex = this.selectFeedByIndex;
 		window.removeFeed = this.removeFeed;
+		window.refreshFeed = this.refreshFeed;
 		window.changeCurFeedByIndex = this.changeCurFeedByIndex;
 	},
 	created() {
@@ -98,6 +102,9 @@ export default ({
 		},
 		removeFeed(feedlink_index) {
 			window.pyobject.remove_feedlink(feedlink_index, this.curFeedIndex);
+		},
+		refreshFeed(feedlink_index) {
+			window.pyobject.refresh_rsshub_list(feedlink_index);
 		},
 		itemBackgroundColor(feed) {
 			if (feed.feed_index == this.curFeedIndex) {

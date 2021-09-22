@@ -89,8 +89,7 @@ export default {
 				status : status
 			}
 			this.$store.commit('changeReadStatus', param);
-			if (from === 0)
-			{
+			if (from === 0) {
 				window.pyobject.change_read_status(this.$store.state.curFeedIndex, this.article.index, param.status);
 			}				
 		},
