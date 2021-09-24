@@ -89,6 +89,7 @@
     ("A" . "add_feed")
     ("R" . "remove_feed")
     ("r" . "alter_read_status")
+    ("g" . "handle_refresh_rsshub_list")
     ("b" . "goBack")
     ("<down>" . "js_select_next_item")
     ("<up>" . "js_select_prev_item")
@@ -103,15 +104,15 @@
   :type 'cons)
 
 ;;;###autoload
-(defun eaf-open-rss-reader ()
-  "Open EAF Rss Reader"
-  (interactive)
-  (eaf-open "eaf-rss-reader" "rss-reader"))
-
 (add-to-list 'eaf-app-binding-alist '("rss-reader" . eaf-rss-reader-keybinding))
 
 (setq eaf-rss-reader-module-path (concat (file-name-directory load-file-name) "buffer.py"))
 (add-to-list 'eaf-app-module-path-alist '("rss-reader" . eaf-rss-reader-module-path))
+
+(defun eaf-open-rss-reader ()
+  "Open EAF Rss Reader"
+  (interactive)
+  (eaf-open "eaf-rss-reader" "rss-reader"))
 
 (provide 'eaf-rss-reader)
 
