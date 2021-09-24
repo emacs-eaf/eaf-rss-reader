@@ -32,7 +32,7 @@ class AppBuffer(BrowserBuffer):
         self.view_key_list = ['all', 'read', 'unread']
         
         self.add_feedlink_threads = []
-
+        self.refresh_feedlink_threads = []
 
         self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
@@ -83,21 +83,11 @@ class AppBuffer(BrowserBuffer):
     def add_feedlink(self, new_feedlink):
         index = self.mainItem.last_feed_index + 1
         self.add_feedlink_thread(new_feedlink, index, 'vue')
-    
-
 
     # call add from emacs    
     def handle_add_feed(self, new_feedlink):
         index = self.mainItem.last_feed_index + 1
         self.add_feedlink_thread(new_feedlink, index, 'emacs')
-
-    # call refresh from vue
-    @QtCore.pyqtSlot(str)
-    def refresh_rsshub_list(self, feedlink_index):
-        feedlink_index = int(feedlink_index)
-        self.refresh_rsshub_list_widget(feedlink_index)
-
-    
 
     # call remove from vue
     @QtCore.pyqtSlot(str, str)
@@ -158,8 +148,6 @@ class AppBuffer(BrowserBuffer):
     def add_feed(self):
         self.send_input_message("Add new feed: ", "add_feed")
 
-    
-
     @interactive
     def remove_feed(self):
         ''' Remove current selected feed.'''
@@ -200,30 +188,43 @@ class AppBuffer(BrowserBuffer):
             else:
                 message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
-    def refresh_rsshub_list_widget(self, feedlink_index):
-        if (feedlink_index < 0):
-            return
-        feedlink = self.mainItem.rsshub_list[feedlink_index]["feed_link"]
-        feed_title = self.mainItem.rsshub_list[feedlink_index]["feed_title"]
+    def refresh_feedlink_thread(self, index, where):
+        feedlink = self.mainItem.rsshub_list[index]['feed_link']
+        thread = FetchRssFeedParserThread(feedlink, index)
+        thread.fetch_result.connect(self.refresh_feedlink_widget)
+        self.refresh_feedlink_threads.append(thread)
+        thread.start()
 
+    # call refresh from vue
+    @QtCore.pyqtSlot(str)
+    def refresh_rsshub_list(self, feedlink_index):
+        feedlink_index = int(feedlink_index)
+        if feedlink_index < 0:
+            return 
+        self.refresh_feedlink_thread(feedlink_index, 'vue')
+
+    @PostGui()
+    def refresh_feedlink_widget(self, new_rss):
+        if new_rss == {}:
+            return
+        feedlink_index = new_rss['feed_index']
+        feed_title = new_rss["feed_title"]
+        new_rss_article_list = new_rss['feed_article_list']
         old_rss = self.mainItem.rsshub_list[feedlink_index]["feed_article_list"]
         old_rss_map = {}
+
         for item in old_rss:
             title = item['title']
             status = item['isRead']
             old_rss_map[title] = status
-        try:
-            new_rss = RssFeedParser(feedlink, feedlink_index).feed_info["feed_article_list"]
-        except AttributeError:
-            message_to_emacs("Failed to refresh feed:{} link:{}, may refresh too frequently".format(feed_title, feedlink))
-            return 
-        for item in new_rss:
+        
+        for item in new_rss_article_list:
             new_title = item["title"]
             new_index = item["index"]
             if new_title in old_rss_map:
-                new_rss[new_index]['isRead'] = old_rss_map[new_title]
+                new_rss_article_list[new_index]['isRead'] = old_rss_map[new_title]
 
-        self.mainItem.rsshub_list[feedlink_index]["feed_article_list"] = new_rss
+        self.mainItem.rsshub_list[feedlink_index]["feed_article_list"] = new_rss_article_list
         
         self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))    
         self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
@@ -232,6 +233,7 @@ class AppBuffer(BrowserBuffer):
         self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('true')))
         self.mainItem.save_rsshub_json()
         message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
+
 
     def handle_refresh_rsshub_list(self):
         curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
