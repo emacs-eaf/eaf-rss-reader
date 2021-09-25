@@ -44,18 +44,14 @@ class AppBuffer(BrowserBuffer):
         self.first_file = os.path.expanduser(arguments)
         self.buffer_widget.loadFinished.connect(self.load_first_file)        
         
-    def add_feedlink_thread(self, feedlink, index, where):
+    def add_feedlink_thread(self, feedlink, index):
         thread = FetchRssFeedParserThread(feedlink, index)
-        if where == 'vue':
-            thread.fetch_result.connect(self.vue_add_feedlink)
-        elif where == 'emacs':
-            thread.fetch_result.connect(self.emacs_add_feedlink)
+        thread.fetch_result.connect(self.add_feedlink_widget)
         self.add_feedlink_threads.append(thread)
         thread.start()
 
     @PostGui()
-    def emacs_add_feedlink(self, new_rss):
-        new_feedlink = new_rss['feed_link']
+    def add_feedlink_widget(self, new_rss, new_feedlink):
         if new_feedlink in self.mainItem.feedlink_list:
             message_to_emacs("Feedlink '{}' exists.".format(new_feedlink))
         else: 
@@ -63,31 +59,20 @@ class AppBuffer(BrowserBuffer):
             if (flag == 1):
                 self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
                 self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
-                message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
-
-    @PostGui()
-    def vue_add_feedlink(self, new_rss):
-        flag = self.mainItem.add_feedlink_widget(new_rss)
-        if flag == 1:
-            new_feedlink = new_rss['feed_link']
-            message_to_emacs("Add new feedlink '{}' success.".format(new_feedlink))
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
-
-            # this.selectFeedByIndex(newIndex-1) is faster than window.pyobject.add_feedlink(new_feedlink);
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
-        else:
-            message_to_emacs("Failed to add feed, please check your link.")
+                message_to_emacs("Successfully add new feedlink '{}'.".format(new_feedlink))
+            else:
+              message_to_emacs("Failed to add feed, please check your link {}.".format(new_feedlink))
 
     # call add from vue
     @QtCore.pyqtSlot(str)
     def add_feedlink(self, new_feedlink):
         index = self.mainItem.last_feed_index + 1
-        self.add_feedlink_thread(new_feedlink, index, 'vue')
+        self.add_feedlink_thread(new_feedlink, index)
 
     # call add from emacs    
     def handle_add_feed(self, new_feedlink):
         index = self.mainItem.last_feed_index + 1
-        self.add_feedlink_thread(new_feedlink, index, 'emacs')
+        self.add_feedlink_thread(new_feedlink, index)
 
     # call remove from vue
     @QtCore.pyqtSlot(str, str)
@@ -204,16 +189,15 @@ class AppBuffer(BrowserBuffer):
         self.refresh_feedlink_thread(feedlink_index)
 
     @PostGui()
-    def refresh_feedlink_widget(self, new_rss):
+    def refresh_feedlink_widget(self, new_rss, feedlink):
         if new_rss == {}:
+            message_to_emacs("Failed to refresh link, maybe you refresh too frequently.".format(feedlink_index))
             return
         feedlink_index = new_rss["feed_index"]
         feed_title = new_rss["feed_title"]
-        feedlink = new_rss["feed_link"]
         new_rss_article_list = new_rss["feed_article_list"]
         old_rss = self.mainItem.rsshub_list[feedlink_index]["feed_article_list"]
         old_rss_map = {}
-        print("here")
         for item in old_rss:
             title = item['title']
             status = item['isRead']
@@ -234,7 +218,6 @@ class AppBuffer(BrowserBuffer):
         self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('true')))
         self.mainItem.save_rsshub_json()
         message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
-
 
     def handle_refresh_rsshub_list(self):
         curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
@@ -285,8 +268,6 @@ class SaveLoadFeeds:
             self.last_feed_index = -1
         else:
             self.last_feed_index = len(self.feedlink_list) - 1
-
-        # self.reget()
 
     def save_rsshub_json(self):
         with open(self.rsshub_json, "w") as f:
@@ -466,7 +447,7 @@ class RssFeedParser:
         return description
 
 class FetchRssFeedParserThread(QThread):
-    fetch_result = QtCore.pyqtSignal(dict)
+    fetch_result = QtCore.pyqtSignal(dict, str)
 
     def __init__(self, feedlink, index):
         QThread.__init__(self)
@@ -482,5 +463,5 @@ class FetchRssFeedParserThread(QThread):
 
     def run(self):
         new_rss = self.get_rss_result()
-        self.fetch_result.emit(new_rss)
+        self.fetch_result.emit(new_rss, self.feedlink)
 
