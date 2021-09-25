@@ -28,11 +28,13 @@ class AppBuffer(BrowserBuffer):
         self.feedlink_json = os.path.join(self.feedlink_json_dir, "link.json")
 
         self.url = url
+        self.refresh_time = 300
         self.view_key_map = {'all':0, 'read': 1, 'unread':2}
         self.view_key_list = ['all', 'read', 'unread']
         
         self.add_feedlink_threads = []
         self.refresh_feedlink_threads = []
+        self.keep_refresh_rss_threads = []
 
         self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
@@ -44,11 +46,25 @@ class AppBuffer(BrowserBuffer):
         self.first_file = os.path.expanduser(arguments)
         self.buffer_widget.loadFinished.connect(self.load_first_file)        
         
+        self.keep_refresh_rss(self.refresh_time)
+        
     def add_feedlink_thread(self, feedlink, index):
         thread = FetchRssFeedParserThread(feedlink, index)
         thread.fetch_result.connect(self.add_feedlink_widget)
         self.add_feedlink_threads.append(thread)
         thread.start()
+
+    def keep_refresh_rss(self, refresh_time):
+        thread = KeepRefreshRss(self.rsshub_json, self.feedlink_json, self.refresh_time)
+        thread.fetch_result.connect(self.auto_refresh_rsshub_list)
+        self.keep_refresh_rss_threads.append(thread)
+        thread.start()
+    
+    @PostGui()
+    def auto_refresh_rsshub_list(self, rsshub_list):
+        self.mainItem.rsshub_list = rsshub_list
+        self.mainItem.save_rsshub_json()
+        self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
 
     @PostGui()
     def add_feedlink_widget(self, new_rss, new_feedlink):
@@ -191,7 +207,7 @@ class AppBuffer(BrowserBuffer):
     @PostGui()
     def refresh_feedlink_widget(self, new_rss, feedlink):
         if new_rss == {}:
-            message_to_emacs("Failed to refresh link, maybe you refresh too frequently.".format(feedlink_index))
+            message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(feedlink_index))
             return
         feedlink_index = new_rss["feed_index"]
         feed_title = new_rss["feed_title"]
@@ -465,3 +481,67 @@ class FetchRssFeedParserThread(QThread):
         new_rss = self.get_rss_result()
         self.fetch_result.emit(new_rss, self.feedlink)
 
+class KeepRefreshRss(QThread):
+    fetch_result = QtCore.pyqtSignal(list)
+
+    def __init__(self, feedlink_json, rsshub_json, refresh_time):
+        QThread.__init__(self)
+        self.feedlink_json = feedlink_json
+        self.rsshub_json = rsshub_json
+        self.refresh_time = refresh_time
+        self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
+
+    def get_rss(self, feedlink, index):
+        try:
+            rss = RssFeedParser(feedlink, index).feed_info
+            return rss
+        except AttributeError:
+            return {}
+
+    def compare(self, old, new):
+        total = len(old)
+        count = 0
+        for item in new:
+            if item in old:
+                count += 1
+        if total == count:
+            return 0
+        return total - count
+
+    def keep_read_status(self, old, new):
+        old_rss_map = {}
+        for item in old:
+            title = item['title']
+            status = item['isRead']
+            old_rss_map[title] = status
+
+        for item in new:
+            new_title = item["title"]
+            new_index = item["index"]
+            if new_title in old_rss_map:
+                new[new_index]['isRead'] = old_rss_map[new_title]
+        return new
+
+    def run(self):
+        while (1):
+            time.sleep(refresh_time)
+            self.mainItem.fetch_feedlink_list()
+            link_list = self.mainItem.feedlink_list
+
+            for index, link in enumerate(link_list):
+                # rsshub_list may be changed when refresh
+                self.mainItem.fetch_rsshub_list()
+
+                new_rss = self.get_rss_result(link, index).feed_info['feed_article_list']
+                if new_rss == {}:
+                    message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(link))
+                    continue
+
+                old_rss = self.mainItem.rsshub_list[index].feed_info['feed_article_list']
+                diff = compare(old, new)
+                if diff == 0:            
+                    continue
+                new_rss = keep_read_status(old_rss, new_rss)
+                self.mainItem.rsshub_list[index].feed_info['feed_article_list'] = new_rss
+        
+        self.fetch_result.emit(self.mainItem.rsshub_list)
