@@ -188,7 +188,7 @@ class AppBuffer(BrowserBuffer):
             else:
                 message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
-    def refresh_feedlink_thread(self, index, where):
+    def refresh_feedlink_thread(self, index):
         feedlink = self.mainItem.rsshub_list[index]['feed_link']
         thread = FetchRssFeedParserThread(feedlink, index)
         thread.fetch_result.connect(self.refresh_feedlink_widget)
@@ -201,18 +201,19 @@ class AppBuffer(BrowserBuffer):
         feedlink_index = int(feedlink_index)
         if feedlink_index < 0:
             return 
-        self.refresh_feedlink_thread(feedlink_index, 'vue')
+        self.refresh_feedlink_thread(feedlink_index)
 
     @PostGui()
     def refresh_feedlink_widget(self, new_rss):
         if new_rss == {}:
             return
-        feedlink_index = new_rss['feed_index']
+        feedlink_index = new_rss["feed_index"]
         feed_title = new_rss["feed_title"]
-        new_rss_article_list = new_rss['feed_article_list']
+        feedlink = new_rss["feed_link"]
+        new_rss_article_list = new_rss["feed_article_list"]
         old_rss = self.mainItem.rsshub_list[feedlink_index]["feed_article_list"]
         old_rss_map = {}
-
+        print("here")
         for item in old_rss:
             title = item['title']
             status = item['isRead']
@@ -237,7 +238,7 @@ class AppBuffer(BrowserBuffer):
 
     def handle_refresh_rsshub_list(self):
         curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
-        self.refresh_rsshub_list_widget(curFeedIndex)
+        self.refresh_feedlink_thread(curFeedIndex)
 
     # call remove from emacs
     def handle_remove_feed(self):
