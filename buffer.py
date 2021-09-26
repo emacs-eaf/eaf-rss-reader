@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import json
+import time
 import feedparser
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
@@ -28,7 +29,7 @@ class AppBuffer(BrowserBuffer):
         self.feedlink_json = os.path.join(self.feedlink_json_dir, "link.json")
 
         self.url = url
-        self.refresh_time = 300
+        self.refresh_time = 600
         self.view_key_map = {'all':0, 'read': 1, 'unread':2}
         self.view_key_list = ['all', 'read', 'unread']
         
@@ -55,16 +56,28 @@ class AppBuffer(BrowserBuffer):
         thread.start()
 
     def keep_refresh_rss(self, refresh_time):
-        thread = KeepRefreshRss(self.rsshub_json, self.feedlink_json, self.refresh_time)
+        thread = KeepRefreshRss(self.feedlink_json, self.rsshub_json, self.refresh_time)
         thread.fetch_result.connect(self.auto_refresh_rsshub_list)
         self.keep_refresh_rss_threads.append(thread)
         thread.start()
     
     @PostGui()
-    def auto_refresh_rsshub_list(self, rsshub_list):
-        self.mainItem.rsshub_list = rsshub_list
-        self.mainItem.save_rsshub_json()
-        self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
+    def auto_refresh_rsshub_list(self, article_list, index, diff, pointer):
+        if pointer == 1:
+            message_to_emacs("All updates have been completed.")
+        elif article_list == ['refresh_start'] and pointer == 0:
+            message_to_emacs("Updating. It is recommended not to add or delete feeds.")
+            # 需要增加一个vue提示
+
+        elif article_list == ['AttributeError'] and pointer == 0:
+            link = self.mainItem.feedlink_list[index]
+            message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(link))
+        else:
+            title = self.mainItem.rsshub_list[index]['feed_title']
+            message_to_emacs("The content of '{}' is up-to-date and {} articles have been updated.".format(title, diff))
+            self.mainItem.rsshub_list[index]['feed_article_list'] = article_list
+            self.mainItem.save_rsshub_json()
+            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
 
     @PostGui()
     def add_feedlink_widget(self, new_rss, new_feedlink):
@@ -284,7 +297,8 @@ class SaveLoadFeeds:
             self.last_feed_index = -1
         else:
             self.last_feed_index = len(self.feedlink_list) - 1
-
+        
+        # self.reget_all()
     def save_rsshub_json(self):
         with open(self.rsshub_json, "w") as f:
             f.write(json.dumps(self.rsshub_list, ensure_ascii=False))
@@ -482,7 +496,7 @@ class FetchRssFeedParserThread(QThread):
         self.fetch_result.emit(new_rss, self.feedlink)
 
 class KeepRefreshRss(QThread):
-    fetch_result = QtCore.pyqtSignal(list)
+    fetch_result = QtCore.pyqtSignal(list, int, int, int)
 
     def __init__(self, feedlink_json, rsshub_json, refresh_time):
         QThread.__init__(self)
@@ -499,12 +513,15 @@ class KeepRefreshRss(QThread):
             return {}
 
     def compare(self, old, new):
-        total = len(old)
         count = 0
+        total = len(old)
+        old_map = {}
+        for item in old:
+            old_map[item['title']] = 1
         for item in new:
-            if item in old:
+            if item['title'] in old_map:
                 count += 1
-        if total == count:
+        if count == 0:
             return 0
         return total - count
 
@@ -524,24 +541,33 @@ class KeepRefreshRss(QThread):
 
     def run(self):
         while (1):
-            time.sleep(refresh_time)
             self.mainItem.fetch_feedlink_list()
             link_list = self.mainItem.feedlink_list
-
+            pointer = 0
+            self.fetch_result.emit(['refresh_start'], -1, -1, pointer)
             for index, link in enumerate(link_list):
+                pointer = 0
+                new_rss = self.get_rss(link, index)['feed_article_list']
+                if new_rss == {}:
+                    self.fetch_result.emit(['AttributeError'], index, 0, pointer)
+                    continue
+
                 # rsshub_list may be changed when refresh
                 self.mainItem.fetch_rsshub_list()
 
-                new_rss = self.get_rss_result(link, index).feed_info['feed_article_list']
-                if new_rss == {}:
-                    message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(link))
+                old_rss = self.mainItem.rsshub_list[index]['feed_article_list']
+                diff = self.compare(old_rss, new_rss)
+                if diff == 0:           
                     continue
+                new_rss = self.keep_read_status(old_rss, new_rss)
+                self.fetch_result.emit(new_rss, index, diff, pointer)
 
-                old_rss = self.mainItem.rsshub_list[index].feed_info['feed_article_list']
-                diff = compare(old, new)
-                if diff == 0:            
-                    continue
-                new_rss = keep_read_status(old_rss, new_rss)
-                self.mainItem.rsshub_list[index].feed_info['feed_article_list'] = new_rss
-        
-        self.fetch_result.emit(self.mainItem.rsshub_list)
+            pointer = 1
+            self.fetch_result.emit([], -1, -1, pointer)
+            time.sleep(self.refresh_time)
+            
+            pointer = 0
+            self.fetch_result.emit(['refresh_start'], -1, -1, pointer)
+            self.mainItem.fetch_feedlink_list()
+            link_list = self.mainItem.feedlink_list
+            
