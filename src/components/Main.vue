@@ -1,29 +1,37 @@
 <template>
-	<div class="home" id="home">
-    <div class="test-item">
-      <div class="button-list">
-        <button @click="selectPrevItem()">prev</button>
-        <button @click="selectNextItem()">next</button>
-        <button @click="openCurrentItem()">right</button>
-        <button @click="upItem()">left</button>
-      </div>
-      <check></check>
-		</div>
-		<feedsList 
-		v-if="!openArticle"
-		class="feedsList"
-		ref="feedslist" />
+	<div class="page">
+		<div class="content">
 
-		<articlesList 
-		v-if="curFeedIndex != -1 && !openArticle"
-		class="articlesList" 
-		ref="articlelist" />
+				<div class="test-item">
+					<div class="button-list">
+						<button @click="selectPrevItem()">prev</button>
+						<button @click="selectNextItem()">next</button>
+						<button @click="openCurrentItem()">right</button>
+						<button @click="upItem()">left</button>
+					</div>
+					<check></check>
+				</div>
+
+			<div class="item-area">
+				<feedsList 
+				v-if="!openArticle"
+				class="feeds-list"
+				ref="feedslist" />
+
+				<articlesList 
+				v-if="curFeedIndex != -1 && !openArticle"
+				class="articles-list" 
+				ref="articlelist" />
+				
+				<articlePanel
+				v-if="openArticle && curArticleIndex != -1"
+				:article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"
+				class="articlePanel" 
+				ref="articlePanel"/>
+			</div>
+	</div>
+
 		
-		<articlePanel
-		v-if="openArticle && curArticleIndex != -1"
-		:article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"
-		class="articlePanel" 
-		ref="articlePanel"/>
 		
 	</div>
 </template>
@@ -143,30 +151,54 @@ export default {
 </script>
 
 <style scoped>
+.page {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.content {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.item-area {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+
+	overflow: hidden;
+}
 
 .view-bar {
 	position: fixed;
 }
-#home{
-	max-width: 1400px;
-	margin:0 auto;
 
-	display: flex;
-  flex-direction: column;
-  
-  width: 100%;
-  height: 100%;
-
-  position: relative;
-}
 .test-item {
   flex-direction: column;
 }
+
+
+
 .button-list {
   flex-direction: row;
 }
 
+.feeds-list {
+	flex: 0 0 50%;
+}
+
+.articles-list {
+	flex: 0 0 50%;
+}
+
 .articlePanel {
+	flex: 0 0 100%;
 	overflow: scroll;
 }
 </style>

@@ -1,52 +1,44 @@
 <template>
-	<div class="feedsList">
-		<div class="content">
-		<div class="list-area">
-			<div class="mu-appbars-title">
-				<mu-menu cover>
-					<mu-appbar 
-					color="white" 
-					textColor="black" 
-					style="text-align: center;">
-						Feeds List
-						<mu-button style="float: right;" >add feed</mu-button>
-					</mu-appbar>
-
-				<mu-list slot="content">
-				<mu-list-item>
-					<mu-text-field
-					v-model="newFeedLink"
-					placeholder="Please input feed link......"
-					style="margin: auto;">
-					</mu-text-field>
-						<mu-button @click="addFeedLink(newFeedLink)">add</mu-button>
-				</mu-list-item>
-				</mu-list>
-				</mu-menu>
+	<div class="list-area">
+		<div class="title-bar">
+			<div class="feeds-list-title-bar">
+				<p>Feeds List</p>
 			</div>
-
-			<div class="feeds-list" ref="feedlist">
-				<div 
-				v-for="feed in $store.state.feedsList" 
-				class="mu-appbars"
-						
-				:key="feed.feed_index">
-					<div class="feed-title" @click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)">
-					<mu-appbar 
-					textColor="black" :style="{'background':itemBackgroundColor(feed)}">
+			<div class="add-widget">
+				<input type="text" v-model="newFeedLink" placeholder="Please input feed link......">
+				<button class="add-button" @click="addFeedLink(newFeedLink)">
+					Add
+				</button>
+			</div>
+		</div>
+		<div class="feeds-list" ref="feedlist">
+			<div 
+			class="feed"
+			v-for="feed in $store.state.feedsList" 
+			:key="feed.feed_index"
+			:style="{'background':itemBackgroundColor(feed)}"
+			@click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)">
+				<div class="feed-title" 
+				>
+					<div class = "title" style="font-size:19px;font-weight:bold;">
 						{{feed.feed_title}}
-					</mu-appbar>
 					</div>
-					<mu-button style="float: right" @click="removeFeed(feed.feed_index)">
-						remove
-					</mu-button>
-					<mu-button style="float: right" @click="refreshFeed(feed.feed_index)">
-						refresh
-					</mu-button>
+					<div class="sub-title">
+						{{feed.feed_subtitle}}
+					</div>
+					<div v-if="feed.feed_subtitle === ''">
+						{{feed.feed_link}}
+					</div>
+				</div>
+				<div class="button-wraper">
+					<button class="refresh" @click="refreshFeed(feed.feed_index)">
+						Refresh
+					</button>
+					<button class="remove" @click="removeFeed(feed.feed_index)">
+						Remove
+					</button>
 				</div>
 			</div>
-
-		</div>
 		</div>
 	</div>
 </template>
@@ -58,9 +50,10 @@ import {mapState} from 'vuex';
 export default ({
 	data() {
 		return {
+			isAdd:false,
 			newFeedLink: '',
 			backgroundColor:"white",
-			selectColor: "grey",
+			selectColor: "#F5F5F5",
 		};	
 	},
 	computed: {
@@ -140,55 +133,100 @@ export default ({
 
 <style scoped>
 
-.feedsList {
-	width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-	
-}
-
 .list-area {
-   flex: 1 1 0px;
-   height: 100%;
-   display: flex;
-   flex-direction: column;
- }
+	display: flex;
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+	overflow: hidden;
 
-.content {
-	position: fixed;
-	width: 35%;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
 }
 
-.mu-appbars-title {
+.title-bar {
 	width: 100%;
 	
+	position: sticky;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	background-color:white;
+
+	border-style: solid;
+	border-width: 1px;
+	border-color: #DCDCDC;
+
+	justify-content: space-between;
+	overflow: hidden;
+
 }
 
-.mu-appbars {
-	width: 100%;
+.add-widget {
 	display: flex;
+	flex-direction: row;
+	align-self: center;
+}
+
+.feeds-list-title-bar {
+	text-align: left;
+	font-size: 22px;
+	font-weight: bold;
+
+}
+
+input {
+	align-self: center;
+	width: 300px;
+}
+
+.add-button {
+	text-align: center;
+	align-self: center;
 }
 
 .feed-title {
-	width: 100%;
-}
-
-
-
-.mu-appbars-button {
-	float: right;
+	display: flex;
+	flex-direction: column;
+	text-align: left;
 }
 
 .feeds-list {
-	width: 100%;
-	height: 70%;
 	overflow: scroll;
+}
+
+.feed {
+	font-size: 17px;
+	display: flex;
+  flex-direction: row;
+	
+	border-style: solid;
+	border-width: 1px;
+	border-color: #DCDCDC;
+	
+	padding-bottom: 5px;
+	padding-top: 5px;
+
+	justify-content: space-between;
+	word-break:break-all;
+}
+
+.button-wraper {
+	display: flex;
+	flex-direction: row;
+}
+
+button {
+	background-color:#9E9E9E;
+  color: white; 
+	border: 1px solid #DCDCDC;
+}
+
+.refresh:hover {
+	background-color: #2196F3; 
+}
+.remove:hover {
+	background-color: #be352b; 
+}
+.add-button:hover {
+	background-color: #2196F3; 
 }
 </style>
 
