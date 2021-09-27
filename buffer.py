@@ -547,11 +547,11 @@ class KeepRefreshRss(QThread):
             self.fetch_result.emit(['refresh_start'], -1, -1, pointer)
             for index, link in enumerate(link_list):
                 pointer = 0
-                new_rss = self.get_rss(link, index)['feed_article_list']
+                new_rss = self.get_rss(link, index)
                 if new_rss == {}:
                     self.fetch_result.emit(['AttributeError'], index, 0, pointer)
                     continue
-
+                new_rss = new_rss['feed_article_list']
                 # rsshub_list may be changed when refresh
                 self.mainItem.fetch_rsshub_list()
 
