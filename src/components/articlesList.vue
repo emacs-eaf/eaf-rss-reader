@@ -1,70 +1,56 @@
 <template>
-	<div class="articleList">
-		<div class="content">
 		<div class="list-area">
-			<div class="article-list-title">
-				<div class="feed-title">
-					<mu-appbar 
-					color="white" 
-					textColor="black"
-					:style="{'background':highlightTitle()}">
-						{{$store.state.feedsList[curFeedIndex].feed_title}}
-					</mu-appbar>
-				</div>
-				<div class="view-bar">
-					<mu-button 
-					:color="$store.state.viewKey === 'all' ? 'blue' : 'grey'"
+			<div class="articles-list-title-bar"
+			:style="{'background':highlightTitleBack(), 'color':highlightTitleFont()}">
+				<h1 class="feed-title">
+					{{$store.state.feedsList[curFeedIndex].feed_title}}
+				</h1>
+				<div class="view-button-bar">
+					<button 
+					class="button"
 					@click="changeViewKey('all')"
-					>all</mu-button>
-					<mu-button 
-					:color="$store.state.viewKey === 'read' ? 'blue' : 'grey'"
+					:style="{'background': $store.state.viewKey === 'all' ? selectButtonColor : buttonColor}">
+						All
+					</button>
+					<button 
+					class="button"
 					@click="changeViewKey('read')"
-					>read</mu-button>
-					<mu-button 
+					:style="{'background': $store.state.viewKey === 'read' ? selectButtonColor : buttonColor}">
+						Read
+					</button>
+					<button 
+					class="button"
 					@click="changeViewKey('unread')"
-					:color="$store.state.viewKey === 'unread' ? 'blue' : 'grey'"
-					>unread</mu-button>
+					:style="{'background': $store.state.viewKey === 'unread' ? selectButtonColor : buttonColor}">
+						Unread
+					</button>
 				</div>
 			</div>
-			<div  class="article-list" ref="articlelist">
+
+			<div  class="articles-list" ref="articlelist">
 				<div
-				class="article-card"
+				class="article-item"
 				v-for="article in infolist"
-				:style="{'background':itemBackgroundColor(article)}"
+				:style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
 				:key="article.article_index">
-
-				<mu-container>
-					<mu-card>
-						<mu-card-title 
-						:title="article.title" 
-						class="title" 
-						@click="changeCurArticleByIndex(article.index), 
-										changeOpenArticle(true),
-										changeOpenFeed(true)"/>
-						<mu-card-header 
-						:title="article.author" 
-						:sub-title="article.time"
-						style="text-align:left;">
-						</mu-card-header>
-						<mu-card-text style="text-align:left;">
-							{{article.shortDescription}}
-						</mu-card-text>
-					
-						<mu-button 
-						@click="changeCurArticleByIndex(article.index), 
-										changeOpenArticle(true),
-										changeOpenFeed(true)" flat>
-							Read
-						</mu-button>
-						
-					</mu-card>
-				</mu-container>
+					<div class="article-title" 
+					@click="changeCurArticleByIndex(article.index), 
+									changeOpenArticle(true),
+									changeOpenFeed(true)">
+						{{article.title}}
+					</div>
+					<div class="article-author">
+						{{article.author}}
+					</div>
+					<div class="article-time">
+						{{article.time}}
+					</div>
+					<div class="article-short-description">
+						{{article.shortDescription}}
+					</div>
 				</div>
 			</div>
-
 		</div>
-		</div>
-	</div>
 </template>
 
 <script>
@@ -75,9 +61,13 @@ export default {
 	name: 'listCard',
 	data () {
 		return {
-			backgroundColor: "white",
-			selectColor: "grey",
 			num: 0,
+			selectColor: "#515e72",
+			backgroundColor:"#F4F4F2",
+			selectFontColor:"#CFCFCF",
+			fontColor:"#495464",
+			selectButtonColor:"#5579dd",
+			buttonColor: "#9E9E9E",
 		};
 	},
 	computed: {
@@ -115,11 +105,18 @@ export default {
 		addFiles(files) {
 			this.$store.commit('updateFileInfos', files);
 		},
-		highlightTitle() {
+		highlightTitleBack() {
 			if (this.openFeed && this.curArticleIndex === -1) {
 				return this.selectColor;
 			} else {
 				return this.backgroundColor;
+			}
+		},
+		highlightTitleFont() {
+			if (this.openFeed && this.curArticleIndex === -1) {
+				return this.selectFontColor;
+			} else {
+				return this.fontColor;
 			}
 		},
 		itemBackgroundColor(article) {
@@ -129,6 +126,13 @@ export default {
 				return this.backgroundColor;
 			}
     },
+		itemFontColor(article) {
+			if (article.index == this.curArticleIndex) {
+				return this.selectFontColor;
+			} else {
+				return this.fontColor;
+			}
+		},
 		keepSelectVisible() {
 			this.$refs.articlelist.children[this.curArticleIndex].scrollIntoViewIfNeeded(false);
     },
@@ -162,68 +166,140 @@ export default {
 
 
 <style scoped>
-.articleList {
-	width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.content {
-	margin-left: 700px;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-
-	display: flex;
-	flex-direction: column;
- }
 
 .list-area {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+
+	overflow: hidden;
+	color: #495464;
+
  }
 
-.article-list-title {
-	width: 50%;
+.articles-list-title-bar {
+	width: 100%;
+
+	position: sticky;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	background-color:white;
+
+
+	border-style: solid;
+	border-width: 1px;
+	border-color: #BBBFCA;
+
+	justify-content: space-between;
+	overflow: hidden;
 }
 
-.feed-title{
-	width: 100%;
+.feed-title {
+	font-weight: bold;
+	text-align: left;
+	padding-left: 8px;
+	overflow: hidden;
 }
 
-.article-list {
+.view-button-bar {
+	margin:auto 0;
+	display: flex;
+	flex-direction: row;
+}
+
+.button {
+	width: 70px;
+	height: 40px;
+	margin-left: 5px;
+	margin-right: 5px;
+	font-weight: bold;
+	background-color: #9E9E9E;
+  color: #F4F4F2; 
+	border: 1px solid #BBBFCA;
+	border-radius: 4px;
+}
+
+.articles-list {
+	height: 100%;
 	width: 100%;
-	height: 75%;
 	overflow: scroll;
-}
-
-.article-card {
-	margin-top: 10px;
-	width: 100%; 
-	max-width: 575px; 
+	display: flex;
 	flex-direction: column;
 }
 
-.single-card {
-	width: 100%;
-	position: relative;
+.article-item {
 	display: flex;
-  flex-direction: row;
-  align-items: center;
+	flex-shrink:0;
+	flex-direction: column;
+	
+	border-style: solid;
+	border-width: 1px;
+	border-color: #BBBFCA;
+
+	
+	padding-bottom: 5px;
+	padding-top: 5px;
+	padding-left: 8px;
+
+	word-break:break-all;
 }
 
-.title{
-	text-align:left;
-	margin-top: -0px;
-	margin-bottom: -10px;
+.article-title {
+	display: flex;
+	font-size: 21px;
+	font-weight: bold;
+	text-align: left;
+
+
+	margin-bottom: 5px;
+	margin-top: 5px;
+
 }
 
-.view-bar{
-	display:table;
-  margin:0 auto;
+.article-author {
+	display: flex;
+	font-size: 19px;
+	text-align: left;
+
+	margin-bottom: 5px;
+	margin-top: 5px;
+
+}
+
+.article-time {
+	display: flex;
+	font-size: 16px;
+	text-align: left;
+	color: #9E9E9E;
+	flex-shrink:0;
+
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.article-short-description {
+	display: flex;
+	font-size: 17px;
+	text-align: left;
+
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+.button {
+	background-color:#9E9E9E;
+	color: white; 
+	border: 1px solid #BBBFCA;
+	font-size: 18px;
+	font-weight: bold;
+	width: 80px;
+}
+
+.view-button-bar button:hover {
+	background-color: #2196F3; 
+}
+
+.view-button-bar button:active {
+	background-color: #56a9ec; 
 }
 </style>
