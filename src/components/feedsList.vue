@@ -1,13 +1,13 @@
 <template>
 	<div class="list-area">
 		<div class="title-bar">
-			<div class="feeds-list-title-bar">
-				<p>Feeds List</p>
-			</div>
+			<h1 class="feeds-list-title-bar" >
+				EAF-RSS-Reader
+			</h1>
 			<div class="add-widget">
-				<input type="text" v-model="newFeedLink" placeholder="Please input feed link......">
+				<input class="input-bar" type="text" v-model="newFeedLink" placeholder="Please input feed link......">
 				<button class="add-button" @click="addFeedLink(newFeedLink)">
-					Add
+					ADD
 				</button>
 			</div>
 		</div>
@@ -16,25 +16,28 @@
 			class="feed"
 			v-for="feed in $store.state.feedsList" 
 			:key="feed.feed_index"
-			:style="{'background':itemBackgroundColor(feed)}"
+			:style="{'background':itemBackgroundColor(feed), 'color':itemFontColor(feed)}"
 			@click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)">
-				<div class="feed-title" 
-				>
-					<div class = "title" style="font-size:19px;font-weight:bold;">
-						{{feed.feed_title}}
+				<div class="feed-title">
+					<div class="title">
+						<div>{{feed.feed_title}}</div>
+						<div v-if="feed.feed_title === ''"> {{feed.feed_subtitle}}</div>
+						<div v-if="feed.feed_title === '' && feed.feed_subtitle === ''"> {{feed.feed_link}}</div>
 					</div>
 					<div class="sub-title">
-						{{feed.feed_subtitle}}
-					</div>
-					<div v-if="feed.feed_subtitle === ''">
-						{{feed.feed_link}}
+						<div>{{feed.feed_subtitle}}</div>
+						<div v-if="feed.feed_subtitle === ''"> {{feed.feed_link}}</div>
 					</div>
 				</div>
 				<div class="button-wraper">
-					<button class="refresh" @click="refreshFeed(feed.feed_index)">
+					<button class="refresh" @click="refreshFeed(feed.feed_index)"
+					:style="{'background':refreshButtonColor(feed)}"
+					>
 						Refresh
 					</button>
-					<button class="remove" @click="removeFeed(feed.feed_index)">
+					<button class="remove" @click="removeFeed(feed.feed_index)"
+					:style="{'background':removeButtonColor(feed)}"
+					>
 						Remove
 					</button>
 				</div>
@@ -52,8 +55,12 @@ export default ({
 		return {
 			isAdd:false,
 			newFeedLink: '',
-			backgroundColor:"white",
-			selectColor: "#F5F5F5",
+			backgroundColor:"#F4F4F2",
+			selectColor: "#515e72",
+			selectFontColor:"#cfcfcf",
+			selectRefreshButtonColor:"#5579dd",
+			selectRemoveButtonColor:"#d6382d",
+			buttonColor: "#9E9E9E",
 		};	
 	},
 	computed: {
@@ -106,6 +113,27 @@ export default ({
 				return this.backgroundColor;
 			}
     },
+		itemFontColor(feed) {
+			if (feed.feed_index == this.curFeedIndex) {
+				return this.selectFontColor;
+			} else {
+				return this.fontColor;
+			}
+		},
+		refreshButtonColor(feed) {
+			if (feed.feed_index == this.curFeedIndex) {
+				return this.selectRefreshButtonColor;
+			} else {
+				return this.buttonColor;
+			}
+		},
+		removeButtonColor(feed) {
+			if (feed.feed_index == this.curFeedIndex) {
+				return this.selectRemoveButtonColor;
+			} else {
+				return this.buttonColor;
+			}
+		},
 		keepSelectVisible() {
 			this.$refs.feedlist.children[this.curFeedIndex].scrollIntoViewIfNeeded(false);
     },
@@ -139,24 +167,31 @@ export default ({
 	height: 100%;
 	flex-direction: column;
 	overflow: hidden;
+	background-color: #F4F4F2;
+
+	border-style: solid;
+	border-width: 1px;
+	border-color: #BBBFCA;
+	color: #495464;
 
 }
 
 .title-bar {
 	width: 100%;
-	
+
 	position: sticky;
 	display: flex;
 	flex-direction: row;
-	background-color:white;
+	background-color: #F4F4F2;
 
 	border-style: solid;
-	border-width: 1px;
-	border-color: #DCDCDC;
+	border-width: 2px;
+	border-color: #BBBFCA;
+
+	margin-top: -2px;
+	margin-bottom: -2px;
 
 	justify-content: space-between;
-	overflow: hidden;
-
 }
 
 .add-widget {
@@ -167,66 +202,113 @@ export default ({
 
 .feeds-list-title-bar {
 	text-align: left;
-	font-size: 22px;
 	font-weight: bold;
-
+	overflow: hidden;
+	padding-left: 4px;
 }
 
 input {
 	align-self: center;
-	width: 300px;
+	width: 400px;
+	height: 40px;
+	background-color: #F4F4F2;
+
+	border-style: solid;
+	border-width: 2px;
+	border-color: #BBBFCA;
+
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
-.add-button {
-	text-align: center;
-	align-self: center;
+.title {
+	display: flex;
+	font-size: 19px;
+	font-weight: bold;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.sub-title { 
+	display: flex;
+	font-size: 17px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	
 }
 
 .feed-title {
 	display: flex;
 	flex-direction: column;
 	text-align: left;
+	padding-left: 4px;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow: ellipsis;
 }
 
 .feeds-list {
+	height: 100%;
+	width: 100%;
 	overflow: scroll;
+	display: flex;
+	flex-direction: column;
+	
 }
 
 .feed {
-	font-size: 17px;
 	display: flex;
+	flex-shrink:0;
   flex-direction: row;
+
 	
+
 	border-style: solid;
 	border-width: 1px;
-	border-color: #DCDCDC;
+	border-color: #BBBFCA;
 	
 	padding-bottom: 5px;
 	padding-top: 5px;
 
 	justify-content: space-between;
-	word-break:break-all;
 }
 
 .button-wraper {
 	display: flex;
 	flex-direction: row;
+	margin:auto 0;
 }
 
+
 button {
-	background-color:#9E9E9E;
-  color: white; 
-	border: 1px solid #DCDCDC;
+	width: 70px;
+	height: 40px;
+	margin-left: 5px;
+	margin-right: 5px;
+	font-weight: bold;
+	background-color: #9E9E9E;
+  color: #F4F4F2; 
+	border: 1px solid #BBBFCA;
+	border-radius: 4px;
 }
 
 .refresh:hover {
-	background-color: #2196F3; 
+	background-color:  #5579dd; 
 }
 .remove:hover {
-	background-color: #be352b; 
+	background-color: #d6382d; 
 }
-.add-button:hover {
-	background-color: #2196F3; 
+.add-button {
+	background-color:  #5579dd; 
+}
+
+.refresh:active {
+	background-color:  #395297; 
+}
+.remove:active {
+	background-color: #a12d25; 
+}
+.add-button:active {
+	background-color:  #395297; 
 }
 </style>
-
