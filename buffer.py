@@ -67,8 +67,6 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("All updates have been completed.")
         elif article_list == ['refresh_start'] and pointer == 0:
             message_to_emacs("Updating. It is recommended not to add or delete feeds.")
-            # 需要增加一个vue提示
-
         elif article_list == ['AttributeError'] and pointer == 0:
             link = self.mainItem.feedlink_list[index]
             message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(link))
@@ -202,6 +200,10 @@ class AppBuffer(BrowserBuffer):
             else:
                 message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
+    @QtCore.pyqtSlot(str)
+    def view_original_page(self, url):
+        eval_in_emacs("eaf-open-browser-other-window", [url])
+
     def refresh_feedlink_thread(self, index):
         feedlink = self.mainItem.rsshub_list[index]['feed_link']
         thread = FetchRssFeedParserThread(feedlink, index)
@@ -256,9 +258,6 @@ class AppBuffer(BrowserBuffer):
     def handle_remove_feed(self):
         curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
         self.remove_feed_widget(curFeedIndex, curFeedIndex)
-
-    def goBack(self):
-        message_to_emacs("You press b.")
 
     def select_next_view_key(self):
         cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
