@@ -2,29 +2,21 @@
 	<div class="page">
 		<div class="content">
 
-				<div class="test-item">
-					<div class="button-list">
-						<button @click="selectPrevItem()">prev</button>
-						<button @click="selectNextItem()">next</button>
-						<button @click="openCurrentItem()">right</button>
-						<button @click="upItem()">left</button>
-					</div>
-					<check></check>
-				</div>
 
 			<div class="item-area">
 				<feedsList 
-				v-if="!openArticle"
+				v-if="!previewArticle"
 				class="feeds-list"
 				ref="feedslist" />
 
 				<articlesList 
-				v-if="curFeedIndex != -1 && !openArticle"
-				class="articles-list" 
+				v-if="curFeedIndex != -1 "
+				class="articles-list"
+				:style="{'flex': previewArticle === true ? '0 0 38.2%' :'0 0 61.8%'}"
 				ref="articlelist" />
 				
 				<articlePanel
-				v-if="openArticle && curArticleIndex != -1"
+				v-if="previewArticle && curArticleIndex != -1"
 				:article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"
 				class="articlePanel" 
 				ref="articlePanel"/>
@@ -55,6 +47,7 @@ export default {
 		'curArticleIndex', 
 		'openFeed', 
 		'openArticle',
+		'previewArticle',
 		'viewKey']),
 		...mapGetters(['curFeedArticleList']),
 	},
@@ -83,50 +76,59 @@ export default {
 			)
 		},
 		selectNextItem() {
-			if (!this.openFeed && !this.openArticle) {
+			if (!this.openFeed && !this.previewArticle && !this.openArticle) {
 				this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
 			} else if (this.openFeed && !this.openArticle) {
 				this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
-			} else if (this.openFeed && this.openArticle) {
+			} else if (this.openFeed && this.previewArticle && this.openArticle) {
 				this.$refs.articlePanel.scrollUp();
 			}
 		},
 		selectPrevItem() {
-			if (!this.openFeed && !this.openArticle) {
+			if (!this.openFeed && !this.previewArticle && !this.openArticle) {
 				this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
 			} else if (this.openFeed && !this.openArticle) {
 				this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
-			} else if (this.openFeed && this.openArticle) {
+			} else if (this.openFeed && this.previewArticle && this.openArticle) {
 				this.$refs.articlePanel.scrollDown();
 			}
 		},
 		openCurrentItem() {
-			if (!this.openFeed && !this.openArticle) {
+			if (!this.openFeed && !this.previewArticle && !this.openArticle) {
 				if (this.curFeedIndex != -1 && this.curArticleIndex === -1) {
+					console.log('here!');
 					this.$store.commit('changeOpenFeed', true);
 				}
-			} else if (this.openFeed && !this.openArticle) {
+			} else if (this.openFeed && !this.previewArticle && !this.openArticle) {
+				if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
+					this.$store.commit('changePreviewArticle', true);
+				}
+			} else if (this.openFeed && this.previewArticle && !this.openArticle) {
 				if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
 					this.$store.commit('changeOpenArticle', true);
 				}
 			}
 		},
 		upItem() {
-			if (this.openFeed && this.openArticle) {
+			if (this.openArticle && this.previewArticle && this.openFeed) {
 				if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
 					this.$store.commit('changeOpenArticle', false);
 				}
-			} else if (this.openFeed && !this.openArticle) {
+			} else if (!this.openArticle && this.previewArticle && this.openFeed) {
+				if (this.curArticleIndex != -1) {
+					this.$store.commit('changePreviewArticle', false);
+				}
+			} else if (!this.openArticle && !this.previewArticle && this.openFeed) {
 				if (this.curFeedIndex != -1) {
 					this.$store.commit('changeOpenFeed', false);
 					this.$store.commit('changeCurArticleIndex', -1);
 				}
-			} else if (!this.openFeed && !this.openArticle) {
+			} else if (!this.openArticle && !this.PreviewArticle && !this.openFeed) {
 				if (this.curFeedIndex != -1) {
 					this.$store.commit('changeCurFeedIndex', -1);
 					this.$store.commit('changeCurArticleIndex', -1);
 				}
-			}
+			} 
 		},
 		
 		giveCurFeedIndex() {
@@ -183,22 +185,15 @@ export default {
   flex-direction: column;
 }
 
-
-
 .button-list {
   flex-direction: row;
 }
 
 .feeds-list {
-	flex: 0 0 50%;
-}
-
-.articles-list {
-	flex: 0 0 50%;
+	flex: 0 0 38.2%;
 }
 
 .articlePanel {
-	flex: 0 0 100%;
-	overflow: scroll;
+	flex: 0 0 61.8%;
 }
 </style>
