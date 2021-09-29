@@ -1,7 +1,7 @@
 <template>
 	<div class="list-area">
 		<div class="title-bar">
-			<h1 class="feeds-list-title-bar" >
+			<h1 class="feeds-list-title-bar">
 				EAF-RSS-Reader
 			</h1>
 			<div class="add-widget">
@@ -29,7 +29,7 @@
 						<div v-if="feed.feed_subtitle === ''"> {{feed.feed_link}}</div>
 					</div>
 				</div>
-				<div class="button-wraper">
+				<div class="button-wrapper">
 					<button class="refresh" @click="refreshFeed(feed.feed_index)"
 					:style="{'background':refreshButtonColor(feed)}"
 					>
@@ -87,9 +87,6 @@ export default ({
 	methods: {
 		changeCurFeedByIndex(feed_index) {
 			this.$store.commit('changeCurFeedIndex', feed_index);
-		},
-		addIcon (iconFile) {
-			return ''
 		},
 		addFeedLink(new_feedlink) {
 			const index = this.$store.state.feedsList.findIndex(x => x.feed_link === new_feedlink);
@@ -160,7 +157,6 @@ export default ({
 </script>
 
 <style scoped>
-
 .list-area {
 	display: flex;
 	width: 100%;
@@ -185,13 +181,14 @@ export default ({
 	background-color: #F4F4F2;
 
 	border-style: solid;
-	border-width: 2px;
+	border-width: 1px;
 	border-color: #BBBFCA;
 
 	margin-top: -2px;
 	margin-bottom: -2px;
 
 	justify-content: space-between;
+	overflow: hidden;
 }
 
 .add-widget {
@@ -234,7 +231,6 @@ input {
 	font-size: 17px;
 	padding-top: 2px;
 	padding-bottom: 2px;
-	
 }
 
 .feed-title {
@@ -253,15 +249,12 @@ input {
 	overflow: scroll;
 	display: flex;
 	flex-direction: column;
-	
 }
 
 .feed {
 	display: flex;
 	flex-shrink:0;
   flex-direction: row;
-
-	
 
 	border-style: solid;
 	border-width: 1px;
@@ -273,16 +266,16 @@ input {
 	justify-content: space-between;
 }
 
-.button-wraper {
+.button-wrapper {
 	display: flex;
 	flex-direction: row;
 	margin:auto 0;
 }
 
-
 button {
 	width: 70px;
 	height: 40px;
+	font-size: 14px;
 	margin-left: 5px;
 	margin-right: 5px;
 	font-weight: bold;
@@ -292,23 +285,7 @@ button {
 	border-radius: 4px;
 }
 
-.refresh:hover {
-	background-color:  #5579dd; 
-}
-.remove:hover {
-	background-color: #d6382d; 
-}
 .add-button {
-	background-color:  #5579dd; 
-}
-
-.refresh:active {
-	background-color:  #395297; 
-}
-.remove:active {
-	background-color: #a12d25; 
-}
-.add-button:active {
-	background-color:  #395297; 
+	background: #5579dd;
 }
 </style>

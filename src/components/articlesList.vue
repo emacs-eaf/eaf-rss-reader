@@ -5,7 +5,7 @@
 				<h1 class="feed-title">
 					{{$store.state.feedsList[curFeedIndex].feed_title}}
 				</h1>
-				<div class="view-button-bar">
+				<div class="button-wrapper">
 					<button 
 					class="button"
 					@click="changeViewKey('all')"
@@ -31,10 +31,12 @@
 				<div
 				class="article-item"
 				v-for="article in infolist"
+				@click="changeCurArticleByIndex(article.index)"
 				:style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
 				:key="article.article_index">
 					<div class="article-title" 
 					@click="changeCurArticleByIndex(article.index), 
+									changePreviewArticle(true),
 									changeOpenArticle(true),
 									changeOpenFeed(true)">
 						{{article.title}}
@@ -66,6 +68,7 @@ export default {
 			backgroundColor:"#F4F4F2",
 			selectFontColor:"#CFCFCF",
 			fontColor:"#495464",
+			fontReadColor: "#919fb6",
 			selectButtonColor:"#5579dd",
 			buttonColor: "#9E9E9E",
 		};
@@ -76,6 +79,7 @@ export default {
 		'curFeedIndex', 
 		'curArticleIndex', 
 		'openFeed',
+		'previewArticle'
 		])
 	},
 	mounted() {
@@ -120,15 +124,17 @@ export default {
 			}
 		},
 		itemBackgroundColor(article) {
-			if (article.index == this.curArticleIndex) {
+			if (article.index === this.curArticleIndex) {
 				return this.selectColor;
 			} else {
 				return this.backgroundColor;
 			}
     },
 		itemFontColor(article) {
-			if (article.index == this.curArticleIndex) {
+			if (article.index === this.curArticleIndex) {
 				return this.selectFontColor;
+			} else if (article.isRead === true) {
+				return this.fontReadColor;
 			} else {
 				return this.fontColor;
 			}
@@ -160,6 +166,11 @@ export default {
 			else if (status === 'true') status = true;
 			this.$store.commit('changeOpenArticle', status);
 		},
+		changePreviewArticle(status) {
+			if (status === 'false') status = false;
+			else if (status === 'true') status = true;
+			this.$store.commit('changePreviewArticle', status);
+		},
 	}
 }
 </script>
@@ -174,7 +185,6 @@ export default {
 
 	overflow: hidden;
 	color: #495464;
-
  }
 
 .articles-list-title-bar {
@@ -183,25 +193,27 @@ export default {
 	position: sticky;
 	display: flex;
 	flex-direction: row;
-	background-color:white;
-
+	background-color: #F4F4F2;
 
 	border-style: solid;
 	border-width: 1px;
 	border-color: #BBBFCA;
+
+	margin-top: -2px;
+	margin-bottom: -2px;
 
 	justify-content: space-between;
 	overflow: hidden;
 }
 
 .feed-title {
-	font-weight: bold;
 	text-align: left;
-	padding-left: 8px;
+	font-weight: bold;
 	overflow: hidden;
+	padding-left: 4px;
 }
 
-.view-button-bar {
+.button-wrapper {
 	margin:auto 0;
 	display: flex;
 	flex-direction: row;
@@ -210,6 +222,7 @@ export default {
 .button {
 	width: 70px;
 	height: 40px;
+	font-size: 14px;
 	margin-left: 5px;
 	margin-right: 5px;
 	font-weight: bold;
@@ -236,7 +249,6 @@ export default {
 	border-width: 1px;
 	border-color: #BBBFCA;
 
-	
 	padding-bottom: 5px;
 	padding-top: 5px;
 	padding-left: 8px;
@@ -249,21 +261,17 @@ export default {
 	font-size: 21px;
 	font-weight: bold;
 	text-align: left;
-
-
+	cursor: pointer;
 	margin-bottom: 5px;
 	margin-top: 5px;
-
 }
 
 .article-author {
 	display: flex;
 	font-size: 19px;
 	text-align: left;
-
 	margin-bottom: 5px;
 	margin-top: 5px;
-
 }
 
 .article-time {
@@ -272,7 +280,6 @@ export default {
 	text-align: left;
 	color: #9E9E9E;
 	flex-shrink:0;
-
 	padding-bottom: 5px;
 	padding-top: 5px;
 }
@@ -281,25 +288,7 @@ export default {
 	display: flex;
 	font-size: 17px;
 	text-align: left;
-
 	margin-bottom: 5px;
 	margin-top: 5px;
-}
-
-.button {
-	background-color:#9E9E9E;
-	color: white; 
-	border: 1px solid #BBBFCA;
-	font-size: 18px;
-	font-weight: bold;
-	width: 80px;
-}
-
-.view-button-bar button:hover {
-	background-color: #2196F3; 
-}
-
-.view-button-bar button:active {
-	background-color: #56a9ec; 
 }
 </style>
