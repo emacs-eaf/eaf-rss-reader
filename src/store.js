@@ -9,6 +9,7 @@ export default new Vuex.Store({
     feedsList: [],
     feedsLinkList: [],
     openFeed: false,
+    previewArticle: false,
     openArticle: false,
     curFeedIndex: -1,
     curArticleIndex:-1,
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     },
     changeOpenArticle(state, status) {
       state.openArticle = status;
+    },
+    changePreviewArticle(state, status) {
+      state.previewArticle = status;
     },
     updateFeedsList(state, infos) {
       state.feedsList = infos;
