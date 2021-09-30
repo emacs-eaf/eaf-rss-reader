@@ -175,9 +175,7 @@ export default {
 }
 </script>
 
-
 <style scoped>
-
 .list-area {
 	height: 100%;
 	display: flex;
