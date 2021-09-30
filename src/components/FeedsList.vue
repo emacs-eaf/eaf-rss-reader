@@ -22,7 +22,9 @@
 					<div class="title">
 						<div>{{feed.feed_title}}</div>
 						<div v-if="feed.feed_title === ''"> {{feed.feed_subtitle}}</div>
-						<div v-if="feed.feed_title === '' && feed.feed_subtitle === ''"> {{feed.feed_link}}</div>
+						<div v-if="feed.feed_title === '' && feed.feed_subtitle === ''"> 
+							{{feed.feed_link}}
+						</div>
 					</div>
 					<div class="sub-title">
 						<div>{{feed.feed_subtitle}}</div>
@@ -31,13 +33,11 @@
 				</div>
 				<div class="button-wrapper">
 					<button class="refresh" @click="refreshFeed(feed.feed_index)"
-					:style="{'background':refreshButtonColor(feed)}"
-					>
+					:style="{'background':refreshButtonColor(feed)}">
 						Refresh
 					</button>
 					<button class="remove" @click="removeFeed(feed.feed_index)"
-					:style="{'background':removeButtonColor(feed)}"
-					>
+					:style="{'background':removeButtonColor(feed)}">
 						Remove
 					</button>
 				</div>
@@ -148,8 +148,7 @@ export default ({
 		changeOpenFeed(status) {
 			this.$store.commit('changeOpenFeed', status);
 		},
-		cleanArticle()
-		{
+		cleanArticle() {
 			this.$store.commit('changeCurArticleIndex', -1);
 		}
 	}
@@ -164,7 +163,6 @@ export default ({
 	flex-direction: column;
 	overflow: hidden;
 	background-color: #F4F4F2;
-
 	border-style: solid;
 	border-width: 1px;
 	border-color: #BBBFCA;
@@ -174,19 +172,15 @@ export default ({
 
 .title-bar {
 	width: 100%;
-
 	position: sticky;
 	display: flex;
 	flex-direction: row;
 	background-color: #F4F4F2;
-
 	border-style: solid;
 	border-width: 1px;
 	border-color: #BBBFCA;
-
 	margin-top: -2px;
 	margin-bottom: -2px;
-
 	justify-content: space-between;
 	overflow: hidden;
 }
@@ -209,11 +203,9 @@ input {
 	width: 400px;
 	height: 40px;
 	background-color: #F4F4F2;
-
 	border-style: solid;
 	border-width: 2px;
 	border-color: #BBBFCA;
-
 	margin-left: 5px;
 	margin-right: 5px;
 }
@@ -255,14 +247,11 @@ input {
 	display: flex;
 	flex-shrink:0;
   flex-direction: row;
-
 	border-style: solid;
 	border-width: 1px;
 	border-color: #BBBFCA;
-	
 	padding-bottom: 5px;
 	padding-top: 5px;
-
 	justify-content: space-between;
 }
 

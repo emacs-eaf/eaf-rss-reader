@@ -180,26 +180,21 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-
 	overflow: hidden;
 	color: #495464;
  }
 
 .articles-list-title-bar {
 	width: 100%;
-
 	position: sticky;
 	display: flex;
 	flex-direction: row;
 	background-color: #F4F4F2;
-
 	border-style: solid;
 	border-width: 1px;
 	border-color: #BBBFCA;
-
 	margin-top: -2px;
 	margin-bottom: -2px;
-
 	justify-content: space-between;
 	overflow: hidden;
 }
@@ -242,15 +237,12 @@ export default {
 	display: flex;
 	flex-shrink:0;
 	flex-direction: column;
-	
 	border-style: solid;
 	border-width: 1px;
 	border-color: #BBBFCA;
-
 	padding-bottom: 5px;
 	padding-top: 5px;
 	padding-left: 8px;
-
 	word-break:break-all;
 }
 

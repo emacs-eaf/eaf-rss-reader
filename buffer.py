@@ -43,7 +43,6 @@ class AppBuffer(BrowserBuffer):
             html = self.convert_index_html(f.read(), self.index_file_dir)
             self.buffer_widget.setHtml(html, QUrl("file://"))
 
-        # vue 注入数据
         self.first_file = os.path.expanduser(arguments)
         self.buffer_widget.loadFinished.connect(self.load_first_file)        
         
@@ -108,7 +107,6 @@ class AppBuffer(BrowserBuffer):
         curFeedIndex = int(curFeedIndex)
         self.remove_feed_widget(feedlink_index, curFeedIndex)
         
-
     @QtCore.pyqtSlot(str, str, bool)
     def change_read_status(self, feedlink_index, article_index, status):
         feedlink_index = int(feedlink_index)
@@ -297,7 +295,6 @@ class SaveLoadFeeds:
         else:
             self.last_feed_index = len(self.feedlink_list) - 1
         
-        # self.reget_all()
     def save_rsshub_json(self):
         with open(self.rsshub_json, "w") as f:
             f.write(json.dumps(self.rsshub_list, ensure_ascii=False))
@@ -398,7 +395,6 @@ class RssFeedParser:
         article_list = []
         article_index = 0
         for item in article_entries:
-            # 部分 entry 没有 author 属性
             try:
                 author = item.author
             except AttributeError:
@@ -412,7 +408,6 @@ class RssFeedParser:
                 "author" : author, 
                 "index" : article_index,
                 "description" : description,
-                # 截取前 120 字放入 cardList 呈现
                 "shortDescription" : description if len(description) <= 120 else description[: 120] + "...",
                 "isRead" : False
             }
@@ -438,10 +433,10 @@ class RssFeedParser:
                     str(li), f"\n{index + 1}. {li_str_search.group(1)}"
                 ).replace("\\n", "\n")
         rss_str = re.sub("</?(ul|ol)>", "", rss_str)
-        # 处理没有被 ul / ol 标签包围的 li 标签
+        # remove <li> withoout ol ul
         rss_str = rss_str.replace("<li>", "- ").replace("</li>", "")
 
-        # <a> 标签处理
+        # handle <a>
         for a in html("a").items():
             a_str = re.search(r"<a.+?</a>", html_unescape(str(a)), flags=re.DOTALL)[0]
             if a.text() and str(a.text()) != a.attr("href"):
@@ -449,11 +444,10 @@ class RssFeedParser:
             else:
                 rss_str = rss_str.replace(a_str, f" {a.attr('href')}\n") 
 
-        # 处理一些 HTML 标签
+        # remove tags
         html_tags = [
             "a","b","i","p","s","h1","h2","h3","h4","h5","code","del","div","dd","dl","dt","em","font","iframe","pre","small","span","strong","sub","table","td","th","tr",
         ]
-        # 直接去掉标签，留下内部文本信息
         for i in html_tags:
             rss_str = re.sub(rf'<{i} .+?"/?>', "", rss_str)
             rss_str = re.sub(rf"</?{i}>", "", rss_str)
@@ -461,10 +455,10 @@ class RssFeedParser:
         rss_str = re.sub('<br .+?"/>|<(br|hr) ?/?>', "\n", rss_str)
         rss_str = re.sub(r"</?h\d>", "\n", rss_str)
 
-        # 删除图片、视频标签
+        # remov video and img
         rss_str = re.sub(r'<video .+?"?/>|</video>|<img.+?>', "", rss_str)
 
-        # 去掉多余换行
+        # remove \n 
         while re.search("\n\n", rss_str):
             rss_str = re.sub("\n\n", "\n", rss_str)
         rss_str = rss_str.strip()

@@ -1,38 +1,32 @@
 <template>
 	<div class="page">
 		<div class="content">
-
-
 			<div class="item-area">
-				<feedsList 
+				<FeedsList 
 				v-if="!previewArticle"
 				class="feeds-list"
 				ref="feedslist" />
 
-				<articlesList 
+				<ArticlesList 
 				v-if="curFeedIndex != -1 "
 				class="articles-list"
 				:style="{'flex': previewArticle === true ? '0 0 38.2%' :'0 0 61.8%'}"
 				ref="articlelist" />
 				
-				<articlePanel
+				<ArticlePanel
 				v-if="previewArticle && curArticleIndex != -1"
 				:article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"
 				class="articlePanel" 
 				ref="articlePanel"/>
 			</div>
-	</div>
-
-		
-		
+	</div>		
 	</div>
 </template>
 
 <script>
-import articlesList from "@/components/articlesList.vue"
-import articlePanel from "@/components/articlePanel.vue"
-import feedsList from "@/components/feedsList.vue"
-import check from "@/components/check.vue"
+import ArticlesList from "@/components/ArticlesList.vue"
+import ArticlePanel from "@/components/ArticlePanel.vue"
+import FeedsList from "@/components/FeedsList.vue"
 import {mapState, mapGetters} from 'vuex';
 
 export default {
@@ -52,10 +46,9 @@ export default {
 		...mapGetters(['curFeedArticleList']),
 	},
 	components:{
-		articlesList,
-		articlePanel,
-		feedsList,
-    check
+		ArticlesList,
+		ArticlePanel,
+		FeedsList,
 	},
 	mounted() {
 		window.selectNextItem = this.selectNextItem;
@@ -69,7 +62,6 @@ export default {
 		window.giveViewKey = this.giveViewKey;
 	},
 	methods: {
-		
 		articleInfoList(){
 			return this.curFeedArticleList.find(
 				article => article.title === this.title
@@ -130,7 +122,6 @@ export default {
 				}
 			} 
 		},
-		
 		giveCurFeedIndex() {
 			return this.$store.state.curFeedIndex;
 		},
@@ -164,7 +155,6 @@ export default {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-
 	display: flex;
 	flex-direction: column;
 }
@@ -173,7 +163,6 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: row;
-
 	overflow: hidden;
 }
 
