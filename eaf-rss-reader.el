@@ -1,104 +1,33 @@
-;;; eaf-vue-demo.el --- Vue demo
-
-;; Filename: eaf-vue-demo.el
-;; Description: Vue demo
-;; Author: Andy Stewart <lazycat.manatee@gmail.com>
-;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
-;; Copyright (C) 2021, Andy Stewart, all rights reserved.
-;; Created: 2021-08-01 10:30:42
-;; Version: 0.1
-;; Last-Updated: 2021-08-01 10:30:42
-;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/eaf-vue-demo.el
-;; Keywords:
-;; Compatibility: GNU Emacs 28.0.50
-;;
-;; Features that might be required by this library:
-;;
-;;
-;;
-
-;;; This file is NOT part of GNU Emacs
-
-;;; License
-;;
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-;; Floor, Boston, MA 02110-1301, USA.
-
-;;; Commentary:
-;;
-;; Vue demo
-;;
-
-;;; Installation:
-;;
-;; Put eaf-vue-demo.el to your load-path.
-;; The load-path is usually ~/elisp/.
-;; It's set in your ~/.emacs like this:
-;; (add-to-list 'load-path (expand-file-name "~/elisp"))
-;;
-;; And the following to your ~/.emacs startup file.
-;;
-;; (require 'eaf-vue-demo)
-;;
-;; No need more.
-
-;;; Customize:
-;;
-;;
-;;
-;; All of the above can customize by:
-;;      M-x customize-group RET eaf-vue-demo RET
-;;
-
-;;; Change log:
-;;
-;; 2021/08/01
-;;      * First released.
-;;
-
-;;; Acknowledgements:
-;;
-;;
-;;
-
-;;; TODO
-;;
-;;
-;;
-
-;;; Require
-
-
-;;; Code:
 
 (defcustom eaf-rss-reader-keybinding
-  '(("M-p" . "add_subscription")
-    ("A" . "add_feed")
+  '(("A" . "add_feed")
+    ("*" . "add_feed")
     ("R" . "remove_feed")
+    ("x" . "remove_feed")
     ("r" . "alter_read_status")
+    ("u" . "alter_read_status")
     ("g" . "handle_refresh_rsshub_list")
-    ("b" . "goBack")
+    ("b" . "js_goback")
+    ("v" . "js_view_original_page")
+    ("o" . "js_view_original_page")
+    ("k" . "js_select_prev_item")
+    ("j" . "js_select_next_item")
+    ("C-k" . "js_open_current_item")
+    ("C-j" . "js_up_item")
+    ("h". "js_up_item")
+    ("l" . "js_open_current_item")
+    ("i" . "js_open_current_item")
     ("<down>" . "js_select_next_item")
     ("<up>" . "js_select_prev_item")
     ("<right>" . "js_open_current_item")
     ("<left>". "js_up_item")
+    ("C-m" . "js_open_current_item")
     ("C-n" . "js_select_next_item")
     ("C-p" . "js_select_prev_item")
     ("<" . "select_prev_view_key")
     (">". "select_next_view_key")
+    ("F" . "select_prev_view_key")
+    ("H". "select_next_view_key")
     )
   "The keybinding of EAF RSS Reader."
   :type 'cons)
@@ -116,4 +45,4 @@
 
 (provide 'eaf-rss-reader)
 
-;;; eaf-vue-demo.el ends here
+;;; eaf-rss-reader.el ends here
