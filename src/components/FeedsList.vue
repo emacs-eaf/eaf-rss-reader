@@ -1,9 +1,9 @@
 <template>
 	<div class="list-area">
 		<div class="title-bar">
-			<h1 class="feeds-list-title-bar">
+			<h2 class="feeds-list-title-bar">
 				EAF-RSS-Reader
-			</h1>
+			</h2>
 			<div class="add-widget">
 				<input class="input-bar" type="text" v-model="newFeedLink" placeholder="Please input feed link......">
 				<button class="add-button" @click="addFeedLink(newFeedLink)">

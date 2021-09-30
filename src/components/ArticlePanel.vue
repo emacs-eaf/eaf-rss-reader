@@ -2,9 +2,9 @@
 	<div class="article-page">
 		<div class="article-title-bar"
 		:style="{'background':highlightTitleBack(), 'color':highlightTitleFont()}">
-			<h1 class="article-title">
+			<h2 class="article-title">
 				{{article.title}}
-			</h1>
+			</h2>
 			<div class="button-wrapper">
 				<button class="go-back" @click="goback()">
 					Goback
