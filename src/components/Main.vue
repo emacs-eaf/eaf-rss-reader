@@ -88,7 +88,6 @@ export default {
 		openCurrentItem() {
 			if (!this.openFeed && !this.previewArticle && !this.openArticle) {
 				if (this.curFeedIndex != -1 && this.curArticleIndex === -1) {
-					console.log('here!');
 					this.$store.commit('changeOpenFeed', true);
 				}
 			} else if (this.openFeed && !this.previewArticle && !this.openArticle) {
