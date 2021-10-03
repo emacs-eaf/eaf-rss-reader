@@ -1,9 +1,11 @@
 <template>
 	<div class="list-area">
 		<div class="title-bar">
-			<h2 class="feeds-list-title-bar">
-				EAF-RSS-Reader
-			</h2>
+			<div class="feeds-list-title-bar">
+				<h2>
+					EAF-RSS-Reader
+				</h2>
+			</div>
 			<div class="add-widget">
 				<input class="input-bar" type="text" v-model="newFeedLink" placeholder="Please input feed link......">
 				<button class="add-button" @click="addFeedLink(newFeedLink)">
@@ -49,7 +51,6 @@
 <script>
 import { QWebChannel } from "qwebchannel";
 import {mapState} from 'vuex';
-
 export default ({
 	data() {
 		return {
@@ -167,9 +168,7 @@ export default ({
 	border-width: 1px;
 	border-color: #BBBFCA;
 	color: #495464;
-
 }
-
 .title-bar {
 	width: 100%;
 	position: sticky;
@@ -184,23 +183,21 @@ export default ({
 	justify-content: space-between;
 	overflow: hidden;
 }
-
 .add-widget {
 	display: flex;
 	flex-direction: row;
 	align-self: center;
 }
-
 .feeds-list-title-bar {
+	display: flex;
 	text-align: left;
 	font-weight: bold;
 	overflow: hidden;
 	padding-left: 4px;
 }
-
 input {
 	align-self: center;
-	width: 400px;
+	width: 300px;
 	height: 40px;
 	background-color: #F4F4F2;
 	border-style: solid;
@@ -209,7 +206,6 @@ input {
 	margin-left: 5px;
 	margin-right: 5px;
 }
-
 .title {
 	display: flex;
 	font-size: 19px;
@@ -217,14 +213,12 @@ input {
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
-
 .sub-title { 
 	display: flex;
 	font-size: 17px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
-
 .feed-title {
 	display: flex;
 	flex-direction: column;
@@ -234,7 +228,6 @@ input {
 	overflow:hidden;
 	text-overflow: ellipsis;
 }
-
 .feeds-list {
 	height: 100%;
 	width: 100%;
@@ -242,7 +235,6 @@ input {
 	display: flex;
 	flex-direction: column;
 }
-
 .feed {
 	display: flex;
 	flex-shrink:0;
@@ -254,13 +246,11 @@ input {
 	padding-top: 5px;
 	justify-content: space-between;
 }
-
 .button-wrapper {
 	display: flex;
 	flex-direction: row;
 	margin:auto 0;
 }
-
 button {
 	width: 70px;
 	height: 40px;
@@ -273,7 +263,6 @@ button {
 	border: 1px solid #BBBFCA;
 	border-radius: 4px;
 }
-
 .add-button {
 	background: #5579dd;
 }

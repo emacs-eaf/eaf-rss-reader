@@ -2,9 +2,11 @@
 		<div class="list-area">
 			<div class="articles-list-title-bar"
 			:style="{'background':highlightTitleBack(), 'color':highlightTitleFont()}">
-				<h2 class="feed-title">
-					{{$store.state.feedsList[curFeedIndex].feed_title}}
-				</h2>
+				<div class="feed-title">
+					<h2>
+						{{$store.state.feedsList[curFeedIndex].feed_title}}
+					</h2>
+				</div>
 				<div class="button-wrapper">
 					<button 
 					class="button"
@@ -200,6 +202,7 @@ export default {
 }
 
 .feed-title {
+	display:flex;
 	text-align: left;
 	font-weight: bold;
 	overflow: hidden;
