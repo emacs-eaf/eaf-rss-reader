@@ -11,22 +11,19 @@ from PyQt5.QtCore import QUrl, QThread
 from pyquery import PyQuery as Pq
 from core.webengine import BrowserBuffer
 from html import unescape as html_unescape
-from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result
+from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir
 
 class AppBuffer(BrowserBuffer):
     def __init__(self, buffer_id, url, arguments):
         BrowserBuffer.__init__(self, buffer_id, url, arguments, False)
-
+        self.config_dir = get_emacs_config_dir()
         self.load_index_html(__file__)
 
         self.index_file_dir = os.path.join(os.path.dirname(__file__), "dist")
         self.index_file = os.path.join(self.index_file_dir, "index.html")
 
-        self.rsshub_json_dir = os.path.join(os.path.dirname(__file__), "public")
-        self.rsshub_json = os.path.join(self.rsshub_json_dir, "list.json")
-        
-        self.feedlink_json_dir = os.path.join(os.path.dirname(__file__), "public")
-        self.feedlink_json = os.path.join(self.feedlink_json_dir, "link.json")
+        self.rsshub_json = os.path.join(self.config_dir, "rss-reader", "list.json")
+        self.feedlink_json = os.path.join(self.config_dir, "rss-reader", "link.json")
 
         self.url = url
         self.refresh_time = 600
