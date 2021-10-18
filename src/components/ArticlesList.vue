@@ -315,9 +315,12 @@
    flex-direction: column;
  }
 
- .article-short-description ::v-deep ul {
+ .article-short-description ::v-deep * {
+   font-size: 16px;
+   font-weight: normal;
    padding: 0;
    margin: 0;
+   width: 98%;
  }
 
  .article-line {

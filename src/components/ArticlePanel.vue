@@ -8,12 +8,6 @@
         </h2>
       </div>
       <div class="button-wrapper">
-        <button class="go-back" @click="goback()">
-          Goback
-        </button>
-        <button class="original-page-button" @click="viewOriginalPage()">
-          Original
-        </button>
         <button
           class="read-button"
           @click="changeReadStatus(article.title, true, 0)"
@@ -210,9 +204,10 @@
    white-space: pre-line;
  }
 
- .article-description ::v-deep ul {
+ .article-description ::v-deep * {
    padding: 0;
    margin: 0;
+   width: 98%;
  }
 
  .go-back {
