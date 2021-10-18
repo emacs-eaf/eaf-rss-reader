@@ -3,21 +3,13 @@
     <div class="content">
       <div class="item-area">
         <FeedsList
-          v-if="!previewArticle"
           class="feeds-list"
           ref="feedslist" />
 
         <ArticlesList
-          v-if="curFeedIndex != -1 "
           class="articles-list"
-          :style="{'flex': previewArticle === true ? '0 0 38.2%' :'0 0 61.8%'}"
+          :style="{'flex': '0 0 61.8%'}"
           ref="articlelist" />
-
-        <ArticlePanel
-          v-if="previewArticle && curArticleIndex != -1"
-          :article="$store.state.feedsList[curFeedIndex].feed_article_list[curArticleIndex]"
-          class="articlePanel"
-          ref="articlePanel"/>
       </div>
     </div>
   </div>
@@ -25,7 +17,6 @@
 
 <script>
  import ArticlesList from "@/components/ArticlesList.vue"
- import ArticlePanel from "@/components/ArticlePanel.vue"
  import FeedsList from "@/components/FeedsList.vue"
  import {mapState, mapGetters} from 'vuex';
 
@@ -47,7 +38,6 @@
    },
    components:{
      ArticlesList,
-     ArticlePanel,
      FeedsList,
    },
    mounted() {
@@ -61,6 +51,12 @@
      window.giveOpenArticle = this.giveOpenFeed;
      window.giveViewKey = this.giveViewKey;
    },
+   created() {
+     // eslint-disable-next-line no-undef
+     new QWebChannel(qt.webChannelTransport, channel => {
+       window.pyobject = channel.objects.pyobject;
+     });
+   },
    methods: {
      articleInfoList(){
        return this.curFeedArticleList.find(
@@ -72,8 +68,6 @@
          this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
        } else if (this.openFeed && !this.openArticle) {
          this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
-       } else if (this.openFeed && this.previewArticle && this.openArticle) {
-         this.$refs.articlePanel.scrollUp();
        }
      },
      selectPrevItem() {
@@ -81,8 +75,6 @@
          this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
        } else if (this.openFeed && !this.openArticle) {
          this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
-       } else if (this.openFeed && this.previewArticle && this.openArticle) {
-         this.$refs.articlePanel.scrollDown();
        }
      },
      openCurrentItem() {
@@ -137,7 +129,7 @@
      },
      giveViewKey() {
        return this.viewKey;
-     }
+     },
    }
  };
 </script>
@@ -163,7 +155,7 @@
    display: flex;
    flex-direction: row;
    overflow: hidden;
-   background: #F4F4F2;
+   background: #FFF;
  }
 
  .view-bar {
@@ -180,9 +172,5 @@
 
  .feeds-list {
    flex: 0 0 38.2%;
- }
-
- .articlePanel {
-   flex: 0 0 61.8%;
  }
 </style>

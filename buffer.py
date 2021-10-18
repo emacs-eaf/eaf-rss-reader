@@ -259,7 +259,7 @@ class AppBuffer(BrowserBuffer):
 
     @QtCore.pyqtSlot(str)
     def view_original_page(self, url):
-        eval_in_emacs("eaf-open-browser-other-window", [url])
+        eval_in_emacs("eaf-open-rss-link", [url])
 
     # call refresh from vue
     @QtCore.pyqtSlot(str)

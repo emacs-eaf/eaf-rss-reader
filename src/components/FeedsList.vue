@@ -39,7 +39,7 @@
      return {
        isAdd:false,
        newFeedLink: '',
-       backgroundColor:"#F4F4F2",
+       backgroundColor:"#FFF",
        selectColor: "#515e72",
        selectFontColor:"#cfcfcf",
        selectRefreshButtonColor:"#5579dd",
@@ -153,26 +153,13 @@
    height: 100%;
    flex-direction: column;
    overflow: hidden;
-   background-color: #F4F4F2;
+   background-color: #FFF;
    border-style: solid;
    border-width: 1px;
    border-color: #BBBFCA;
    color: #495464;
  }
- .title-bar {
-   width: 100%;
-   position: sticky;
-   display: flex;
-   flex-direction: row;
-   background-color: #F4F4F2;
-   border-style: solid;
-   border-width: 1px;
-   border-color: #BBBFCA;
-   margin-top: -2px;
-   margin-bottom: -2px;
-   justify-content: space-between;
-   overflow: hidden;
- }
+ 
  .add-widget {
    display: flex;
    flex-direction: row;
@@ -187,14 +174,14 @@
  }
  .title {
    display: flex;
-   font-size: 19px;
+   font-size: 16px;
    font-weight: bold;
    padding-top: 2px;
    padding-bottom: 2px;
  }
  .sub-title {
    display: flex;
-   font-size: 17px;
+   font-size: 14px;
    padding-top: 2px;
    padding-bottom: 2px;
  }

@@ -8,8 +8,6 @@
     ("u" . "alter_read_status")
     ("g" . "handle_refresh_rsshub_list")
     ("b" . "js_goback")
-    ("v" . "js_view_original_page")
-    ("o" . "js_view_original_page")
     ("k" . "js_select_prev_item")
     ("j" . "js_select_next_item")
     ("C-k" . "js_open_current_item")
@@ -43,6 +41,15 @@
   "Open EAF Rss Reader"
   (interactive)
   (eaf-open "eaf-rss-reader" "rss-reader"))
+
+(defun eaf-open-rss-link (url)
+  "Open RSS link in other window."
+  (interactive "M[EAF/browser] URL: ")
+  (when (< (length (window-list)) 2)
+    (split-window-right))
+  (other-window 1)
+  (eaf-open (eaf-wrap-url url) "browser")
+  (other-window -1))
 
 (provide 'eaf-rss-reader)
 

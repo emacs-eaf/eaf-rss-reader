@@ -1,14 +1,5 @@
 <template>
   <div class="list-area">
-    <div class="articles-list-title-bar"
-      :style="{'background':highlightTitleBack(), 'color':highlightTitleFont()}">
-      <div class="feed-title">
-        <h2>
-          {{$store.state.feedsList[curFeedIndex].feed_title}}
-        </h2>
-      </div>
-    </div>
-
     <div  class="articles-list" ref="articlelist">
       <div
         class="article-item"
@@ -17,14 +8,15 @@
         :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
         :key="article.article_index">
 
+        <div class="article-title"
+          @click="changeCurArticleByIndex(article.index),
+          changePreviewArticle(true),
+          changeOpenArticle(true),
+          changeOpenFeed(true)">
+          {{article.title}}
+        </div>
+
         <div class="article-line">
-          <div class="article-title"
-            @click="changeCurArticleByIndex(article.index),
-            changePreviewArticle(true),
-            changeOpenArticle(true),
-            changeOpenFeed(true)">
-            {{article.title}}
-          </div>
           <div class="article-author">
             {{article.author}}
           </div>
@@ -52,7 +44,7 @@
      return {
        num: 0,
        selectColor: "#515e72",
-       backgroundColor:"#F4F4F2",
+       backgroundColor:"#FFF",
        selectFontColor:"#CFCFCF",
        fontColor:"#495464",
        fontReadColor: "#919fb6",
@@ -142,6 +134,7 @@
      },
      changeCurArticleByIndex(article_index) {
        this.$store.commit('changeCurArticleIndex', article_index);
+       window.pyobject.view_original_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
      },
      changeOpenFeed(status) {
        if (status === 'false') status = false;
@@ -191,45 +184,12 @@
    color: #495464;
  }
 
- .articles-list-title-bar {
-   width: 100%;
-   position: sticky;
-   display: flex;
-   flex-direction: row;
-   background-color: #F4F4F2;
-   border-right: 1px solid #BBBFCA;
-   border-bottom: 1px solid #BBBFCA;
-   margin-top: -2px;
-   margin-bottom: -2px;
-   justify-content: space-between;
-   overflow: hidden;
- }
-
  .feed-title {
    display:flex;
    text-align: left;
    font-weight: bold;
    overflow: hidden;
    padding-left: 4px;
- }
-
- .button-wrapper {
-   margin:auto 0;
-   display: flex;
-   flex-direction: row;
- }
-
- .button {
-   width: 70px;
-   height: 40px;
-   font-size: 14px;
-   margin-left: 5px;
-   margin-right: 5px;
-   font-weight: bold;
-   background-color: #9E9E9E;
-   color: #F4F4F2;
-   border: 1px solid #BBBFCA;
-   border-radius: 4px;
  }
 
  .articles-list {
@@ -239,7 +199,7 @@
    display: flex;
    flex-direction: column;
    border-right: 1px solid #BBBFCA;
-   background: #F4F4F2;
+   background: #FFF;
  }
 
  .article-item {
@@ -255,7 +215,7 @@
 
  .article-title {
    display: flex;
-   font-size: 18px;
+   font-size: 16px;
    font-weight: bold;
    text-align: left;
    cursor: pointer;
@@ -266,29 +226,23 @@
 
  .article-author {
    display: flex;
-   font-size: 16px;
+   font-size: 14px;
    color: #9E9E9E;
    text-align: left;
-   margin-bottom: 5px;
-   margin-top: 5px;
-   margin-left: 10px;
    margin-right: 10px;
  }
 
  .article-time {
    display: flex;
-   font-size: 16px;
+   font-size: 14px;
    text-align: left;
    color: #9E9E9E;
    flex-shrink:0;
-   padding-bottom: 5px;
-   padding-top: 5px;
-   margin-right: 10px;
  }
 
  .article-short-description {
    display: flex;
-   font-size: 17px;
+   font-size: 14px;
    text-align: left;
    margin-bottom: 5px;
    margin-top: 5px;
@@ -296,7 +250,7 @@
  }
 
  .article-short-description ::v-deep * {
-   font-size: 16px;
+   font-size: 14px;
    font-weight: normal;
    padding: 0;
    margin: 0;
@@ -307,5 +261,6 @@
    display: flex;
    flex-direction: row;
    align-items: center;
+   margin-bottom: 5px;
  }
 </style>
