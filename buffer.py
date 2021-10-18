@@ -140,8 +140,8 @@ class AppBuffer(BrowserBuffer):
         self.refresh_feedlink_threads.append(thread)
         thread.start()
 
-        def handle_refresh_rsshub_list(self):
-          curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
+    def handle_refresh_rsshub_list(self):
+        curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
         self.refresh_feedlink_thread(curFeedIndex)
 
     # call remove from emacs
