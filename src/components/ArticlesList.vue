@@ -312,6 +312,7 @@
    text-align: left;
    margin-bottom: 5px;
    margin-top: 5px;
+   flex-direction: column;
  }
 
  .article-short-description ::v-deep ul {
