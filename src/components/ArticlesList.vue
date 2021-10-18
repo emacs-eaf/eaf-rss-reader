@@ -7,26 +7,6 @@
           {{$store.state.feedsList[curFeedIndex].feed_title}}
         </h2>
       </div>
-      <div class="button-wrapper">
-        <button
-          class="button"
-          @click="changeViewKey('all')"
-          :style="{'background': $store.state.viewKey === 'all' ? selectButtonColor : buttonColor}">
-          All
-        </button>
-        <button
-          class="button"
-          @click="changeViewKey('read')"
-          :style="{'background': $store.state.viewKey === 'read' ? selectButtonColor : buttonColor}">
-          Read
-        </button>
-        <button
-          class="button"
-          @click="changeViewKey('unread')"
-          :style="{'background': $store.state.viewKey === 'unread' ? selectButtonColor : buttonColor}">
-          Unread
-        </button>
-      </div>
     </div>
 
     <div  class="articles-list" ref="articlelist">

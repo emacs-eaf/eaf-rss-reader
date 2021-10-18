@@ -7,20 +7,6 @@
           {{article.title}}
         </h2>
       </div>
-      <div class="button-wrapper">
-        <button
-          class="read-button"
-          @click="changeReadStatus(article.title, true, 0)"
-          :style="{'background': article.isRead === true ? selectButtonColor : buttonColor}">
-          Read
-        </button>
-        <button
-          class="unread-button"
-          @click="changeReadStatus(article.title, false, 0)"
-          :style="{'background': article.isRead === false ? selectButtonColor : buttonColor}">
-          Unread
-        </button>
-      </div>
     </div>
     <div class="article-wrapper" ref="articlepanel">
       <div class="article">
