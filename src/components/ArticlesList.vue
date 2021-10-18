@@ -16,7 +16,9 @@
         </div>
 
         <div class="article-line">
-          <div class="article-author">
+          <div
+            v-if="article.author !== ''"
+            class="article-author">
             {{article.author}}
           </div>
           <div class="article-time">
