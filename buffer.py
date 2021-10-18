@@ -400,13 +400,15 @@ class RssFeedParser:
             except AttributeError:
                 author = ""
 
+            description = item.summary
+
             item = {
                 "title" : item.title,
                 "link" : item.link,
                 "time" : item.published,
                 "author" : author,
                 "index" : article_index,
-                "description" : item.summary,
+                "description" : description,
                 "shortDescription" : description if len(description) <= 120 else description[: 120] + "...",
                 "isRead" : False
             }
