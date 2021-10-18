@@ -78,7 +78,7 @@ class AppBuffer(BrowserBuffer):
         article_status = self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead']
         article_title = self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
 
-        if (article_index < 0):
+        if article_index < 0:
             return
         self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
         self.mainItem.save_rsshub_json()
@@ -104,8 +104,7 @@ class AppBuffer(BrowserBuffer):
         # feed selected, select next feed
         if curFeedIndex != -1:
             feed_count = len(self.mainItem.feedlink_list)
-            success_flag = self.mainItem.remove_feedlink_widget(feedlink_index)
-            if success_flag:
+            if self.mainItem.remove_feedlink_widget(feedlink_index):
                 self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
                 if feed_count == 1:
                     self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
@@ -122,8 +121,7 @@ class AppBuffer(BrowserBuffer):
                 message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
         # feed not selected
         else:
-            success_flag = self.mainItem.remove_feedlink_widget(feedlink_index)
-            if success_flag:
+            if self.mainItem.remove_feedlink_widget(feedlink_index):
                 self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
                 self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
                 self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
@@ -194,13 +192,12 @@ class AppBuffer(BrowserBuffer):
         if new_feedlink in self.mainItem.feedlink_list:
             message_to_emacs("Feedlink '{}' exists.".format(new_feedlink))
         else:
-            flag = self.mainItem.add_feedlink_widget(new_rss)
-            if (flag == 1):
+            if self.mainItem.add_feedlink_widget(new_rss):
                 self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
                 self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.mainItem.feedlink_list)-1)))
                 message_to_emacs("Successfully add new feedlink '{}'.".format(new_feedlink))
             else:
-              message_to_emacs("Failed to add feed, please check your link {}.".format(new_feedlink))
+                message_to_emacs("Failed to add feed, please check your link {}.".format(new_feedlink))
 
     @PostGui()
     def refresh_feedlink_widget(self, new_rss, feedlink):
@@ -325,28 +322,26 @@ class SaveLoadFeeds:
             except json.decoder.JSONDecodeError:
                 pass
 
-    # 0 : add feedlink faild
-    # 1 : add feedlink success
     def add_feedlink_widget(self, new_rss):
         new_feedlink = ''
         if new_rss == {}:
-            return 0
-        else:
-            self.last_feed_index += 1
-            new_feedlink = new_rss['feed_link']
+            return False
+
+        self.last_feed_index += 1
+        new_feedlink = new_rss['feed_link']
 
         self.feedlink_list.append(new_feedlink)
         self.save_feedlink_json()
 
         self.rsshub_list.append(new_rss)
         self.save_rsshub_json()
-        return 1
 
-    # 0 : remove feedlink faild
-    # 1 : remove feedlink success
+        return True
+
     def remove_feedlink_widget(self, feedlink_index):
         if not feedlink_index in range(0, self.last_feed_index + 1):
-            return 0
+            return False
+
         self.feedlink_list.pop(feedlink_index)
         self.save_feedlink_json()
 
@@ -357,7 +352,7 @@ class SaveLoadFeeds:
         self.save_rsshub_json()
 
         self.last_feed_index -= 1
-        return 1
+        return True
 
     def reget_all(self):
         file = open(self.rsshub_json, 'w')
