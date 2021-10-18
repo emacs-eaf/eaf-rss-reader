@@ -28,6 +28,7 @@
     (">". "select_next_view_key")
     ("F" . "select_prev_view_key")
     ("H". "select_next_view_key")
+    ("<f12>" . "open_devtools")
     )
   "The keybinding of EAF RSS Reader."
   :type 'cons)
