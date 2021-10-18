@@ -26,16 +26,6 @@
             <div v-if="feed.feed_subtitle === ''"> {{feed.feed_link}}</div>
           </div>
         </div>
-        <div class="button-wrapper">
-          <button class="refresh" @click="refreshFeed(feed.feed_index)"
-            :style="{'background':refreshButtonColor(feed)}">
-            Refresh
-          </button>
-          <button class="remove" @click="removeFeed(feed.feed_index)"
-            :style="{'background':removeButtonColor(feed)}">
-            Remove
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -195,17 +185,6 @@
    overflow: hidden;
    padding-left: 4px;
  }
- input {
-   align-self: center;
-   width: 300px;
-   height: 40px;
-   background-color: #F4F4F2;
-   border-style: solid;
-   border-width: 2px;
-   border-color: #BBBFCA;
-   margin-left: 5px;
-   margin-right: 5px;
- }
  .title {
    display: flex;
    font-size: 19px;
@@ -239,31 +218,9 @@
    display: flex;
    flex-shrink:0;
    flex-direction: row;
-   border-style: solid;
-   border-width: 1px;
-   border-color: #BBBFCA;
+   border-bottom: 1px solid #BBBFCA;
    padding-bottom: 5px;
    padding-top: 5px;
    justify-content: space-between;
- }
- .button-wrapper {
-   display: flex;
-   flex-direction: row;
-   margin:auto 0;
- }
- button {
-   width: 70px;
-   height: 40px;
-   font-size: 14px;
-   margin-left: 5px;
-   margin-right: 5px;
-   font-weight: bold;
-   background-color: #9E9E9E;
-   color: #F4F4F2;
-   border: 1px solid #BBBFCA;
-   border-radius: 4px;
- }
- .add-button {
-   background: #5579dd;
  }
 </style>
