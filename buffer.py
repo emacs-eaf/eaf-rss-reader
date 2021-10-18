@@ -399,7 +399,6 @@ class RssFeedParser:
                 author = item.author
             except AttributeError:
                 author = ""
-            description = self.get_description(item.summary)
 
             item = {
                 "title" : item.title,
@@ -407,7 +406,7 @@ class RssFeedParser:
                 "time" : item.published,
                 "author" : author,
                 "index" : article_index,
-                "description" : description,
+                "description" : item.summary,
                 "shortDescription" : description if len(description) <= 120 else description[: 120] + "...",
                 "isRead" : False
             }
@@ -415,59 +414,6 @@ class RssFeedParser:
             article_index += 1
 
         return article_list
-
-    def handle_html_tag(self, html):
-        rss_str = html_unescape(str(html))
-        html = Pq(html)
-        for ul in html("ul").items():
-            for li in ul("li").items():
-                li_str_search = re.search("<li>(.+)</li>", repr(str(li)))
-                rss_str = rss_str.replace(str(li), f"\n- {li_str_search.group(1)}").replace(
-                    "\\n", "\n"
-                )
-
-        for ol in html("ol").items():
-            for index, li in enumerate(ol("li").items()):
-                li_str_search = re.search("<li>(.+)</li>", repr(str(li)))
-                rss_str = rss_str.replace(
-                    str(li), f"\n{index + 1}. {li_str_search.group(1)}"
-                ).replace("\\n", "\n")
-        rss_str = re.sub("</?(ul|ol)>", "", rss_str)
-        # remove <li> withoout ol ul
-        rss_str = rss_str.replace("<li>", "- ").replace("</li>", "")
-
-        # handle <a>
-        for a in html("a").items():
-            a_str = re.search(r"<a.+?</a>", html_unescape(str(a)), flags=re.DOTALL)[0]
-            if a.text() and str(a.text()) != a.attr("href"):
-                rss_str = rss_str.replace(a_str, f" {a.text()}: {a.attr('href')}\n")
-            else:
-                rss_str = rss_str.replace(a_str, f" {a.attr('href')}\n")
-
-        # remove tags
-        html_tags = [
-            "a","b","i","p","s","h1","h2","h3","h4","h5","code","del","div","dd","dl","dt","em","font","iframe","pre","small","span","strong","sub","table","td","th","tr",
-        ]
-        for i in html_tags:
-            rss_str = re.sub(rf'<{i} .+?"/?>', "", rss_str)
-            rss_str = re.sub(rf"</?{i}>", "", rss_str)
-
-        rss_str = re.sub('<br .+?"/>|<(br|hr) ?/?>', "\n", rss_str)
-        rss_str = re.sub(r"</?h\d>", "\n", rss_str)
-
-        # remov video and img
-        rss_str = re.sub(r'<video .+?"?/>|</video>|<img.+?>', "", rss_str)
-
-        # remove \n
-        while re.search("\n\n", rss_str):
-            rss_str = re.sub("\n\n", "\n", rss_str)
-        rss_str = rss_str.strip()
-
-        return rss_str
-
-    def get_description(self, raw_description):
-        description = self.handle_html_tag(raw_description)
-        return description
 
 class FetchRssFeedParserThread(QThread):
     fetch_result = QtCore.pyqtSignal(dict, str)
