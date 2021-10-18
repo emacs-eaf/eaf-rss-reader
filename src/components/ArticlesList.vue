@@ -36,19 +36,23 @@
         @click="changeCurArticleByIndex(article.index)"
         :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
         :key="article.article_index">
-        <div class="article-title"
-          @click="changeCurArticleByIndex(article.index),
-          changePreviewArticle(true),
-          changeOpenArticle(true),
-          changeOpenFeed(true)">
-          {{article.title}}
+
+        <div class="article-line">
+          <div class="article-title"
+            @click="changeCurArticleByIndex(article.index),
+            changePreviewArticle(true),
+            changeOpenArticle(true),
+            changeOpenFeed(true)">
+            {{article.title}}
+          </div>
+          <div class="article-author">
+            {{article.author}}
+          </div>
+          <div class="article-time">
+            {{ formatDate(article) }}
+          </div>
         </div>
-        <div class="article-author">
-          {{article.author}}
-        </div>
-        <div class="article-time">
-          {{article.time}}
-        </div>
+
         <div
           class="article-short-description"
           v-html="article.shortDescription">
@@ -174,6 +178,26 @@
        else if (status === 'true') status = true;
        this.$store.commit('changePreviewArticle', status);
      },
+     formatDate(article) {
+       var date = new Date(article.time);
+       var fmt = "yyyy-MM-dd hh:mm:ss";
+
+       if (!date || date == null) return null;
+       var o = {
+         'M+': date.getMonth() + 1,
+         'd+': date.getDate(),
+         'h+': date.getHours(),
+         'm+': date.getMinutes(),
+         's+': date.getSeconds(),
+         'q+': Math.floor((date.getMonth() + 3) / 3),
+         'S': date.getMilliseconds()
+       }
+       if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+       for (var k in o) {
+         if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+       }
+       return fmt
+     }
    }
  }
 </script>
@@ -235,6 +259,7 @@
    display: flex;
    flex-direction: column;
    border-right: 1px solid #BBBFCA;
+   background: #F4F4F2;
  }
 
  .article-item {
@@ -250,20 +275,24 @@
 
  .article-title {
    display: flex;
-   font-size: 21px;
+   font-size: 18px;
    font-weight: bold;
    text-align: left;
    cursor: pointer;
    margin-bottom: 5px;
    margin-top: 5px;
+   flex: 1;
  }
 
  .article-author {
    display: flex;
-   font-size: 19px;
+   font-size: 16px;
+   color: #9E9E9E;
    text-align: left;
    margin-bottom: 5px;
    margin-top: 5px;
+   margin-left: 10px;
+   margin-right: 10px;
  }
 
  .article-time {
@@ -274,6 +303,7 @@
    flex-shrink:0;
    padding-bottom: 5px;
    padding-top: 5px;
+   margin-right: 10px;
  }
 
  .article-short-description {
@@ -286,5 +316,12 @@
 
  .article-short-description ::v-deep ul {
    padding: 0;
+   margin: 0;
+ }
+
+ .article-line {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
  }
 </style>

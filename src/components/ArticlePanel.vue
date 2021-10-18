@@ -30,16 +30,10 @@
     </div>
     <div class="article-wrapper" ref="articlepanel">
       <div class="article">
-        <p class="article-author">
-          Author : {{article.author}}
-        </p>
-        <p class="article-time">
-          Time : {{article.time}}
-        </p>
-        <p
+        <div
           class="article-description"
           v-html="article.description">
-        </p>
+        </div>
       </div>
     </div>
   </div>
@@ -208,6 +202,7 @@
    text-align: left;
    padding-left: 8px;
    padding-right: 8px;
+   padding-top: 10px;
  }
 
  .article-description {
@@ -217,6 +212,7 @@
 
  .article-description ::v-deep ul {
    padding: 0;
+   margin: 0;
  }
 
  .go-back {
