@@ -49,8 +49,9 @@
         <div class="article-time">
           {{article.time}}
         </div>
-        <div class="article-short-description">
-          {{article.shortDescription}}
+        <div
+          class="article-short-description"
+          v-html="article.shortDescription">
         </div>
       </div>
     </div>
@@ -192,7 +193,6 @@
    display: flex;
    flex-direction: row;
    background-color: #F4F4F2;
-   border-left: 1px solid #BBBFCA;
    border-right: 1px solid #BBBFCA;
    border-bottom: 1px solid #BBBFCA;
    margin-top: -2px;
@@ -282,5 +282,9 @@
    text-align: left;
    margin-bottom: 5px;
    margin-top: 5px;
+ }
+
+ .article-short-description ::v-deep ul {
+   padding: 0;
  }
 </style>

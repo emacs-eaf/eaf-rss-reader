@@ -36,8 +36,9 @@
         <p class="article-time">
           Time : {{article.time}}
         </p>
-        <p class="article-description">
-          {{article.description}}
+        <p
+          class="article-description"
+          v-html="article.description">
         </p>
       </div>
     </div>
@@ -212,6 +213,10 @@
  .article-description {
    position: relative;
    white-space: pre-line;
+ }
+
+ .article-description ::v-deep ul {
+   padding: 0;
  }
 
  .go-back {
