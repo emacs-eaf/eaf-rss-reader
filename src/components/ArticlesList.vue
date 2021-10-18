@@ -10,7 +10,6 @@
 
         <div class="article-title"
           @click="changeCurArticleByIndex(article.index),
-          changePreviewArticle(true),
           changeOpenArticle(true),
           changeOpenFeed(true)">
           {{article.title}}
@@ -58,7 +57,6 @@
        'curFeedIndex',
        'curArticleIndex',
        'openFeed',
-       'previewArticle'
      ])
    },
    mounted() {
@@ -145,11 +143,6 @@
        if (status === 'false') status = false;
        else if (status === 'true') status = true;
        this.$store.commit('changeOpenArticle', status);
-     },
-     changePreviewArticle(status) {
-       if (status === 'false') status = false;
-       else if (status === 'true') status = true;
-       this.$store.commit('changePreviewArticle', status);
      },
      formatDate(article) {
        var date = new Date(article.time);

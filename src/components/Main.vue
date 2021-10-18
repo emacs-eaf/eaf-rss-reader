@@ -32,7 +32,6 @@
        'curArticleIndex',
        'openFeed',
        'openArticle',
-       'previewArticle',
        'viewKey']),
      ...mapGetters(['curFeedArticleList']),
    },
@@ -64,49 +63,42 @@
        )
      },
      selectNextItem() {
-       if (!this.openFeed && !this.previewArticle && !this.openArticle) {
+       if (!this.openFeed && !this.openArticle) {
          this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
        } else if (this.openFeed && !this.openArticle) {
          this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
        }
      },
      selectPrevItem() {
-       if (!this.openFeed && !this.previewArticle && !this.openArticle) {
+       if (!this.openFeed && !this.openArticle) {
          this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
        } else if (this.openFeed && !this.openArticle) {
          this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
        }
      },
      openCurrentItem() {
-       if (!this.openFeed && !this.previewArticle && !this.openArticle) {
+       if (!this.openFeed && !this.openArticle) {
          if (this.curFeedIndex != -1 && this.curArticleIndex === -1) {
            this.$store.commit('changeOpenFeed', true);
+           this.$refs.articlelist.selectArticleByIndex(0);
          }
-       } else if (this.openFeed && !this.previewArticle && !this.openArticle) {
-         if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
-           this.$store.commit('changePreviewArticle', true);
-         }
-       } else if (this.openFeed && this.previewArticle && !this.openArticle) {
+       } else if (this.openFeed && !this.openArticle) {
          if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
            this.$store.commit('changeOpenArticle', true);
          }
        }
      },
      upItem() {
-       if (this.openArticle && this.previewArticle && this.openFeed) {
+       if (this.openArticle && this.openFeed) {
          if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
            this.$store.commit('changeOpenArticle', false);
          }
-       } else if (!this.openArticle && this.previewArticle && this.openFeed) {
-         if (this.curArticleIndex != -1) {
-           this.$store.commit('changePreviewArticle', false);
-         }
-       } else if (!this.openArticle && !this.previewArticle && this.openFeed) {
+       } else if (!this.openArticle && this.openFeed) {
          if (this.curFeedIndex != -1) {
            this.$store.commit('changeOpenFeed', false);
            this.$store.commit('changeCurArticleIndex', -1);
          }
-       } else if (!this.openArticle && !this.PreviewArticle && !this.openFeed) {
+       } else if (!this.openArticle && !this.openFeed) {
          if (this.curFeedIndex != -1) {
            this.$store.commit('changeCurFeedIndex', -1);
            this.$store.commit('changeCurArticleIndex', -1);
