@@ -15,16 +15,16 @@
         @click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)">
         <div class="feed-title">
           <div class="title">
-            <div>{{feed.feed_title}}</div>
-            <div class="unread-count">({{unreadCount(feed.feed_index)}})</div>
-            <div v-if="feed.feed_title === ''"> {{feed.feed_subtitle}}</div>
+            <div>{{ feed.feed_title }}</div>
+            <div class="unread-count">({{ unreadCount(feed.feed_index) }})</div>
+            <div v-if="feed.feed_title === ''"> {{ feed.feed_subtitle }}</div>
             <div v-if="feed.feed_title === '' && feed.feed_subtitle === ''">
-              {{feed.feed_link}}
+              {{ feed.feed_link }}
             </div>
           </div>
           <div class="sub-title">
-            <div>{{feed.feed_subtitle}}</div>
-            <div v-if="feed.feed_subtitle === ''"> {{feed.feed_link}}</div>
+            <div>{{ feed.feed_subtitle }}</div>
+            <div v-if="feed.feed_subtitle === ''"> {{ feed.feed_link }}</div>
           </div>
         </div>
       </div>
@@ -33,9 +33,11 @@
 </template>
 
 <script>
+ import { mapState } from 'vuex';
  import { QWebChannel } from "qwebchannel";
- import {mapState} from 'vuex';
+
  export default ({
+   name: 'FeedsList',
    data() {
      return {
        isAdd:false,
@@ -137,7 +139,7 @@
        this.$store.commit('changeCurArticleIndex', -1);
      },
      unreadCount(index) {
-      return this.$store.state.feedsList[index].feed_article_list.filter(x => !x.isRead).length;
+       return this.$store.state.feedsList[index].feed_article_list.filter(x => !x.isRead).length;
      }
    }
  })
@@ -164,18 +166,6 @@
    color: #495464;
  }
 
- .add-widget {
-   display: flex;
-   flex-direction: row;
-   align-self: center;
- }
- .feeds-list-title-bar {
-   display: flex;
-   text-align: left;
-   font-weight: bold;
-   overflow: hidden;
-   padding-left: 4px;
- }
  .title {
    display: flex;
    font-size: 16px;
@@ -183,12 +173,14 @@
    padding-top: 2px;
    padding-bottom: 2px;
  }
+
  .sub-title {
    display: flex;
    font-size: 14px;
    padding-top: 2px;
    padding-bottom: 2px;
  }
+
  .feed-title {
    display: flex;
    flex-direction: column;
@@ -198,6 +190,7 @@
    overflow:hidden;
    text-overflow: ellipsis;
  }
+
  .feeds-list {
    height: 100%;
    width: 100%;
@@ -205,6 +198,7 @@
    display: flex;
    flex-direction: column;
  }
+
  .feed {
    display: flex;
    flex-shrink:0;
@@ -214,6 +208,7 @@
    padding-top: 5px;
    justify-content: space-between;
  }
+
  .unread-count {
    margin-left: 10px;
  }

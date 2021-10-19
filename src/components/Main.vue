@@ -1,28 +1,18 @@
 <template>
   <div class="page">
-    <div class="content">
-      <div class="item-area">
-        <FeedsList
-          class="feeds-list"
-          ref="feedslist" />
-
-        <ArticlesList
-          class="articles-list"
-          :style="{'flex': '0 0 61.8%'}"
-          ref="articlelist" />
-      </div>
-    </div>
+    <FeedsList class="feeds-list" ref="feedslist"/>
+    <ArticlesList class="articles-list" ref="articlelist" />
   </div>
 </template>
 
 <script>
+ import { mapState, mapGetters } from 'vuex';
  import { QWebChannel } from "qwebchannel";
  import ArticlesList from "@/components/ArticlesList.vue"
  import FeedsList from "@/components/FeedsList.vue"
- import {mapState, mapGetters} from 'vuex';
 
  export default {
-   name: "home",
+   name: "Main",
    data () {
      return {
      };
@@ -93,38 +83,14 @@
    width: 100%;
    height: 100%;
    display: flex;
-   flex-direction: column;
- }
-
- .content {
-   width: 100%;
-   height: 100%;
-   overflow: hidden;
-   display: flex;
-   flex-direction: column;
- }
-
- .item-area {
-   height: 100%;
-   display: flex;
-   flex-direction: row;
-   overflow: hidden;
-   background: #FFF;
- }
-
- .view-bar {
-   position: fixed;
- }
-
- .test-item {
-   flex-direction: column;
- }
-
- .button-list {
    flex-direction: row;
  }
 
  .feeds-list {
    flex: 0 0 38.2%;
+ }
+
+ .articles-list {
+   flex: 0 0 61.8%;
  }
 </style>

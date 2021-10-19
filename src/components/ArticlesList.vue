@@ -12,14 +12,14 @@
           @click="changeCurArticleByIndex(article.index),
           changeOpenArticle(true),
           changeOpenFeed(true)">
-          {{article.title}}
+          {{ article.title }}
         </div>
 
         <div class="article-line">
           <div
             v-if="article.author !== ''"
             class="article-author">
-            {{article.author}}
+            {{ article.author }}
           </div>
           <div class="article-time">
             {{ formatDate(article) }}
@@ -36,11 +36,11 @@
 </template>
 
 <script>
- import {mapGetters, mapState} from 'vuex';
+ import { mapGetters, mapState } from 'vuex';
  import { QWebChannel } from "qwebchannel";
 
  export default {
-   name: 'listCard',
+   name: 'ArticlesList',
    data () {
      return {
        num: 0,
@@ -169,14 +169,6 @@
    flex-direction: column;
    overflow: hidden;
    color: #495464;
- }
-
- .feed-title {
-   display:flex;
-   text-align: left;
-   font-weight: bold;
-   overflow: hidden;
-   padding-left: 4px;
  }
 
  .articles-list {
