@@ -35,6 +35,10 @@
      window.selectNextFeed = this.selectNextFeed;
      window.selectPrevArticle = this.selectPrevArticle;
      window.selectNextArticle = this.selectNextArticle;
+     window.selectFirstFeed = this.selectFirstFeed;
+     window.selectLastFeed = this.selectLastFeed;
+     window.selectFirstArticle = this.selectFirstArticle;
+     window.selectLastArticle = this.selectLastArticle;
      window.giveCurFeedIndex = this.giveCurFeedIndex;
      window.giveCurArticleIndex = this.giveCurArticleIndex;
      window.giveViewKey = this.giveViewKey;
@@ -65,6 +69,22 @@
      selectPrevArticle() {
        this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
      },
+     selectFirstFeed() {
+       this.$refs.feedslist.selectFeedByIndex(0);
+       this.$store.commit('changeCurArticleIndex', -1);
+     },
+     selectLastFeed() {
+       const last_index = this.$store.state.feedsList.length - 1;
+       this.$refs.feedslist.selectFeedByIndex(last_index);
+       this.$store.commit('changeCurArticleIndex', -1);
+     },
+     selectFirstArticle() {
+       this.$refs.articlelist.selectArticleByIndex(0);
+     },
+     selectLastArticle() {
+       const last_index = this.$store.state.feedsList[this.curFeedIndex].feed_article_list.length - 1;
+       this.$refs.articlelist.selectArticleByIndex(last_index);
+     },     
      giveCurFeedIndex() {
        return this.$store.state.curFeedIndex;
      },
