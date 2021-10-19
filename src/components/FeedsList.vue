@@ -160,9 +160,7 @@
    flex-direction: column;
    overflow: hidden;
    background-color: #FFF;
-   border-style: solid;
-   border-width: 1px;
-   border-color: #BBBFCA;
+   border-right: 1px solid #BBBFCA;
    color: #495464;
  }
 

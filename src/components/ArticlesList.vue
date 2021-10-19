@@ -189,6 +189,7 @@
    padding-bottom: 5px;
    padding-top: 5px;
    padding-left: 8px;
+   padding-right: 8px;
    word-break:break-all;
  }
 
@@ -220,12 +221,11 @@
  }
 
  .article-short-description {
-   display: flex;
    font-size: 14px;
    text-align: left;
    margin-bottom: 5px;
    margin-top: 5px;
-   flex-direction: column;
+   display: inline;
  }
 
  .article-short-description ::v-deep * {
@@ -234,6 +234,14 @@
    padding: 0;
    margin: 0;
    width: 98%;
+ }
+
+ .article-short-description ::v-deep a {
+   color: inherit;
+ }
+
+ .article-short-description ::v-deep ul {
+   padding-left: 12px;
  }
 
  .article-line {
