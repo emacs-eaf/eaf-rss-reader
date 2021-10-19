@@ -40,20 +40,10 @@ class AppBuffer(BrowserBuffer):
 
         self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
-        with open(self.index_file, "r", encoding='utf-8') as f:
-            html = self.convert_index_html(f.read(), self.index_file_dir)
-            self.buffer_widget.setHtml(html, QUrl("file://"))
-
-        self.first_file = os.path.expanduser(arguments)
-        self.buffer_widget.loadFinished.connect(self.load_first_file)
-
         self.keep_refresh_rss(self.refresh_time)
 
-
-    def load_first_file(self):
-        self.buffer_widget.eval_js(
-            '''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list))
-            )
+    def init_app(self):
+        self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
 
     def add_feedlink_thread(self, feedlink, index):
         thread = FetchRssFeedParserThread(feedlink, index)
@@ -98,11 +88,12 @@ class AppBuffer(BrowserBuffer):
         else:
             message_to_emacs("Set {} as unread.".format(article_title))
 
-    def remove_feed_widget(self, feedlink_index, curFeedIndex):
+    @QtCore.pyqtSlot(int, int)
+    def remove_feed_widget(self, feedlink_index, cur_feed_index):
         feed_title = self.mainItem.rsshub_list[feedlink_index]['feed_title']
         feed_link = self.mainItem.rsshub_list[feedlink_index]['feed_link']
         # feed selected, select next feed
-        if curFeedIndex != -1:
+        if cur_feed_index != -1:
             feed_count = len(self.mainItem.feedlink_list)
             if self.mainItem.remove_feedlink_widget(feedlink_index):
                 self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
@@ -139,13 +130,13 @@ class AppBuffer(BrowserBuffer):
         thread.start()
 
     def handle_refresh_rsshub_list(self):
-        curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
-        self.refresh_feedlink_thread(curFeedIndex)
+        cur_feed_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
+        self.refresh_feedlink_thread(cur_feed_index)
 
     # call remove from emacs
     def handle_remove_feed(self):
-        curFeedIndex = self.buffer_widget.execute_js("giveCurFeedIndex()")
-        self.remove_feed_widget(curFeedIndex, curFeedIndex)
+        cur_feed_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
+        self.remove_feed_widget(cur_feed_index, cur_feed_index)
 
     def select_next_view_key(self):
         cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
@@ -236,17 +227,8 @@ class AppBuffer(BrowserBuffer):
         index = self.mainItem.last_feed_index + 1
         self.add_feedlink_thread(new_feedlink, index)
 
-    # call remove from vue
-    @QtCore.pyqtSlot(str, str)
-    def remove_feedlink(self, feedlink_index, curFeedIndex):
-        feedlink_index = int(feedlink_index)
-        curFeedIndex = int(curFeedIndex)
-        self.remove_feed_widget(feedlink_index, curFeedIndex)
-
-    @QtCore.pyqtSlot(str, str, bool)
+    @QtCore.pyqtSlot(int, int, bool)
     def change_read_status(self, feedlink_index, article_index, status):
-        feedlink_index = int(feedlink_index)
-        article_index = int(article_index)
         article_title = self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
 
         self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = status
@@ -258,7 +240,7 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("Set {} as unread.".format(article_title))
 
     @QtCore.pyqtSlot(str)
-    def view_original_page(self, url):
+    def view_page(self, url):
         eval_in_emacs("eaf-open-rss-link", [url])
 
     # call refresh from vue
@@ -395,7 +377,7 @@ class RssFeedParser:
             except AttributeError:
                 author = ""
 
-            description = item.summary
+            summary = item.summary
 
             item = {
                 "title" : item.title,
@@ -403,8 +385,7 @@ class RssFeedParser:
                 "time" : item.published,
                 "author" : author,
                 "index" : article_index,
-                "description" : description,
-                "shortDescription" : description if len(description) <= 120 else description[: 120] + "...",
+                "summary" : summary if len(summary) <= 120 else summary[: 120] + "...",
                 "isRead" : False
             }
             article_list.append(item)
@@ -422,8 +403,7 @@ class FetchRssFeedParserThread(QThread):
 
     def get_rss_result(self):
         try:
-            rss = RssFeedParser(self.feedlink, self.index).feed_info
-            return rss
+            return RssFeedParser(self.feedlink, self.index).feed_info
         except AttributeError:
             return {}
 
@@ -443,8 +423,7 @@ class KeepRefreshRss(QThread):
 
     def get_rss(self, feedlink, index):
         try:
-            rss = RssFeedParser(feedlink, index).feed_info
-            return rss
+            return RssFeedParser(feedlink, index).feed_info
         except AttributeError:
             return {}
 

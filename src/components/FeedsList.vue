@@ -82,7 +82,7 @@
        this.newFeedLink = '';
      },
      removeFeed(feedlink_index) {
-       window.pyobject.remove_feedlink(feedlink_index, this.curFeedIndex);
+       window.pyobject.remove_feedlink(parseInt(feedlink_index), parseInt(this.curFeedIndex));
      },
      refreshFeed(feedlink_index) {
        window.pyobject.refresh_rsshub_list(feedlink_index);
@@ -159,7 +159,7 @@
    border-color: #BBBFCA;
    color: #495464;
  }
- 
+
  .add-widget {
    display: flex;
    flex-direction: row;

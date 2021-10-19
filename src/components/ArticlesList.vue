@@ -28,7 +28,7 @@
 
         <div
           class="article-short-description"
-          v-html="article.shortDescription">
+          v-html="article.summary">
         </div>
       </div>
     </div>
@@ -134,7 +134,7 @@
      },
      changeCurArticleByIndex(article_index) {
        this.$store.commit('changeCurArticleIndex', article_index);
-       window.pyobject.view_original_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
+       window.pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
      },
      changeOpenFeed(status) {
        if (status === 'false') status = false;
