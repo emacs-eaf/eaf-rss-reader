@@ -16,6 +16,7 @@
 </template>
 
 <script>
+ import { QWebChannel } from "qwebchannel";
  import ArticlesList from "@/components/ArticlesList.vue"
  import FeedsList from "@/components/FeedsList.vue"
  import {mapState, mapGetters} from 'vuex';

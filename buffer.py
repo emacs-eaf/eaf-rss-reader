@@ -17,7 +17,6 @@ class AppBuffer(BrowserBuffer):
     def __init__(self, buffer_id, url, arguments):
         BrowserBuffer.__init__(self, buffer_id, url, arguments, False)
         self.config_dir = get_emacs_config_dir()
-        self.load_index_html(__file__)
 
         self.index_file_dir = os.path.join(os.path.dirname(__file__), "dist")
         self.index_file = os.path.join(self.index_file_dir, "index.html")
@@ -41,6 +40,8 @@ class AppBuffer(BrowserBuffer):
         self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
         self.keep_refresh_rss(self.refresh_time)
+        
+        self.load_index_html(__file__)
 
     def init_app(self):
         self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.mainItem.rsshub_list)))
