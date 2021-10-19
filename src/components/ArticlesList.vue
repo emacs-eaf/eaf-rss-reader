@@ -134,6 +134,8 @@
      },
      changeCurArticleByIndex(article_index) {
        this.$store.commit('changeCurArticleIndex', article_index);
+       this.$store.commit('markAsRead');
+       window.pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
        window.pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
      },
      changeOpenFeed(status) {

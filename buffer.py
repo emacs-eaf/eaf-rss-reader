@@ -240,6 +240,11 @@ class AppBuffer(BrowserBuffer):
         else:
             message_to_emacs("Set {} as unread.".format(article_title))
 
+    @QtCore.pyqtSlot(int, int)
+    def mark_as_read(self, feedlink_index, article_index):
+        self.mainItem.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = True
+        self.mainItem.save_rsshub_json()
+
     @QtCore.pyqtSlot(str)
     def view_page(self, url):
         eval_in_emacs("eaf-open-rss-link", [url])
