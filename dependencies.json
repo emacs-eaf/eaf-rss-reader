@@ -7,10 +7,16 @@
     ],
     "pip": {
         "linux": [
-            "pyquery"
+            "pyquery",
+            "feedparser"
         ],
         "win32": [
-            "pyquery"
+            "pyquery",
+            "feedparser"
+        ],
+        "darwin": [
+            "pyquery",
+            "feedparser"
         ]
     },
     "vue_install": true
