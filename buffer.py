@@ -40,7 +40,7 @@ class AppBuffer(BrowserBuffer):
         self.mainItem = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
         self.keep_refresh_rss(self.refresh_time)
-        
+
         self.load_index_html(__file__)
 
     def init_app(self):
@@ -378,7 +378,7 @@ class RssFeedParser:
             except AttributeError:
                 author = ""
 
-            summary = item.summary
+            shortDescription = item.summary
 
             item = {
                 "title" : item.title,
@@ -386,7 +386,7 @@ class RssFeedParser:
                 "time" : item.published,
                 "author" : author,
                 "index" : article_index,
-                "summary" : summary if len(summary) <= 120 else summary[: 120] + "...",
+                "shortDescription" : shortDescription if len(shortDescription) <= 120 else shortDescription[: 120] + "...",
                 "isRead" : False
             }
             article_list.append(item)

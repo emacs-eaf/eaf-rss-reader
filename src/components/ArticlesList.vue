@@ -28,7 +28,7 @@
 
         <div
           class="article-short-description"
-          v-html="article.summary">
+          v-html="article.shortDescription">
         </div>
       </div>
     </div>
