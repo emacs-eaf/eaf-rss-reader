@@ -4,20 +4,15 @@
     ("R" . "remove_feed")
     ("g" . "handle_refresh_rsshub_list")
 
-    ("k" . "js_select_prev_item")
-    ("j" . "js_select_next_item")
-    ("h". "js_up_item")
-    ("l" . "js_open_current_item")
+    ("1" . "js_select_prev_feed")
+    ("2" . "js_select_next_feed")
+    ("3" . "js_select_prev_article")
+    ("4" . "js_select_next_article")
 
-    ("<down>" . "js_select_next_item")
-    ("<up>" . "js_select_prev_item")
-    ("<left>". "js_up_item")
-    ("<right>" . "js_open_current_item")
-
-    ("C-n" . "js_select_next_item")
-    ("C-p" . "js_select_prev_item")
-    ("C-h" . "js_up_item")
-    ("C-m" . "js_open_current_item")
+    ("p" . "js_select_prev_feed")
+    ("n" . "js_select_next_feed")
+    ("j" . "js_select_prev_article")
+    ("k" . "js_select_next_article")
 
     ("<f12>" . "open_devtools")
     )
