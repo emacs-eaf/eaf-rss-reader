@@ -1,15 +1,7 @@
 ### EAF RSS Reader
 
 <p align="center">
-  <img width="800" src="./screenshot-1.png">
-</p>
-
-<p align="center">
-  <img width="800" src="./screenshot-2.png">
-</p>
-
-<p align="center">
-  <img width="800" src="./screenshot-3.png">
+  <img width="800" src="./img/screenshot.png">
 </p>
 
 RSS Reader application for the [Emacs Application Framework](https://github.com/emacs-eaf/emacs-application-framework).
@@ -41,4 +33,3 @@ RSS Reader application for the [Emacs Application Framework](https://github.com/
 | `C-h` | js_up_item |
 | `C-m` | js_open_current_item |
 | `<f12>` | open_devtools |
-
