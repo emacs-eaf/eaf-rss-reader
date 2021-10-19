@@ -16,7 +16,7 @@
         <div class="feed-title">
           <div class="title">
             <div>{{feed.feed_title}}</div>
-            <div>({{unreadCount(feed.feed_index)}})</div>
+            <div> ({{unreadCount(feed.feed_index)}})</div>
             <div v-if="feed.feed_title === ''"> {{feed.feed_subtitle}}</div>
             <div v-if="feed.feed_title === '' && feed.feed_subtitle === ''">
               {{feed.feed_link}}
