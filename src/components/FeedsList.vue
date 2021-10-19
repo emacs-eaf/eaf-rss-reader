@@ -16,6 +16,7 @@
         <div class="feed-title">
           <div class="title">
             <div>{{feed.feed_title}}</div>
+            <div>({{unreadCount(feed.feed_index)}})</div>
             <div v-if="feed.feed_title === ''"> {{feed.feed_subtitle}}</div>
             <div v-if="feed.feed_title === '' && feed.feed_subtitle === ''">
               {{feed.feed_link}}
@@ -134,6 +135,9 @@
      },
      cleanArticle() {
        this.$store.commit('changeCurArticleIndex', -1);
+     },
+     unreadCount(index) {
+      return this.$store.state.feedsList[index].feed_article_list.filter(x => !x.isRead).length;
      }
    }
  })
