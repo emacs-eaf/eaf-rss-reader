@@ -41,14 +41,12 @@
      FeedsList,
    },
    mounted() {
-     window.selectNextItem = this.selectNextItem;
-     window.selectPrevItem = this.selectPrevItem;
-     window.openCurrentItem = this.openCurrentItem;
-     window.upItem = this.upItem;
+     window.selectPrevFeed = this.selectPrevFeed;
+     window.selectNextFeed = this.selectNextFeed;
+     window.selectPrevArticle = this.selectPrevArticle;
+     window.selectNextArticle = this.selectNextArticle;
      window.giveCurFeedIndex = this.giveCurFeedIndex;
      window.giveCurArticleIndex = this.giveCurArticleIndex;
-     window.giveOpenFeed = this.giveOpenFeed;
-     window.giveOpenArticle = this.giveOpenFeed;
      window.giveViewKey = this.giveViewKey;
    },
    created() {
@@ -63,62 +61,25 @@
          article => article.title === this.title
        )
      },
-     selectNextItem() {
-       if (!this.openFeed && !this.openArticle) {
-         this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
-       } else if (this.openFeed && !this.openArticle) {
-         this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
-       }
+     selectNextFeed() {
+       this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
+       this.$store.commit('changeCurArticleIndex', -1);
      },
-     selectPrevItem() {
-       if (!this.openFeed && !this.openArticle) {
-         this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
-       } else if (this.openFeed && !this.openArticle) {
-         this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
-       }
+     selectPrevFeed() {
+       this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
+       this.$store.commit('changeCurArticleIndex', -1);
      },
-     openCurrentItem() {
-       if (!this.openFeed && !this.openArticle) {
-         if (this.curFeedIndex != -1 && this.curArticleIndex === -1) {
-           this.$store.commit('changeOpenFeed', true);
-           this.$refs.articlelist.selectArticleByIndex(0);
-         }
-       } else if (this.openFeed && !this.openArticle) {
-         if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
-           this.$store.commit('changeOpenArticle', true);
-         }
-       }
+     selectNextArticle() {
+       this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
      },
-     upItem() {
-       if (this.openArticle && this.openFeed) {
-         if (this.curFeedIndex != -1 && this.curArticleIndex != -1) {
-           this.$store.commit('changeOpenArticle', false);
-         }
-       } else if (!this.openArticle && this.openFeed) {
-         if (this.curFeedIndex != -1) {
-           this.$store.commit('changeOpenFeed', false);
-           this.$store.commit('changeCurArticleIndex', -1);
-         }
-       } else if (!this.openArticle && !this.openFeed) {
-         if (this.curFeedIndex != -1) {
-           this.$store.commit('changeCurFeedIndex', -1);
-           this.$store.commit('changeCurArticleIndex', -1);
-         }
-       }
+     selectPrevArticle() {
+       this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
      },
      giveCurFeedIndex() {
        return this.$store.state.curFeedIndex;
      },
      giveCurArticleIndex() {
        return this.curArticleIndex;
-     },
-     giveOpenFeed() {
-       if (this.openFeed === false) return 'false';
-       return 'true';
-     },
-     giveOpenArticle() {
-       if (this.openArticle === 'false') return 'false';
-       return 'true';
      },
      giveViewKey() {
        return this.viewKey;

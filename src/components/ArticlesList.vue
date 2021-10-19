@@ -138,16 +138,6 @@
        window.pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
        window.pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
      },
-     changeOpenFeed(status) {
-       if (status === 'false') status = false;
-       else if (status === 'true') status = true;
-       this.$store.commit('changeOpenFeed', status);
-     },
-     changeOpenArticle(status) {
-       if (status === 'false') status = false;
-       else if (status === 'true') status = true;
-       this.$store.commit('changeOpenArticle', status);
-     },
      formatDate(article) {
        var date = new Date(article.time);
        var fmt = "yyyy-MM-dd hh:mm:ss";
