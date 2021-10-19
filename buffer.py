@@ -110,7 +110,7 @@ class AppBuffer(BrowserBuffer):
                 message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, feedlink_index))
             else:
                 message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
-        
+
     def refresh_feedlink_thread(self, index):
         feedlink = self.main_item.rsshub_list[index]['feed_link']
         thread = FetchRssFeedParserThread(feedlink, index)
@@ -278,10 +278,6 @@ class SaveLoadFeeds:
             f.write(json.dumps(self.feedlink_list, ensure_ascii=False))
 
     def fetch_rsshub_list(self):
-        if not os.path.exists(self.rsshub_json):
-            file = open(self.rsshub_json, 'w')
-            file.write("")
-            file.close()
         with open(self.rsshub_json, "r") as f:
             try:
                 self.rsshub_list = json.load(f)
@@ -289,10 +285,6 @@ class SaveLoadFeeds:
                 pass
 
     def fetch_feedlink_list(self):
-        if not os.path.exists(self.feedlink_json):
-            file = open(self.feedlink_json, 'w')
-            file.write("")
-            file.close()
         with open(self.feedlink_json, 'r') as f:
             try:
                 self.feedlink_list = json.load(f)
