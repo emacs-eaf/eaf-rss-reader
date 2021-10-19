@@ -69,25 +69,24 @@ class AppBuffer(BrowserBuffer):
         article_status = self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead']
         article_title = self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
 
-        if article_index < 0:
-            return
-        self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
-        self.main_item.save_rsshub_json()
+        if article_index >= 0:
+            self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
+            self.main_item.save_rsshub_json()
 
-        # method1 : reload the list.json to javascript
-        # self.buffer_widget.eval_js(
-        #    '''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list))
-        #    )
+            # method1 : reload the list.json to javascript
+            # self.buffer_widget.eval_js(
+            #    '''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list))
+            #    )
 
-        # method2 : call articlePanel.vue -> changeReadStatus(key)
-        self.buffer_widget.eval_js(
-            '''changeReadStatus(\"{}\", \"{}\", \"{}\");'''.format(article_title, not article_status, 1)
-            )
+            # method2 : call articlePanel.vue -> changeReadStatus(key)
+            self.buffer_widget.eval_js(
+                '''changeReadStatus(\"{}\", \"{}\", \"{}\");'''.format(article_title, not article_status, 1)
+                )
 
-        if article_status == False:
-            message_to_emacs("Set {} as read.".format(article_title))
-        else:
-            message_to_emacs("Set {} as unread.".format(article_title))
+            if article_status == False:
+                message_to_emacs("Set {} as read.".format(article_title))
+            else:
+                message_to_emacs("Set {} as unread.".format(article_title))
 
     @QtCore.pyqtSlot(int, int)
     def remove_feed_widget(self, feedlink_index, cur_feed_index):
@@ -184,32 +183,32 @@ class AppBuffer(BrowserBuffer):
     def refresh_feedlink_widget(self, new_rss, feedlink):
         if new_rss == {}:
             message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(feedlink_index))
-            return
-        feedlink_index = new_rss["feed_index"]
-        feed_title = new_rss["feed_title"]
-        new_rss_article_list = new_rss["feed_article_list"]
-        old_rss = self.main_item.rsshub_list[feedlink_index]["feed_article_list"]
-        old_rss_map = {}
-        for item in old_rss:
-            title = item['title']
-            status = item['isRead']
-            old_rss_map[title] = status
+        else:
+            feedlink_index = new_rss["feed_index"]
+            feed_title = new_rss["feed_title"]
+            new_rss_article_list = new_rss["feed_article_list"]
+            old_rss = self.main_item.rsshub_list[feedlink_index]["feed_article_list"]
+            old_rss_map = {}
+            for item in old_rss:
+                title = item['title']
+                status = item['isRead']
+                old_rss_map[title] = status
 
-        for item in new_rss_article_list:
-            new_title = item["title"]
-            new_index = item["index"]
-            if new_title in old_rss_map:
-                new_rss_article_list[new_index]['isRead'] = old_rss_map[new_title]
+            for item in new_rss_article_list:
+                new_title = item["title"]
+                new_index = item["index"]
+                if new_title in old_rss_map:
+                    new_rss_article_list[new_index]['isRead'] = old_rss_map[new_title]
 
-        self.main_item.rsshub_list[feedlink_index]["feed_article_list"] = new_rss_article_list
+            self.main_item.rsshub_list[feedlink_index]["feed_article_list"] = new_rss_article_list
 
-        self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-        self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
-        self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(feedlink_index)))
-        self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
-        self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('true')))
-        self.main_item.save_rsshub_json()
-        message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
+            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
+            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(feedlink_index)))
+            self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
+            self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('true')))
+            self.main_item.save_rsshub_json()
+            message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
 
     # call add from vue
     @QtCore.pyqtSlot(str)
@@ -239,12 +238,10 @@ class AppBuffer(BrowserBuffer):
         eval_in_emacs("eaf-open-rss-link", [url])
 
     # call refresh from vue
-    @QtCore.pyqtSlot(str)
+    @QtCore.pyqtSlot(int)
     def refresh_rsshub_list(self, feedlink_index):
-        feedlink_index = int(feedlink_index)
-        if feedlink_index < 0:
-            return
-        self.refresh_feedlink_thread(feedlink_index)
+        if feedlink_index >= 0:
+            self.refresh_feedlink_thread(feedlink_index)
 
     def handle_input_response(self, callback_tag, result_content):
         if callback_tag == "add_feed":
@@ -295,33 +292,33 @@ class SaveLoadFeeds:
         new_feedlink = ''
         if new_rss == {}:
             return False
+        else:
+            self.last_feed_index += 1
+            new_feedlink = new_rss['feed_link']
 
-        self.last_feed_index += 1
-        new_feedlink = new_rss['feed_link']
+            self.feedlink_list.append(new_feedlink)
+            self.save_feedlink_json()
 
-        self.feedlink_list.append(new_feedlink)
-        self.save_feedlink_json()
+            self.rsshub_list.append(new_rss)
+            self.save_rsshub_json()
 
-        self.rsshub_list.append(new_rss)
-        self.save_rsshub_json()
-
-        return True
+            return True
 
     def remove_feedlink_widget(self, feedlink_index):
         if not feedlink_index in range(0, self.last_feed_index + 1):
             return False
+        else:
+            self.feedlink_list.pop(feedlink_index)
+            self.save_feedlink_json()
 
-        self.feedlink_list.pop(feedlink_index)
-        self.save_feedlink_json()
+            for item in self.rsshub_list[feedlink_index::]:
+                item['feed_index'] -= 1
 
-        for item in self.rsshub_list[feedlink_index::]:
-            item['feed_index'] -= 1
+            self.rsshub_list.pop(feedlink_index)
+            self.save_rsshub_json()
 
-        self.rsshub_list.pop(feedlink_index)
-        self.save_rsshub_json()
-
-        self.last_feed_index -= 1
-        return True
+            self.last_feed_index -= 1
+            return True
 
     def reget_all(self):
         file = open(self.rsshub_json, 'w')
@@ -425,7 +422,8 @@ class KeepRefreshRss(QThread):
                 count += 1
         if count == 0:
             return 0
-        return total - count
+        else:
+            return total - count
 
     def keep_read_status(self, old, new):
         old_rss_map = {}

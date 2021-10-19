@@ -88,7 +88,7 @@
        window.pyobject.remove_feedlink(parseInt(feedlink_index), parseInt(this.curFeedIndex));
      },
      refreshFeed(feedlink_index) {
-       window.pyobject.refresh_rsshub_list(feedlink_index);
+       window.pyobject.refresh_rsshub_list(parseInt(feedlink_index));
      },
      itemBackgroundColor(feed) {
        if (feed.feed_index == this.curFeedIndex) {
