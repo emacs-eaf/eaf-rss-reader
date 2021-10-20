@@ -2,7 +2,7 @@
   <div class="list-area">
     <div  class="articles-list" ref="articlelist">
       <div
-        class="article-item"
+        class="article-item eaf-rss-reader-article-item"
         v-for="article in infolist"
         @click="changeCurArticleByIndex(article.index)"
         :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"

@@ -8,7 +8,7 @@
       </div>
       <div
         v-else
-        class="feed"
+        class="feed eaf-rss-reader-feed-item"
         v-for="feed in $store.state.feedsList"
         :key="feed.feed_index"
         :style="{'background':itemBackgroundColor(feed), 'color':itemFontColor(feed)}"
