@@ -94,7 +94,7 @@ class AppBuffer(BrowserBuffer):
         feed_link = self.main_item.rsshub_list[feedlink_index]['feed_link']
         feed_count = len(self.main_item.feedlink_list)
         article_index = self.buffer_widget.execute_js("giveCurArticleIndex()")
-        
+
         if feed_count == 1:
             self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
@@ -107,7 +107,7 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index)))
             self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
 
-        # remove feed in list.json and link.json 
+        # remove feed in list.json and link.json
         if self.main_item.remove_feedlink_widget(feedlink_index):
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
             message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, feedlink_index))
@@ -257,6 +257,8 @@ class AppBuffer(BrowserBuffer):
             self.handle_add_feed(result_content)
         elif callback_tag == "remove_feed":
             self.handle_remove_feed()
+        else:
+            BrowserBuffer.handle_input_response(self, callback_tag, result_content)
 
 class SaveLoadFeeds:
     def __init__(self, feedlink_json, rsshub_json):
