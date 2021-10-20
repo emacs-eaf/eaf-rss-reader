@@ -148,6 +148,10 @@ class AppBuffer(BrowserBuffer):
         selected_key = self.view_key_list[cur_view_num]
         self.buffer_widget.eval_js('''changeViewKey({});'''.format(json.dumps(selected_key)))
 
+    def view_page_and_mark_as_read(self):
+        self.buffer_widget.execute_js("markAsRead()")
+        self.buffer_widget.execute_js("viewPage()")
+
     @interactive
     def add_feed(self):
         self.send_input_message("Add new feed: ", "add_feed")

@@ -4,14 +4,13 @@
       <div
         class="article-item eaf-rss-reader-article-item"
         v-for="article in infolist"
-        @click="changeCurArticleByIndex(article.index)"
+        @click="changeCurArticleByIndex(article.index),
+        markAsRead(),
+        viewPage()"
         :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
         :key="article.article_index">
 
-        <div class="article-title"
-          @click="changeCurArticleByIndex(article.index),
-          changeOpenArticle(true),
-          changeOpenFeed(true)">
+        <div class="article-title">
           {{ article.title }}
         </div>
 
@@ -70,6 +69,8 @@
      window.changeViewKey = this.changeViewKey;
      window.changeCurArticleByIndex = this.changeCurArticleByIndex;
      window.selectArticleByIndex = this.selectArticleByIndex;
+     window.markAsRead = this.markAsRead;
+     window.viewPage = this.viewPage;
    },
    created() {
      // eslint-disable-next-line no-undef
@@ -134,8 +135,12 @@
      },
      changeCurArticleByIndex(article_index) {
        this.$store.commit('changeCurArticleIndex', article_index);
+     },
+     markAsRead() {
        this.$store.commit('markAsRead');
        window.pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
+     },
+     viewPage() {
        window.pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
      },
      formatDate(article) {
