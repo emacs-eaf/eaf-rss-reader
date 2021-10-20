@@ -92,23 +92,30 @@ class AppBuffer(BrowserBuffer):
     def remove_feed_widget(self, feedlink_index, cur_feed_index):
         feed_title = self.main_item.rsshub_list[feedlink_index]['feed_title']
         feed_link = self.main_item.rsshub_list[feedlink_index]['feed_link']
-        # feed selected, select next feed
-        if cur_feed_index != -1:
-            feed_count = len(self.main_item.feedlink_list)
-            if self.main_item.remove_feedlink_widget(feedlink_index):
-                self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-                if feed_count == 1:
-                    self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
-                    self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
-                elif feed_count - 1 == feedlink_index:
-                    self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index - 1)))
-                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
-                else:
-                    self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index)))
-                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
-                message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, feedlink_index))
-            else:
-                message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
+        feed_count = len(self.main_item.feedlink_list)
+        article_index = self.buffer_widget.execute_js("giveCurArticleIndex()")
+        
+        if feed_count == 1:
+            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
+            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
+        # select last feed
+        elif feed_count - 1 == feedlink_index:
+            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index - 1)))
+            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(0)))
+        # select next feed
+        else:
+            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(feedlink_index)))
+            self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
+
+        # remove feed in list.json and link.json 
+        if self.main_item.remove_feedlink_widget(feedlink_index):
+            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+            message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, feedlink_index))
+        else:
+            # Failed to remove feed, turn back to prev feed and prev article.
+            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(feedlink_index)))
+            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(article_index)))
+            message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def refresh_feedlink_thread(self, index):
         feedlink = self.main_item.rsshub_list[index]['feed_link']
@@ -205,8 +212,6 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
             self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(feedlink_index)))
-            self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
-            self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('true')))
             self.main_item.save_rsshub_json()
             message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
 
