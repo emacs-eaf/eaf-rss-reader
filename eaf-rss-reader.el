@@ -22,6 +22,9 @@
 (setq eaf-rss-reader-module-path (concat (file-name-directory load-file-name) "buffer.py"))
 (add-to-list 'eaf-app-module-path-alist '("rss-reader" . eaf-rss-reader-module-path))
 
+(defvar eaf-rss-reader-last-url ""
+  "Record last url of rss reader open.")
+
 (defun eaf-open-rss-reader ()
   "Open EAF Rss Reader"
   (interactive)
@@ -33,7 +36,19 @@
   (when (< (length (window-list)) 2)
     (split-window-right))
   (other-window 1)
-  (eaf-open (eaf-wrap-url url) "browser")
+  (let ((rss-url (eaf-wrap-url url)))
+    (cond ((catch 'found-eaf
+             (eaf-for-each-eaf-buffer
+              (when (and (string= eaf--buffer-url eaf-rss-reader-last-url)
+                         (string= eaf--buffer-app-name "browser"))
+                (switch-to-buffer buffer)
+                (unless (string= eaf-rss-reader-last-url rss-url)
+                  (setq-local eaf--buffer-url rss-url)
+                  (eaf-call-async "call_function_with_args" eaf--buffer-id "change_url" rss-url))
+                (throw 'found-eaf t)))))
+          (t
+           (eaf-open rss-url "browser")))
+    (setq eaf-rss-reader-last-url rss-url))
   (other-window -1))
 
 (provide 'eaf-rss-reader)
