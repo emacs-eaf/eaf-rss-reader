@@ -45,6 +45,8 @@
        backgroundColor:"#FFF",
        selectColor: "#515e72",
        selectFontColor:"#cfcfcf",
+       fontColor:"#495464",
+       fontReadColor: "#919fb6",
        selectRefreshButtonColor:"#5579dd",
        selectRemoveButtonColor:"#d6382d",
        buttonColor: "#9E9E9E",
@@ -100,6 +102,8 @@
      itemFontColor(feed) {
        if (feed.feed_index == this.curFeedIndex) {
          return this.selectFontColor;
+       } else if (feed.feed_article_list.filter(x => !x.isRead).length == 0) {
+         return this.fontReadColor;
        } else {
          return this.fontColor;
        }
