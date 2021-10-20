@@ -31,8 +31,8 @@
 (defun eaf-rss-reader-web-page ()
   (catch 'found-rss-reader-buffer
     (eaf-for-each-eaf-buffer
-     (when (and (boundp 'eaf--buffer-type-flag)
-                (string= eaf--buffer-type-flag "eaf-rss-reader"))
+     (when (and (boundp 'eaf--buffer-type)
+                (string= eaf--buffer-type "eaf-rss-reader"))
        (throw 'found-rss-reader-buffer buffer)))))
 
 (defun eaf-open-rss-link (url)
@@ -50,7 +50,7 @@
                (eaf-call-async "call_function_with_args" eaf--buffer-id "change_url" rss-url))))
           (t
            (eaf-open rss-url "browser")
-           (setq-local eaf--buffer-type-flag "eaf-rss-reader"))))
+           (setq-local eaf--buffer-type "eaf-rss-reader"))))
   (other-window -1))
 
 (defun eaf-rss-reader-close-web-page ()
