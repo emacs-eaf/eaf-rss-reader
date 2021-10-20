@@ -205,8 +205,6 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
             self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(feedlink_index)))
-            self.buffer_widget.eval_js('''changeOpenArticle({});'''.format(json.dumps('false')))
-            self.buffer_widget.eval_js('''changeOpenFeed({});'''.format(json.dumps('true')))
             self.main_item.save_rsshub_json()
             message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
 
