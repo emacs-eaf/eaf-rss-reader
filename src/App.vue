@@ -15,7 +15,6 @@ export default ({
     window.addFeedsLinkListFiles = this.addFeedsLinkListFiles;
 	},
   created() {
-		this.$store.dispatch('getList');
 	},
   methods: {
     addFeedsListFiles(files) {

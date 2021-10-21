@@ -48,12 +48,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    // test in localhost
-		getList(context) {
-			axios.get('/list.json').then(({data}) => {
-				context.commit('updateFeedsList', data);
-			})
-		}
 	},
   getters: {
     curFeedArticleList(state) {
