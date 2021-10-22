@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <FeedsList class="feeds-list" ref="feedslist"/>
-    <ArticlesList class="articles-list" ref="articlelist" />
+    <ArticlesList class="articles-list" ref="articlelist" v-bind:pyobject=pyobject />
   </div>
 </template>
 
@@ -84,7 +84,7 @@
      },
      selectFirstArticle() {
        if (this.curFeedIndex != -1) {
-        this.$refs.articlelist.selectArticleByIndex(0);
+        this.$refs.articlelist.selectArticleByIndex(0); 
        }
      },
      selectLastArticle() {
