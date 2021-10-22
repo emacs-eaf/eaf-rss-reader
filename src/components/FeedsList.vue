@@ -34,7 +34,6 @@
 
 <script>
  import { mapState } from 'vuex';
- import { QWebChannel } from "qwebchannel";
 
  export default ({
    name: 'FeedsList',
