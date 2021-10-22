@@ -52,6 +52,9 @@
        buttonColor: "#9E9E9E",
      };
    },
+   props: {
+     pyobject: Object,
+   },
    computed: {
      ...mapGetters(['curFeedArticleList', 'infolist']),
      ...mapState([
@@ -73,10 +76,6 @@
      window.viewPage = this.viewPage;
    },
    created() {
-     // eslint-disable-next-line no-undef
-     new QWebChannel(qt.webChannelTransport, channel => {
-       window.pyobject = channel.objects.pyobject;
-     });
    },
    methods: {
      changeViewKey(key) {
@@ -138,10 +137,10 @@
      },
      markAsRead() {
        this.$store.commit('markAsRead');
-       window.pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
+       pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
      },
      viewPage() {
-       window.pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
+       pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
      },
      formatDate(article) {
        var date = new Date(article.time);
