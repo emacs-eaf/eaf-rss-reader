@@ -60,37 +60,14 @@
      ])
    },
    mounted() {
-     window.addFeedLink = this.addFeedLink;
-     window.removeFeedLink = this.removeFeedLink;
      window.selectFeedByIndex = this.selectFeedByIndex;
-     window.removeFeed = this.removeFeed;
-     window.refreshFeed = this.refreshFeed;
      window.changeCurFeedByIndex = this.changeCurFeedByIndex;
    },
    created() {
-     // eslint-disable-next-line no-undef
-     new QWebChannel(qt.webChannelTransport, channel => {
-       window.pyobject = channel.objects.pyobject;
-     });
    },
    methods: {
      changeCurFeedByIndex(feed_index) {
        this.$store.commit('changeCurFeedIndex', feed_index);
-     },
-     addFeedLink(new_feedlink) {
-       const index = this.$store.state.feedsList.findIndex(x => x.feed_link === new_feedlink);
-       if (index != -1) {
-         alert("Feedlink '"+new_feedlink+"' exists.");
-       } else {
-         window.pyobject.add_feedlink(new_feedlink);
-       }
-       this.newFeedLink = '';
-     },
-     removeFeed(feedlink_index) {
-       window.pyobject.remove_feedlink(parseInt(feedlink_index), parseInt(this.curFeedIndex));
-     },
-     refreshFeed(feedlink_index) {
-       window.pyobject.refresh_rsshub_list(parseInt(feedlink_index));
      },
      itemBackgroundColor(feed) {
        if (feed.feed_index == this.curFeedIndex) {
@@ -106,20 +83,6 @@
          return this.fontReadColor;
        } else {
          return this.fontColor;
-       }
-     },
-     refreshButtonColor(feed) {
-       if (feed.feed_index == this.curFeedIndex) {
-         return this.selectRefreshButtonColor;
-       } else {
-         return this.buttonColor;
-       }
-     },
-     removeButtonColor(feed) {
-       if (feed.feed_index == this.curFeedIndex) {
-         return this.selectRemoveButtonColor;
-       } else {
-         return this.buttonColor;
        }
      },
      keepSelectVisible() {
