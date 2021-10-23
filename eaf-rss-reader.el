@@ -19,6 +19,7 @@
     ("x" . "eaf-rss-reader-close-web-page")
     ("," . "eaf-rss-reader-scroll-up-web-page")
     ("." . "eaf-rss-reader-scroll-down-web-page")
+    ("r" . "eaf-rss-reader-refresh-web-page")
     ("<f12>" . "open_devtools")
     )
   "The keybinding of EAF RSS Reader."
@@ -68,19 +69,23 @@
         (switch-to-buffer rss-web-page)
         (kill-buffer-and-window)))))
 
-(defun eaf-rss-reader-scroll-up-web-page ()
-  (interactive)
+(defun eaf-rss-reader-run-in-web-page (command)
   (let ((rss-web-page (eaf-rss-reader-web-page)))
     (when rss-web-page
       (with-current-buffer rss-web-page
-        (eaf-call-async "execute_function" eaf--buffer-id "scroll_up" (key-description (this-command-keys-vector)))))))
+        (eaf-call-async "execute_function" eaf--buffer-id command (key-description (this-command-keys-vector)))))))
+
+(defun eaf-rss-reader-scroll-up-web-page ()
+  (interactive)
+  (eaf-rss-reader-run-in-web-page "scroll_up"))
 
 (defun eaf-rss-reader-scroll-down-web-page ()
   (interactive)
-  (let ((rss-web-page (eaf-rss-reader-web-page)))
-    (when rss-web-page
-      (with-current-buffer rss-web-page
-        (eaf-call-async "execute_function" eaf--buffer-id "scroll_down" (key-description (this-command-keys-vector)))))))
+  (eaf-rss-reader-run-in-web-page "scroll_down"))
+
+(defun eaf-rss-reader-refresh-web-page ()
+  (interactive)
+  (eaf-rss-reader-run-in-web-page "refresh_page"))
 
 (provide 'eaf-rss-reader)
 
