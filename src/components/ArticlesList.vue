@@ -61,9 +61,6 @@
      ])
    },
    mounted() {
-     window.initCardItemListColor = this.initCardItemListColor;
-     window.getpic = this.getpic
-     window.getitem = this.get_item
      window.changeCurArticleByIndex = this.changeCurArticleByIndex;
      window.selectArticleByIndex = this.selectArticleByIndex;
      window.markArticleAsRead = this.markArticleAsRead;
@@ -72,26 +69,8 @@
    created() {
    },
    methods: {
-     initCardItemListColor(backgroundColor, foregroundColor) {
-       this.backgroundColor = backgroundColor;
-       this.foregroundColor = foregroundColor;
-     },
      addFiles(files) {
        this.$store.commit('updateFileInfos', files);
-     },
-     highlightTitleBack() {
-       if (this.curArticleIndex === -1) {
-         return this.selectColor;
-       } else {
-         return this.backgroundColor;
-       }
-     },
-     highlightTitleFont() {
-       if (this.curArticleIndex === -1) {
-         return this.selectFontColor;
-       } else {
-         return this.fontColor;
-       }
      },
      itemBackgroundColor(article) {
        if (article.index === this.curArticleIndex) {
