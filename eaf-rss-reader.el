@@ -14,6 +14,7 @@
     ("x" . "eaf-rss-reader-close-web-page")
     ("f" . "open_link")
     ("m" . "view_page_and_mark_as_read")
+    ("M" . "mark_feed_as_read")
     ("<f12>" . "open_devtools")
     )
   "The keybinding of EAF RSS Reader."

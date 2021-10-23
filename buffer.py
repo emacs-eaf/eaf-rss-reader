@@ -109,6 +109,12 @@ class AppBuffer(BrowserBuffer):
         self.view_page(self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list'][self.cur_article_index]['link'])
         self.mark_as_read(self.cur_feed_index, self.cur_article_index)
 
+    def mark_feed_as_read(self):
+        for article in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
+            article["isRead"] = True
+
+        self.main_item.save_rsshub_json()
+
     @interactive
     def add_feed(self):
         self.send_input_message("Add new feed: ", "add_feed")
