@@ -17,10 +17,10 @@ export default new Vuex.Store({
     updateFeedsLinkList(state, infos) {
       state.feedsLinkList = infos;
     },
-    changeCurFeedIndex(state, feed_index) {
+    changeCurrentFeedIndex(state, feed_index) {
       state.currentFeedIndex = feed_index;
     },
-    changeCurArticleIndex(state, article_index) {
+    changeCurrentArticleIndex(state, article_index) {
       state.currentArticleIndex = article_index;
     },
     markArticleAsRead(state) {

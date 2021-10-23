@@ -12,7 +12,7 @@
         v-for="feed in $store.state.feedsList"
         :key="feed.feed_index"
         :style="{'background':itemBackgroundColor(feed), 'color':itemFontColor(feed)}"
-        @click="changeCurFeedByIndex(feed.feed_index), cleanArticle()">
+        @click="changeCurrentFeedByIndex(feed.feed_index), cleanArticle()">
         <div class="feed-title">
           <div class="title">
             <div>{{ feed.feed_title }}</div>
@@ -59,13 +59,13 @@
    },
    mounted() {
      window.selectFeedByIndex = this.selectFeedByIndex;
-     window.changeCurFeedByIndex = this.changeCurFeedByIndex;
+     window.changeCurrentFeedByIndex = this.changeCurrentFeedByIndex;
    },
    created() {
    },
    methods: {
-     changeCurFeedByIndex(feed_index) {
-       this.$store.commit('changeCurFeedIndex', feed_index);
+     changeCurrentFeedByIndex(feed_index) {
+       this.$store.commit('changeCurrentFeedIndex', feed_index);
      },
      itemBackgroundColor(feed) {
        if (feed.feed_index == this.currentFeedIndex) {
@@ -89,16 +89,16 @@
      selectFeedByIndex(index) {
        var len = this.$store.state.feedsList.length;
        if (index >= len) {
-         this.changeCurFeedByIndex(len - 1)
+         this.changeCurrentFeedByIndex(len - 1)
        } else if (index <= 0) {
-         this.changeCurFeedByIndex(0)
+         this.changeCurrentFeedByIndex(0)
        } else {
-         this.changeCurFeedByIndex(index)
+         this.changeCurrentFeedByIndex(index)
        }
        this.keepSelectVisible();
      },
      cleanArticle() {
-       this.$store.commit('changeCurArticleIndex', -1);
+       this.$store.commit('changeCurrentArticleIndex', -1);
      },
      unreadCount(index) {
        return this.$store.state.feedsList[index].feed_article_list.filter(x => !x.isRead).length;

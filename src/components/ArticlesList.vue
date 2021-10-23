@@ -4,7 +4,7 @@
       <div
         class="article-item eaf-rss-reader-article-item"
         v-for="article in infolist"
-        @click="changeCurArticleByIndex(article.index), markArticleAsRead()"
+        @click="changeCurrentArticleByIndex(article.index), markArticleAsRead()"
         :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
         :key="article.article_index">
 
@@ -61,7 +61,7 @@
      ])
    },
    mounted() {
-     window.changeCurArticleByIndex = this.changeCurArticleByIndex;
+     window.changeCurrentArticleByIndex = this.changeCurrentArticleByIndex;
      window.selectArticleByIndex = this.selectArticleByIndex;
      window.markArticleAsRead = this.markArticleAsRead;
      window.markFeedAsRead = this.markFeedAsRead;
@@ -91,16 +91,16 @@
      selectArticleByIndex(index) {
        var len = this.infolist.length;
        if (index >= len) {
-         this.changeCurArticleByIndex(len - 1)
+         this.changeCurrentArticleByIndex(len - 1)
        } else if (index <= 0) {
-         this.changeCurArticleByIndex(0)
+         this.changeCurrentArticleByIndex(0)
        } else {
-         this.changeCurArticleByIndex(index)
+         this.changeCurrentArticleByIndex(index)
        }
        this.keepSelectVisible();
      },
-     changeCurArticleByIndex(article_index) {
-       this.$store.commit('changeCurArticleIndex', article_index);
+     changeCurrentArticleByIndex(article_index) {
+       this.$store.commit('changeCurrentArticleIndex', article_index);
      },
      markArticleAsRead() {
        this.$store.commit('markArticleAsRead');

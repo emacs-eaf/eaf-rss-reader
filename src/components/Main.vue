@@ -65,11 +65,11 @@
      },
      selectNextFeed() {
        this.$refs.feedslist.selectFeedByIndex(this.currentFeedIndex + 1);
-       this.$store.commit('changeCurArticleIndex', 0);
+       this.$store.commit('changeCurrentArticleIndex', 0);
      },
      selectPrevFeed() {
        this.$refs.feedslist.selectFeedByIndex(this.currentFeedIndex - 1);
-       this.$store.commit('changeCurArticleIndex', 0);
+       this.$store.commit('changeCurrentArticleIndex', 0);
      },
      selectNextArticle() {
        if (this.currentFeedIndex != -1) {
@@ -83,12 +83,12 @@
      },
      selectFirstFeed() {
        this.$refs.feedslist.selectFeedByIndex(0);
-       this.$store.commit('changeCurArticleIndex', 0);
+       this.$store.commit('changeCurrentArticleIndex', 0);
      },
      selectLastFeed() {
        const last_index = this.$store.state.feedsList.length - 1;
        this.$refs.feedslist.selectFeedByIndex(last_index);
-       this.$store.commit('changeCurArticleIndex', 0);
+       this.$store.commit('changeCurrentArticleIndex', 0);
      },
      selectFirstArticle() {
        if (this.currentFeedIndex != -1) {

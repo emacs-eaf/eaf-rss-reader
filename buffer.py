@@ -81,8 +81,8 @@ class AppBuffer(BrowserBuffer):
         feed_count = len(self.main_item.feedlink_list)
 
         if feed_count == 1:
-            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
-            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
+            self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(-1)))
+            self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(-1)))
         # select last feed
         elif feed_count - 1 == self.current_feed_index:
             self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.current_feed_index - 1)))
@@ -101,8 +101,8 @@ class AppBuffer(BrowserBuffer):
                 self.current_feed_index))
         else:
             # Failed to remove feed, turn back to prev feed and prev article.
-            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
-            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.current_article_index)))
+            self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
+            self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(self.current_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def jump_to_unread(self):
@@ -176,8 +176,8 @@ class AppBuffer(BrowserBuffer):
             self.main_item.rsshub_list[feedlink_index]["feed_article_list"] = new_rss_article_list
 
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
-            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(feedlink_index)))
+            self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(-1)))
+            self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(feedlink_index)))
             self.main_item.save_rsshub_json()
             message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
 
