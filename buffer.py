@@ -106,7 +106,7 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def view_page_and_mark_as_read(self):
-        self.view_page(self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list'][self.cur_article_index]['link'])
+        eval_in_emacs("eaf-open-rss-link", [self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list'][self.cur_article_index]['link']])
         self.mark_as_read(self.cur_feed_index, self.cur_article_index)
 
     def mark_feed_as_read(self):
@@ -186,10 +186,6 @@ class AppBuffer(BrowserBuffer):
     def mark_as_read(self, feedlink_index, article_index):
         self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = True
         self.main_item.save_rsshub_json()
-
-    @QtCore.pyqtSlot(str)
-    def view_page(self, url):
-        eval_in_emacs("eaf-open-rss-link", [url])
 
     def handle_input_response(self, callback_tag, result_content):
         if callback_tag == "add_feed":

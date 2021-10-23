@@ -137,7 +137,7 @@
        pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
      },
      viewPage() {
-       pyobject.view_page(this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link)
+       pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link])
      },
      formatDate(article) {
        var date = new Date(article.time);
