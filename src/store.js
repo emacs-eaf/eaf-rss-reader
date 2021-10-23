@@ -34,8 +34,11 @@ export default new Vuex.Store({
     changeViewKey(state, key) {
       state.viewKey = key;
     },
-    markAsRead(state) {
+    markArticleAsRead(state) {
       state.feedsList[state.curFeedIndex].feed_article_list[state.curArticleIndex].isRead = true;
+    },
+    markFeedAsRead(state) {
+      state.feedsList[state.curFeedIndex].feed_article_list.map(article => article.isRead = true);
     }
   },
   actions: {

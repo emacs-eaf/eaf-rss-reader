@@ -4,9 +4,7 @@
       <div
         class="article-item eaf-rss-reader-article-item"
         v-for="article in infolist"
-        @click="changeCurArticleByIndex(article.index),
-        markAsRead(),
-        viewPage()"
+        @click="changeCurArticleByIndex(article.index), markArticleAsRead()"
         :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
         :key="article.article_index">
 
@@ -69,8 +67,8 @@
      window.changeViewKey = this.changeViewKey;
      window.changeCurArticleByIndex = this.changeCurArticleByIndex;
      window.selectArticleByIndex = this.selectArticleByIndex;
-     window.markAsRead = this.markAsRead;
-     window.viewPage = this.viewPage;
+     window.markArticleAsRead = this.markArticleAsRead;
+     window.markFeedAsRead = this.markFeedAsRead;
    },
    created() {
    },
@@ -132,12 +130,14 @@
      changeCurArticleByIndex(article_index) {
        this.$store.commit('changeCurArticleIndex', article_index);
      },
-     markAsRead() {
-       this.$store.commit('markAsRead');
-       pyobject.mark_as_read(this.curFeedIndex, this.curArticleIndex);
-     },
-     viewPage() {
+     markArticleAsRead() {
+       this.$store.commit('markArticleAsRead');
+       pyobject.mark_article_as_read(this.curFeedIndex, this.curArticleIndex);
        pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link])
+     },
+     markFeedAsRead() {
+       this.$store.commit('markFeedAsRead');
+       pyobject.mark_feed_as_read();
      },
      formatDate(article) {
        var date = new Date(article.time);

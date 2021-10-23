@@ -105,16 +105,6 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.cur_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
-    def mark_article_as_read(self):
-        eval_in_emacs("eaf-open-rss-link", [self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list'][self.cur_article_index]['link']])
-        self.mark_as_read(self.cur_feed_index, self.cur_article_index)
-
-    def mark_feed_as_read(self):
-        for article in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
-            article["isRead"] = True
-
-        self.main_item.save_rsshub_json()
-
     @interactive
     def add_feed(self):
         self.send_input_message("Add new feed: ", "add_feed")
@@ -183,8 +173,15 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
 
     @QtCore.pyqtSlot(int, int)
-    def mark_as_read(self, feedlink_index, article_index):
+    def mark_article_as_read(self, feedlink_index, article_index):
         self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = True
+        self.main_item.save_rsshub_json()
+
+    @QtCore.pyqtSlot()
+    def mark_feed_as_read(self):
+        for article in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
+            article["isRead"] = True
+
         self.main_item.save_rsshub_json()
 
     def handle_input_response(self, callback_tag, result_content):

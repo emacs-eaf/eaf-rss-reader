@@ -13,8 +13,8 @@
     ("K" . "js_select_first_article")
     ("x" . "eaf-rss-reader-close-web-page")
     ("f" . "open_link")
-    ("m" . "mark_article_as_read")
-    ("M" . "mark_feed_as_read")
+    ("m" . "js_mark_article_as_read")
+    ("M" . "js_mark_feed_as_read")
     ("<f12>" . "open_devtools")
     )
   "The keybinding of EAF RSS Reader."
