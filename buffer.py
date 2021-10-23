@@ -30,8 +30,6 @@ class AppBuffer(BrowserBuffer):
 
         self.url = url
         self.refresh_time = 600
-        self.view_key_map = {'all':0, 'read': 1, 'unread':2}
-        self.view_key_list = ['all', 'read', 'unread']
         self.cur_feed_index = -1
         self.cur_article_index = -1
 
@@ -60,37 +58,10 @@ class AppBuffer(BrowserBuffer):
         self.keep_refresh_rss_threads.append(thread)
         thread.start()
 
-
-
     # call add from emacs
     def handle_add_feed(self, new_feedlink):
         index = self.main_item.last_feed_index + 1
         self.add_feedlink_thread(new_feedlink, index)
-
-    def alter_read_status(self):
-        feedlink_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
-        article_index = self.buffer_widget.execute_js("giveCurArticleIndex()")
-        article_status = self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead']
-        article_title = self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
-
-        if article_index >= 0:
-            self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = not article_status
-            self.main_item.save_rsshub_json()
-
-            # method1 : reload the list.json to javascript
-            # self.buffer_widget.eval_js(
-            #    '''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list))
-            #    )
-
-            # method2 : call articlePanel.vue -> changeReadStatus(key)
-            self.buffer_widget.eval_js(
-                '''changeReadStatus(\"{}\", \"{}\", \"{}\");'''.format(article_title, not article_status, 1)
-                )
-
-            if article_status == False:
-                message_to_emacs("Set {} as read.".format(article_title))
-            else:
-                message_to_emacs("Set {} as unread.".format(article_title))
 
     @QtCore.pyqtSlot(int)
     def vue_update_cur_feed_index(self, new_feed_index):
@@ -144,21 +115,6 @@ class AppBuffer(BrowserBuffer):
     def handle_remove_feed(self):
         cur_feed_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
         self.remove_feed_widget(cur_feed_index, cur_feed_index)
-
-    def select_next_view_key(self):
-        cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
-        cur_view_num = self.view_key_map[cur_view_key]
-        # use mod to make the line to a cycle
-        cur_view_num = (cur_view_num + 1) % 3
-        selected_key = self.view_key_list[cur_view_num]
-        self.buffer_widget.eval_js('''changeViewKey({});'''.format(json.dumps(selected_key)))
-
-    def select_prev_view_key(self):
-        cur_view_key = self.buffer_widget.execute_js("giveViewKey()")
-        cur_view_num = self.view_key_map[cur_view_key]
-        cur_view_num = (cur_view_num - 1) % 3
-        selected_key = self.view_key_list[cur_view_num]
-        self.buffer_widget.eval_js('''changeViewKey({});'''.format(json.dumps(selected_key)))
 
     def view_page_and_mark_as_read(self):
         self.buffer_widget.execute_js("markAsRead()")
@@ -231,24 +187,6 @@ class AppBuffer(BrowserBuffer):
             self.main_item.save_rsshub_json()
             message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
 
-    # call add from vue
-    @QtCore.pyqtSlot(str)
-    def add_feedlink(self, new_feedlink):
-        index = self.main_item.last_feed_index + 1
-        self.add_feedlink_thread(new_feedlink, index)
-
-    @QtCore.pyqtSlot(int, int, bool)
-    def change_read_status(self, feedlink_index, article_index, status):
-        article_title = self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['title']
-
-        self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = status
-        self.main_item.save_rsshub_json()
-
-        if status == True:
-            message_to_emacs("Set {} as read.".format(article_title))
-        else:
-            message_to_emacs("Set {} as unread.".format(article_title))
-
     @QtCore.pyqtSlot(int, int)
     def mark_as_read(self, feedlink_index, article_index):
         self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = True
@@ -257,12 +195,6 @@ class AppBuffer(BrowserBuffer):
     @QtCore.pyqtSlot(str)
     def view_page(self, url):
         eval_in_emacs("eaf-open-rss-link", [url])
-
-    # call refresh from vue
-    @QtCore.pyqtSlot(int)
-    def refresh_rsshub_list(self, feedlink_index):
-        if feedlink_index >= 0:
-            self.refresh_feedlink_thread(feedlink_index)
 
     def handle_input_response(self, callback_tag, result_content):
         if callback_tag == "add_feed":
