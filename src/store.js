@@ -8,8 +8,7 @@ export default new Vuex.Store({
     feedsList: [],
     feedsLinkList: [],
     curFeedIndex: -1,
-    curArticleIndex:-1,
-    viewKey: "all"
+    curArticleIndex:-1
   },
   mutations: {
     updateFeedsList(state, infos) {
@@ -18,21 +17,11 @@ export default new Vuex.Store({
     updateFeedsLinkList(state, infos) {
       state.feedsLinkList = infos;
     },
-    changeReadStatus(state, param) {
-      const cur_feed = state.feedsList[state.curFeedIndex];
-      const index = cur_feed.feed_article_list.findIndex(x => x.title === param.title);
-      if (index != -1) {
-        cur_feed.feed_article_list[index].isRead = param.status;
-      }
-    },
     changeCurFeedIndex(state, feed_index) {
       state.curFeedIndex = feed_index;
     },
     changeCurArticleIndex(state, article_index) {
       state.curArticleIndex = article_index;
-    },
-    changeViewKey(state, key) {
-      state.viewKey = key;
     },
     markArticleAsRead(state) {
       state.feedsList[state.curFeedIndex].feed_article_list[state.curArticleIndex].isRead = true;
@@ -42,7 +31,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
-	},
+  },
   getters: {
     curFeedArticleList(state) {
       if (state.curFeedIndex != -1) {
@@ -52,18 +41,8 @@ export default new Vuex.Store({
     infolist(state) {
       const index = state.curFeedIndex;
       if (index != -1) {
-        if (state.viewKey === 'all') {
-          return state.feedsList[index].feed_article_list;
-        }
-        if (state.viewKey === 'read') {
-          return state.feedsList[index].feed_article_list.filter(x => x.isRead);
-        }
-        if (state.viewKey === 'unread') {
-          return state.feedsList[index].feed_article_list.filter(x => !x.isRead);
-        }
         return state.feedsList[index].feed_article_list;
       }
-		},
-
+    },
   }
 })

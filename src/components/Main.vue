@@ -22,8 +22,7 @@
        'curFeedIndex',
        'curArticleIndex',
        'openFeed',
-       'openArticle',
-       'viewKey']),
+       'openArticle']),
      ...mapGetters(['curFeedArticleList']),
    },
    watch: {
@@ -74,7 +73,7 @@
      },
      selectNextArticle() {
        if (this.curFeedIndex != -1) {
-        this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);         
+        this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
        }
      },
      selectPrevArticle() {
@@ -93,7 +92,7 @@
      },
      selectFirstArticle() {
        if (this.curFeedIndex != -1) {
-        this.$refs.articlelist.selectArticleByIndex(0); 
+        this.$refs.articlelist.selectArticleByIndex(0);
        }
      },
      selectLastArticle() {

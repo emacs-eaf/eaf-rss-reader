@@ -64,7 +64,6 @@
      window.initCardItemListColor = this.initCardItemListColor;
      window.getpic = this.getpic
      window.getitem = this.get_item
-     window.changeViewKey = this.changeViewKey;
      window.changeCurArticleByIndex = this.changeCurArticleByIndex;
      window.selectArticleByIndex = this.selectArticleByIndex;
      window.markArticleAsRead = this.markArticleAsRead;
@@ -73,9 +72,6 @@
    created() {
    },
    methods: {
-     changeViewKey(key) {
-       this.$store.commit('changeViewKey', key)
-     },
      initCardItemListColor(backgroundColor, foregroundColor) {
        this.backgroundColor = backgroundColor;
        this.foregroundColor = foregroundColor;
