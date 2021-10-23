@@ -11,12 +11,14 @@
     ("P" . "js_select_first_feed")
     ("J" . "js_select_last_article")
     ("K" . "js_select_first_article")
-    ("x" . "eaf-rss-reader-close-web-page")
     ("f" . "open_link")
     ("m" . "js_mark_article_as_read")
     ("M" . "js_mark_feed_as_read")
     ("u" . "jump_to_unread")
     ("C-j" . "jump_to_unread")
+    ("x" . "eaf-rss-reader-close-web-page")
+    ("," . "eaf-rss-reader-scroll-up-web-page")
+    ("." . "eaf-rss-reader-scroll-down-web-page")
     ("<f12>" . "open_devtools")
     )
   "The keybinding of EAF RSS Reader."
@@ -65,6 +67,20 @@
       (when rss-web-page
         (switch-to-buffer rss-web-page)
         (kill-buffer-and-window)))))
+
+(defun eaf-rss-reader-scroll-up-web-page ()
+  (interactive)
+  (let ((rss-web-page (eaf-rss-reader-web-page)))
+    (when rss-web-page
+      (with-current-buffer rss-web-page
+        (eaf-call-async "execute_function" eaf--buffer-id "scroll_up" (key-description (this-command-keys-vector)))))))
+
+(defun eaf-rss-reader-scroll-down-web-page ()
+  (interactive)
+  (let ((rss-web-page (eaf-rss-reader-web-page)))
+    (when rss-web-page
+      (with-current-buffer rss-web-page
+        (eaf-call-async "execute_function" eaf--buffer-id "scroll_down" (key-description (this-command-keys-vector)))))))
 
 (provide 'eaf-rss-reader)
 
