@@ -53,8 +53,8 @@
    },
    computed: {
      ...mapState([
-       'curFeedIndex',
-       'curArticleIndex',
+       'currentFeedIndex',
+       'currentArticleIndex',
      ])
    },
    mounted() {
@@ -68,14 +68,14 @@
        this.$store.commit('changeCurFeedIndex', feed_index);
      },
      itemBackgroundColor(feed) {
-       if (feed.feed_index == this.curFeedIndex) {
+       if (feed.feed_index == this.currentFeedIndex) {
          return this.selectColor;
        } else {
          return this.backgroundColor;
        }
      },
      itemFontColor(feed) {
-       if (feed.feed_index == this.curFeedIndex) {
+       if (feed.feed_index == this.currentFeedIndex) {
          return this.selectFontColor;
        } else if (feed.feed_article_list.filter(x => !x.isRead).length == 0) {
          return this.fontReadColor;
@@ -84,7 +84,7 @@
        }
      },
      keepSelectVisible() {
-       this.$refs.feedlist.children[this.curFeedIndex].scrollIntoViewIfNeeded(false);
+       this.$refs.feedlist.children[this.currentFeedIndex].scrollIntoViewIfNeeded(false);
      },
      selectFeedByIndex(index) {
        var len = this.$store.state.feedsList.length;

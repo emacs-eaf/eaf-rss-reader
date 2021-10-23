@@ -30,8 +30,8 @@ class AppBuffer(BrowserBuffer):
 
         self.url = url
         self.refresh_time = 600
-        self.cur_feed_index = -1
-        self.cur_article_index = -1
+        self.current_feed_index = -1
+        self.current_article_index = -1
 
         self.add_feedlink_threads = []
         self.refresh_feedlink_threads = []
@@ -63,15 +63,15 @@ class AppBuffer(BrowserBuffer):
         self.add_feedlink_thread(new_feedlink, self.main_item.last_feed_index + 1)
 
     @QtCore.pyqtSlot(int)
-    def vue_update_cur_feed_index(self, new_feed_index):
-        self.cur_feed_index = new_feed_index
+    def update_current_feed_index(self, new_feed_index):
+        self.current_feed_index = new_feed_index
 
     @QtCore.pyqtSlot(int)
-    def vue_update_cur_article_index(self, new_article_index):
-        self.cur_article_index = new_article_index
+    def update_current_article_index(self, new_article_index):
+        self.current_article_index = new_article_index
 
     def refresh_feed(self):
-        thread = FetchRssFeedParserThread(self.main_item.rsshub_list[self.cur_feed_index]['feed_link'], self.cur_feed_index)
+        thread = FetchRssFeedParserThread(self.main_item.rsshub_list[self.current_feed_index]['feed_link'], self.current_feed_index)
         thread.fetch_result.connect(self.refresh_feedlink_widget)
         self.refresh_feedlink_threads.append(thread)
         thread.start()
@@ -84,34 +84,34 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
         # select last feed
-        elif feed_count - 1 == self.cur_feed_index:
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.cur_feed_index - 1)))
+        elif feed_count - 1 == self.current_feed_index:
+            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.current_feed_index - 1)))
             self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
         # select next feed
         else:
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.cur_feed_index)))
+            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
             self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
 
         # remove feed in list.json and link.json
-        if self.main_item.remove_feedlink_widget(self.cur_feed_index):
+        if self.main_item.remove_feedlink_widget(self.current_feed_index):
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
             message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(
-                self.main_item.rsshub_list[self.cur_feed_index]['feed_title'],
-                self.main_item.rsshub_list[self.cur_feed_index]['feed_link'],
-                self.cur_feed_index))
+                self.main_item.rsshub_list[self.current_feed_index]['feed_title'],
+                self.main_item.rsshub_list[self.current_feed_index]['feed_link'],
+                self.current_feed_index))
         else:
             # Failed to remove feed, turn back to prev feed and prev article.
-            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(self.cur_feed_index)))
-            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.cur_article_index)))
+            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
+            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.current_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def jump_to_unread(self):
-        index = self.cur_article_index
-        if self.cur_feed_index != -1:
-            for item in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
+        index = self.current_article_index
+        if self.current_feed_index != -1:
+            for item in self.main_item.rsshub_list[self.current_feed_index]['feed_article_list']:
                 if not item['isRead']:
                     index = item['index']
-                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(index)))        
+                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(index)))
                     return
 
     @interactive
@@ -188,7 +188,7 @@ class AppBuffer(BrowserBuffer):
 
     @QtCore.pyqtSlot()
     def mark_feed_as_read(self):
-        for article in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
+        for article in self.main_item.rsshub_list[self.current_feed_index]['feed_article_list']:
             article["isRead"] = True
 
         self.main_item.save_rsshub_json()

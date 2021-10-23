@@ -54,10 +54,10 @@
      pyobject: Object,
    },
    computed: {
-     ...mapGetters(['curFeedArticleList', 'infolist']),
+     ...mapGetters(['currentFeedArticleList', 'infolist']),
      ...mapState([
-       'curFeedIndex',
-       'curArticleIndex',
+       'currentFeedIndex',
+       'currentArticleIndex',
      ])
    },
    mounted() {
@@ -73,14 +73,14 @@
        this.$store.commit('updateFileInfos', files);
      },
      itemBackgroundColor(article) {
-       if (article.index === this.curArticleIndex) {
+       if (article.index === this.currentArticleIndex) {
          return this.selectColor;
        } else {
          return this.backgroundColor;
        }
      },
      itemFontColor(article) {
-       if (article.index === this.curArticleIndex) {
+       if (article.index === this.currentArticleIndex) {
          return this.selectFontColor;
        } else if (article.isRead === true) {
          return this.fontReadColor;
@@ -89,7 +89,7 @@
        }
      },
      keepSelectVisible() {
-       this.$refs.articlelist.children[this.curArticleIndex].scrollIntoViewIfNeeded(false);
+       this.$refs.articlelist.children[this.currentArticleIndex].scrollIntoViewIfNeeded(false);
      },
      selectArticleByIndex(index) {
        var len = this.infolist.length;
@@ -107,8 +107,8 @@
      },
      markArticleAsRead() {
        this.$store.commit('markArticleAsRead');
-       pyobject.mark_article_as_read(this.curFeedIndex, this.curArticleIndex);
-       pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.curArticleIndex].link])
+       pyobject.mark_article_as_read(this.curFeedIndex, this.currentArticleIndex);
+       pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.currentArticleIndex].link])
      },
      markFeedAsRead() {
        this.$store.commit('markFeedAsRead');

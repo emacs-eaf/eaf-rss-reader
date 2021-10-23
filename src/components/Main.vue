@@ -19,21 +19,21 @@
    },
    computed: {
      ...mapState([
-       'curFeedIndex',
-       'curArticleIndex',
+       'currentFeedIndex',
+       'currentArticleIndex',
        'openFeed',
        'openArticle']),
-     ...mapGetters(['curFeedArticleList']),
+     ...mapGetters(['currentFeedArticleList']),
    },
    watch: {
-    curFeedIndex: {
+    currentFeedIndex: {
       handler: function(val, oldVal) {
-        window.pyobject.vue_update_cur_feed_index(val);
+        window.pyobject.update_current_feed_index(val);
       }
     },
-    curArticleIndex: {
+    currentArticleIndex: {
       handler: function(val, oldVal) {
-        window.pyobject.vue_update_cur_article_index(val);
+        window.pyobject.update_current_article_index(val);
       }
     }
   },
@@ -59,26 +59,26 @@
    },
    methods: {
      articleInfoList(){
-       return this.curFeedArticleList.find(
+       return this.currentFeedArticleList.find(
          article => article.title === this.title
        )
      },
      selectNextFeed() {
-       this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex + 1);
+       this.$refs.feedslist.selectFeedByIndex(this.currentFeedIndex + 1);
        this.$store.commit('changeCurArticleIndex', 0);
      },
      selectPrevFeed() {
-       this.$refs.feedslist.selectFeedByIndex(this.curFeedIndex - 1);
+       this.$refs.feedslist.selectFeedByIndex(this.currentFeedIndex - 1);
        this.$store.commit('changeCurArticleIndex', 0);
      },
      selectNextArticle() {
-       if (this.curFeedIndex != -1) {
-        this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex + 1);
+       if (this.currentFeedIndex != -1) {
+        this.$refs.articlelist.selectArticleByIndex(this.currentArticleIndex + 1);
        }
      },
      selectPrevArticle() {
-       if (this.curFeedIndex != -1) {
-        this.$refs.articlelist.selectArticleByIndex(this.curArticleIndex - 1);
+       if (this.currentFeedIndex != -1) {
+        this.$refs.articlelist.selectArticleByIndex(this.currentArticleIndex - 1);
        }
      },
      selectFirstFeed() {
@@ -91,13 +91,13 @@
        this.$store.commit('changeCurArticleIndex', 0);
      },
      selectFirstArticle() {
-       if (this.curFeedIndex != -1) {
+       if (this.currentFeedIndex != -1) {
         this.$refs.articlelist.selectArticleByIndex(0);
        }
      },
      selectLastArticle() {
-       if (this.curFeedIndex != -1) {
-        const last_index = this.$store.state.feedsList[this.curFeedIndex].feed_article_list.length - 1;
+       if (this.currentFeedIndex != -1) {
+        const last_index = this.$store.state.feedsList[this.currentFeedIndex].feed_article_list.length - 1;
         this.$refs.articlelist.selectArticleByIndex(last_index);
        }
      }
