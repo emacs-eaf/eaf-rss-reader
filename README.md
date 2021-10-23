@@ -29,7 +29,10 @@ RSS Reader application for the [Emacs Application Framework](https://github.com/
 | `J` | js_select_last_article |
 | `K` | js_select_first_article |
 | `x` | eaf-rss-reader-close-web-page |
-| `F` | open_link |
-| `m` | mark_article_as_read |
-| `M` | mark_feed_as_read |
+| `f` | open_link |
+| `m` | js_mark_article_as_read |
+| `M` | js_mark_feed_as_read |
+| `u` | jump_to_unread |
+| `C-j` | jump_to_unread |
 | `<f12>` | open_devtools |
+
