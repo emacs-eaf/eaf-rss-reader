@@ -24,17 +24,17 @@ RSS Reader application for the [Emacs Application Framework](https://github.com/
 | `p` | js_select_prev_feed |
 | `j` | js_select_next_article |
 | `k` | js_select_prev_article |
+| `m` | js_mark_article_as_read |
+| `M` | js_mark_feed_as_read |
 | `N` | js_select_last_feed |
 | `P` | js_select_first_feed |
 | `J` | js_select_last_article |
 | `K` | js_select_first_article |
-| `f` | open_link |
-| `m` | js_mark_article_as_read |
-| `M` | js_mark_feed_as_read |
-| `u` | jump_to_unread |
-| `C-j` | jump_to_unread |
 | `x` | eaf-rss-reader-close-web-page |
 | `,` | eaf-rss-reader-scroll-up-web-page |
 | `.` | eaf-rss-reader-scroll-down-web-page |
+| `r` | eaf-rss-reader-refresh-web-page |
+| `u` | jump_to_unread |
+| `C-j` | jump_to_unread |
+| `f` | open_link |
 | `<f12>` | open_devtools |
-
