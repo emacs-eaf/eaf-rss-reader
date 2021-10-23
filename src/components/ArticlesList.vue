@@ -104,8 +104,8 @@
      },
      markArticleAsRead() {
        this.$store.commit('markArticleAsRead');
-       pyobject.mark_article_as_read(this.curFeedIndex, this.currentArticleIndex);
-       pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.curFeedIndex].feed_article_list[this.currentArticleIndex].link])
+       pyobject.mark_article_as_read(this.currentFeedIndex, this.currentArticleIndex);
+       pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.currentFeedIndex].feed_article_list[this.currentArticleIndex].link])
      },
      markFeedAsRead() {
        this.$store.commit('markFeedAsRead');

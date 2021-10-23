@@ -24,7 +24,7 @@ export default new Vuex.Store({
       state.currentArticleIndex = article_index;
     },
     markArticleAsRead(state) {
-      state.feedsList[state.curFeedIndex].feed_article_list[state.currentArticleIndex].isRead = true;
+      state.feedsList[state.currentFeedIndex].feed_article_list[state.currentArticleIndex].isRead = true;
     },
     markFeedAsRead(state) {
       state.feedsList[state.currentFeedIndex].feed_article_list.map(article => article.isRead = true);
