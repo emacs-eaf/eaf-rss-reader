@@ -164,8 +164,8 @@
    border-bottom: 1px solid #BBBFCA;
    padding-bottom: 5px;
    padding-top: 5px;
-   padding-left: 8px;
-   padding-right: 8px;
+   padding-left: 10px;
+   padding-right: 10px;
    word-break:break-all;
  }
 
