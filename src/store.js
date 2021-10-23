@@ -7,19 +7,11 @@ export default new Vuex.Store({
   state: {
     feedsList: [],
     feedsLinkList: [],
-    openFeed: false,
-    openArticle: false,
     curFeedIndex: -1,
     curArticleIndex:-1,
     viewKey: "all"
   },
   mutations: {
-    changeOpenFeed(state, status) {
-      state.openFeed = status;
-    },
-    changeOpenArticle(state, status) {
-      state.openArticle = status;
-    },
     updateFeedsList(state, infos) {
       state.feedsList = infos;
     },

@@ -51,9 +51,6 @@
      window.selectLastFeed = this.selectLastFeed;
      window.selectFirstArticle = this.selectFirstArticle;
      window.selectLastArticle = this.selectLastArticle;
-     window.giveCurFeedIndex = this.giveCurFeedIndex;
-     window.giveCurArticleIndex = this.giveCurArticleIndex;
-     window.giveViewKey = this.giveViewKey;
    },
    created() {
      // eslint-disable-next-line no-undef
@@ -104,16 +101,7 @@
         const last_index = this.$store.state.feedsList[this.curFeedIndex].feed_article_list.length - 1;
         this.$refs.articlelist.selectArticleByIndex(last_index);
        }
-     },     
-     giveCurFeedIndex() {
-       return this.$store.state.curFeedIndex;
-     },
-     giveCurArticleIndex() {
-       return this.curArticleIndex;
-     },
-     giveViewKey() {
-       return this.viewKey;
-     },
+     }
    }
  };
 </script>

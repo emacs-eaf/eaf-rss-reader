@@ -12,7 +12,7 @@
         v-for="feed in $store.state.feedsList"
         :key="feed.feed_index"
         :style="{'background':itemBackgroundColor(feed), 'color':itemFontColor(feed)}"
-        @click="changeCurFeedByIndex(feed.feed_index), cleanArticle(), changeOpenFeed(true)">
+        @click="changeCurFeedByIndex(feed.feed_index), cleanArticle()">
         <div class="feed-title">
           <div class="title">
             <div>{{ feed.feed_title }}</div>
@@ -55,7 +55,6 @@
      ...mapState([
        'curFeedIndex',
        'curArticleIndex',
-       'openFeed',
      ])
    },
    mounted() {
@@ -97,9 +96,6 @@
          this.changeCurFeedByIndex(index)
        }
        this.keepSelectVisible();
-     },
-     changeOpenFeed(status) {
-       this.$store.commit('changeOpenFeed', status);
      },
      cleanArticle() {
        this.$store.commit('changeCurArticleIndex', -1);

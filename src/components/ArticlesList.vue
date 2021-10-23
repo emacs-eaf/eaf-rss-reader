@@ -60,15 +60,12 @@
      ...mapState([
        'curFeedIndex',
        'curArticleIndex',
-       'openFeed',
      ])
    },
    mounted() {
      window.initCardItemListColor = this.initCardItemListColor;
      window.getpic = this.getpic
      window.getitem = this.get_item
-     window.changeOpenFeed = this.changeOpenFeed;
-     window.changeOpenArticle = this.changeOpenArticle;
      window.changeViewKey = this.changeViewKey;
      window.changeCurArticleByIndex = this.changeCurArticleByIndex;
      window.selectArticleByIndex = this.selectArticleByIndex;
@@ -89,14 +86,14 @@
        this.$store.commit('updateFileInfos', files);
      },
      highlightTitleBack() {
-       if (this.openFeed && this.curArticleIndex === -1) {
+       if (this.curArticleIndex === -1) {
          return this.selectColor;
        } else {
          return this.backgroundColor;
        }
      },
      highlightTitleFont() {
-       if (this.openFeed && this.curArticleIndex === -1) {
+       if (this.curArticleIndex === -1) {
          return this.selectFontColor;
        } else {
          return this.fontColor;
