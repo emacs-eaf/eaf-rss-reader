@@ -26,6 +26,18 @@
        'viewKey']),
      ...mapGetters(['curFeedArticleList']),
    },
+   watch: {
+    curFeedIndex: {
+      handler: function(val, oldVal) {
+        window.pyobject.vue_update_cur_feed_index(val);
+      }
+    },
+    curArticleIndex: {
+      handler: function(val, oldVal) {
+        window.pyobject.vue_update_cur_article_index(val);
+      }
+    }
+  },
    components:{
      ArticlesList,
      FeedsList,

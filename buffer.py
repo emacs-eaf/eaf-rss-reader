@@ -32,6 +32,8 @@ class AppBuffer(BrowserBuffer):
         self.refresh_time = 600
         self.view_key_map = {'all':0, 'read': 1, 'unread':2}
         self.view_key_list = ['all', 'read', 'unread']
+        self.cur_feed_index = -1
+        self.cur_article_index = -1
 
         self.add_feedlink_threads = []
         self.refresh_feedlink_threads = []
@@ -57,6 +59,8 @@ class AppBuffer(BrowserBuffer):
         thread.fetch_result.connect(self.auto_refresh_rsshub_list)
         self.keep_refresh_rss_threads.append(thread)
         thread.start()
+
+
 
     # call add from emacs
     def handle_add_feed(self, new_feedlink):
@@ -87,6 +91,14 @@ class AppBuffer(BrowserBuffer):
                 message_to_emacs("Set {} as read.".format(article_title))
             else:
                 message_to_emacs("Set {} as unread.".format(article_title))
+
+    @QtCore.pyqtSlot(int)
+    def vue_update_cur_feed_index(self, new_feed_index):
+        self.cur_feed_index = new_feed_index
+
+    @QtCore.pyqtSlot(int)
+    def vue_update_cur_article_index(self, new_article_index):
+        self.cur_article_index = new_article_index
 
     @QtCore.pyqtSlot(int, int)
     def remove_feed_widget(self, feedlink_index, cur_feed_index):
