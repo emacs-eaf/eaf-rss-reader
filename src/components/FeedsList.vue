@@ -167,6 +167,7 @@
    padding-bottom: 5px;
    padding-top: 5px;
    padding-left: 10px;
+   padding-right: 10px;
    justify-content: space-between;
  }
 
