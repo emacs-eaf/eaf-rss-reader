@@ -166,6 +166,7 @@
    border-bottom: 1px solid #BBBFCA;
    padding-bottom: 5px;
    padding-top: 5px;
+   padding-left: 10px;
    justify-content: space-between;
  }
 
