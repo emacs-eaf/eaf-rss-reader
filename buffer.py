@@ -113,8 +113,11 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def view_page_and_mark_as_read(self):
-        self.buffer_widget.execute_js("markAsRead()")
-        self.buffer_widget.execute_js("viewPage()")
+        cur_feed_index = self.cur_feed_index
+        cur_article_index = self.cur_article_index
+        article_url = self.main_item.rsshub_list[cur_feed_index]['feed_article_list'][cur_article_index]['link']
+        self.view_page(article_url)
+        self.mark_as_read(cur_feed_index, cur_article_index)
 
     @interactive
     def add_feed(self):
