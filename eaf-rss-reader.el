@@ -15,6 +15,7 @@
     ("f" . "open_link")
     ("m" . "js_mark_article_as_read")
     ("M" . "js_mark_feed_as_read")
+    ("C-j" . "jump_to_unread")
     ("<f12>" . "open_devtools")
     )
   "The keybinding of EAF RSS Reader."

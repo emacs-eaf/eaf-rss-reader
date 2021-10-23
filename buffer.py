@@ -105,6 +105,16 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.cur_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
+    def jump_to_unread(self):
+        index = self.cur_article_index
+        if self.cur_feed_index != -1:
+            for item in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
+                if not item['isRead']:
+                    index = item['index']
+                    print(index)
+                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(index)))        
+                    return
+
     @interactive
     def add_feed(self):
         self.send_input_message("Add new feed: ", "add_feed")
