@@ -111,7 +111,6 @@ class AppBuffer(BrowserBuffer):
             for item in self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list']:
                 if not item['isRead']:
                     index = item['index']
-                    print(index)
                     self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(index)))        
                     return
 
