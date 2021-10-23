@@ -2,7 +2,7 @@
 (defcustom eaf-rss-reader-keybinding
   '(("A" . "add_feed")
     ("R" . "remove_feed")
-    ("g" . "handle_refresh_rsshub_list")
+    ("g" . "refresh_feed")
     ("n" . "js_select_next_feed")
     ("p" . "js_select_prev_feed")
     ("j" . "js_select_next_article")
@@ -13,7 +13,7 @@
     ("K" . "js_select_first_article")
     ("x" . "eaf-rss-reader-close-web-page")
     ("f" . "open_link")
-    ("m" . "view_page_and_mark_as_read")
+    ("m" . "mark_article_as_read")
     ("M" . "mark_feed_as_read")
     ("<f12>" . "open_devtools")
     )

@@ -70,7 +70,7 @@ class AppBuffer(BrowserBuffer):
     def vue_update_cur_article_index(self, new_article_index):
         self.cur_article_index = new_article_index
 
-    def handle_refresh_rsshub_list(self):
+    def refresh_feed(self):
         thread = FetchRssFeedParserThread(self.main_item.rsshub_list[self.cur_feed_index]['feed_link'], self.cur_feed_index)
         thread.fetch_result.connect(self.refresh_feedlink_widget)
         self.refresh_feedlink_threads.append(thread)
@@ -105,7 +105,7 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.cur_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
-    def view_page_and_mark_as_read(self):
+    def mark_article_as_read(self):
         eval_in_emacs("eaf-open-rss-link", [self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list'][self.cur_article_index]['link']])
         self.mark_as_read(self.cur_feed_index, self.cur_article_index)
 
