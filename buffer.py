@@ -60,8 +60,7 @@ class AppBuffer(BrowserBuffer):
 
     # call add from emacs
     def handle_add_feed(self, new_feedlink):
-        index = self.main_item.last_feed_index + 1
-        self.add_feedlink_thread(new_feedlink, index)
+        self.add_feedlink_thread(new_feedlink, self.main_item.last_feed_index + 1)
 
     @QtCore.pyqtSlot(int)
     def vue_update_cur_feed_index(self, new_feed_index):
@@ -72,48 +71,43 @@ class AppBuffer(BrowserBuffer):
         self.cur_article_index = new_article_index
 
     def handle_refresh_rsshub_list(self):
-        feedlink = self.main_item.rsshub_list[self.cur_feed_index]['feed_link']
-        thread = FetchRssFeedParserThread(feedlink, self.cur_feed_index)
+        thread = FetchRssFeedParserThread(self.main_item.rsshub_list[self.cur_feed_index]['feed_link'], self.cur_feed_index)
         thread.fetch_result.connect(self.refresh_feedlink_widget)
         self.refresh_feedlink_threads.append(thread)
         thread.start()
 
     # call remove from emacs
     def handle_remove_feed(self):
-        cur_feed_index = self.cur_feed_index
-        cur_article_index = self.cur_article_index
-        feed_title = self.main_item.rsshub_list[cur_feed_index]['feed_title']
-        feed_link = self.main_item.rsshub_list[cur_feed_index]['feed_link']
         feed_count = len(self.main_item.feedlink_list)
 
         if feed_count == 1:
             self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(-1)))
             self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(-1)))
         # select last feed
-        elif feed_count - 1 == cur_feed_index:
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(cur_feed_index - 1)))
+        elif feed_count - 1 == self.cur_feed_index:
+            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.cur_feed_index - 1)))
             self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
         # select next feed
         else:
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(cur_feed_index)))
+            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.cur_feed_index)))
             self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
 
         # remove feed in list.json and link.json
-        if self.main_item.remove_feedlink_widget(cur_feed_index):
+        if self.main_item.remove_feedlink_widget(self.cur_feed_index):
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-            message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(feed_title, feed_link, cur_feed_index))
+            message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(
+                self.main_item.rsshub_list[self.cur_feed_index]['feed_title'],
+                self.main_item.rsshub_list[self.cur_feed_index]['feed_link'],
+                self.cur_feed_index))
         else:
             # Failed to remove feed, turn back to prev feed and prev article.
-            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(cur_feed_index)))
-            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(cur_article_index)))
+            self.buffer_widget.eval_js('''changeCurFeedByIndex({});'''.format(json.dumps(self.cur_feed_index)))
+            self.buffer_widget.eval_js('''changeCurArticleByIndex({});'''.format(json.dumps(self.cur_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def view_page_and_mark_as_read(self):
-        cur_feed_index = self.cur_feed_index
-        cur_article_index = self.cur_article_index
-        article_url = self.main_item.rsshub_list[cur_feed_index]['feed_article_list'][cur_article_index]['link']
-        self.view_page(article_url)
-        self.mark_as_read(cur_feed_index, cur_article_index)
+        self.view_page(self.main_item.rsshub_list[self.cur_feed_index]['feed_article_list'][self.cur_article_index]['link'])
+        self.mark_as_read(self.cur_feed_index, self.cur_article_index)
 
     @interactive
     def add_feed(self):
