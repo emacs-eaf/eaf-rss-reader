@@ -69,9 +69,6 @@
    created() {
    },
    methods: {
-     addFiles(files) {
-       this.$store.commit('updateFileInfos', files);
-     },
      itemBackgroundColor(article) {
        if (article.index === this.currentArticleIndex) {
          return this.selectColor;
