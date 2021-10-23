@@ -71,16 +71,12 @@ class AppBuffer(BrowserBuffer):
     def vue_update_cur_article_index(self, new_article_index):
         self.cur_article_index = new_article_index
 
-    def refresh_feedlink_thread(self, index):
-        feedlink = self.main_item.rsshub_list[index]['feed_link']
-        thread = FetchRssFeedParserThread(feedlink, index)
+    def handle_refresh_rsshub_list(self):
+        feedlink = self.main_item.rsshub_list[self.cur_feed_index]['feed_link']
+        thread = FetchRssFeedParserThread(feedlink, self.cur_feed_index)
         thread.fetch_result.connect(self.refresh_feedlink_widget)
         self.refresh_feedlink_threads.append(thread)
         thread.start()
-
-    def handle_refresh_rsshub_list(self):
-        cur_feed_index = self.buffer_widget.execute_js("giveCurFeedIndex()")
-        self.refresh_feedlink_thread(cur_feed_index)
 
     # call remove from emacs
     def handle_remove_feed(self):
