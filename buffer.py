@@ -13,6 +13,27 @@ from core.webengine import BrowserBuffer
 from html import unescape as html_unescape
 from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch
 
+
+def count_new_rss(old_rss, new_rss):
+    count = 0
+    total = len(old_rss)
+    old_rss_map = {}
+    for item in old_rss:
+        old_rss_map[item['title']] = True
+    for item in new_rss:
+        if item['title'] not in old_rss_map:
+            count += 1
+    return count
+
+def keep_read_status(old_rss, new_rss):
+    old_rss_map = {}
+    for item in old_rss:
+        old_rss_map[item['title']] = item['isRead']
+    for item in new_rss:
+        if item["title"] in old_rss_map:
+            new_rss[item["index"]]['isRead'] = old_rss_map[item["title"]]
+    return new_rss
+
 class AppBuffer(BrowserBuffer):
     def __init__(self, buffer_id, url, arguments):
         BrowserBuffer.__init__(self, buffer_id, url, arguments, False)
@@ -124,14 +145,18 @@ class AppBuffer(BrowserBuffer):
         self.send_input_message("Are you sure you want to remove this feed?", "remove_feed", "yes-or-no")
 
     @PostGui()
-    def auto_refresh_rsshub_list(self, article_list, index, diff, pointer):
-        if pointer == 1:
+    def auto_refresh_rsshub_list(self, article_list, index, diff, is_refresh_finished):
+        # all update finished
+        if is_refresh_finished:
             message_to_emacs("All updates have been completed.")
-        elif article_list == ['refresh_start'] and pointer == 0:
+        # updating
+        elif article_list == ['refresh_start'] and not is_refresh_finished:
             message_to_emacs("Updating. It is recommended not to add or delete feeds.")
-        elif article_list == ['AttributeError'] and pointer == 0:
+        # get error when fetch feed
+        elif article_list == ['AttributeError']:
             link = self.main_item.feedlink_list[index]
             message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(link))
+        # updated one feed
         else:
             title = self.main_item.rsshub_list[index]['feed_title']
             message_to_emacs("The content of '{}' is up-to-date and {} articles have been updated.".format(title, diff))
@@ -157,29 +182,19 @@ class AppBuffer(BrowserBuffer):
         if new_rss == {}:
             message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(feedlink_index))
         else:
-            feedlink_index = new_rss["feed_index"]
-            feed_title = new_rss["feed_title"]
-            new_rss_article_list = new_rss["feed_article_list"]
-            old_rss = self.main_item.rsshub_list[feedlink_index]["feed_article_list"]
-            old_rss_map = {}
-            for item in old_rss:
-                title = item['title']
-                status = item['isRead']
-                old_rss_map[title] = status
-
-            for item in new_rss_article_list:
-                new_title = item["title"]
-                new_index = item["index"]
-                if new_title in old_rss_map:
-                    new_rss_article_list[new_index]['isRead'] = old_rss_map[new_title]
-
-            self.main_item.rsshub_list[feedlink_index]["feed_article_list"] = new_rss_article_list
-
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-            self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(-1)))
-            self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(feedlink_index)))
-            self.main_item.save_rsshub_json()
-            message_to_emacs("Refresh feed:{} link:{} success.".format(feed_title, feedlink))
+            feed_index = new_rss["feed_index"]
+            title = new_rss["feed_title"]
+            new_rss = new_rss["feed_article_list"]
+            old_rss = self.main_item.rsshub_list[feed_index]["feed_article_list"]
+            count = count_new_rss(old_rss, new_rss)
+            if count != 0:
+                new_rss = keep_read_status(old_rss, new_rss)
+                self.main_item.rsshub_list[feed_index]["feed_article_list"] = new_rss
+                self.main_item.save_rsshub_json()
+                self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+                self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(feed_index)))
+                self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(0)))
+            message_to_emacs("The content of '{}' is up-to-date and {} articles have been updated.".format(title, count))
 
     @QtCore.pyqtSlot(int, int)
     def mark_article_as_read(self, feedlink_index, article_index):
@@ -363,62 +378,26 @@ class KeepRefreshRss(QThread):
         except AttributeError:
             return {}
 
-    def compare(self, old, new):
-        count = 0
-        total = len(old)
-        old_map = {}
-        for item in old:
-            old_map[item['title']] = 1
-        for item in new:
-            if item['title'] in old_map:
-                count += 1
-        if count == 0:
-            return 0
-        else:
-            return total - count
-
-    def keep_read_status(self, old, new):
-        old_rss_map = {}
-        for item in old:
-            title = item['title']
-            status = item['isRead']
-            old_rss_map[title] = status
-
-        for item in new:
-            new_title = item["title"]
-            new_index = item["index"]
-            if new_title in old_rss_map:
-                new[new_index]['isRead'] = old_rss_map[new_title]
-        return new
-
     def run(self):
         while (1):
             self.main_item.fetch_feedlink_list()
             link_list = self.main_item.feedlink_list
-            pointer = 0
-            self.fetch_result.emit(['refresh_start'], -1, -1, pointer)
+            is_refresh_finished = False
+            self.fetch_result.emit(['refresh_start'], -1, -1, is_refresh_finished)
             for index, link in enumerate(link_list):
-                pointer = 0
                 new_rss = self.get_rss(link, index)
                 if new_rss == {}:
-                    self.fetch_result.emit(['AttributeError'], index, 0, pointer)
+                    self.fetch_result.emit(['AttributeError'], index, 0, is_refresh_finished)
                     continue
                 new_rss = new_rss['feed_article_list']
                 # rsshub_list may be changed when refresh
                 self.main_item.fetch_rsshub_list()
-
                 old_rss = self.main_item.rsshub_list[index]['feed_article_list']
-                diff = self.compare(old_rss, new_rss)
-                if diff == 0:
-                    continue
-                new_rss = self.keep_read_status(old_rss, new_rss)
-                self.fetch_result.emit(new_rss, index, diff, pointer)
+                count = count_new_rss(old_rss, new_rss)
+                if count != 0:
+                    new_rss = keep_read_status(old_rss, new_rss)
+                    self.fetch_result.emit(new_rss, index, count, is_refresh_finished)
 
-            pointer = 1
-            self.fetch_result.emit([], -1, -1, pointer)
+            is_refresh_finished = True
+            self.fetch_result.emit([], -1, -1, is_refresh_finished)
             time.sleep(self.refresh_time)
-
-            pointer = 0
-            self.fetch_result.emit(['refresh_start'], -1, -1, pointer)
-            self.main_item.fetch_feedlink_list()
-            link_list = self.main_item.feedlink_list
