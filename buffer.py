@@ -10,8 +10,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
 from pyquery import PyQuery as Pq
 from core.webengine import BrowserBuffer
+
 from html import unescape as html_unescape
-from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch
+from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch, get_emacs_var
 
 
 def count_new_rss(old_rss, new_rss):
@@ -50,7 +51,7 @@ class AppBuffer(BrowserBuffer):
         touch(self.feedlink_json)
 
         self.url = url
-        self.refresh_time = 600
+        self.refresh_time = int(get_emacs_var("eaf-rss-reader-refresh-time"))
         self.current_feed_index = -1
         self.current_article_index = -1
 

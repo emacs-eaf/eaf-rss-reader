@@ -1,3 +1,8 @@
+;;; Code:
+
+(defcustom eaf-rss-reader-refresh-time "600"
+  "The default feed refresh time."
+  :type 'int)
 
 (defcustom eaf-rss-reader-keybinding
   '(("A" . "add_feed")
