@@ -51,9 +51,12 @@
 (defun eaf-open-rss-link (url)
   "Open RSS link in other window."
   (interactive "M[EAF/browser] URL: ")
-  (when (< (length (window-list)) 2)
+  ;; Try split window to open web pag.
+  (when (< (length (cl-remove-if #'window-dedicated-p (window-list))) 2) ;we need remove dedicated window, such as sort-tab window
     (split-window-right))
   (other-window 1)
+
+  ;; Open web page.
   (let ((rss-url (eaf-wrap-url url))
         rss-web-page)
     (cond ((setq rss-web-page (eaf-rss-reader-web-page))
@@ -64,6 +67,8 @@
           (t
            (eaf-open rss-url "browser")
            (setq-local eaf--buffer-type "eaf-rss-reader"))))
+
+  ;; Switch back to rss reader buffer.
   (other-window -1))
 
 (defun eaf-rss-reader-close-web-page ()
