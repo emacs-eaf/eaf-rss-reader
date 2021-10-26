@@ -197,10 +197,12 @@ class AppBuffer(BrowserBuffer):
                 self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(0)))
             message_to_emacs("The content of '{}' is up-to-date and {} articles have been updated.".format(title, count))
 
-    @QtCore.pyqtSlot(int, int)
-    def mark_article_as_read(self, feedlink_index, article_index):
+    @QtCore.pyqtSlot(int, int, str)
+    def mark_article_as_read(self, feedlink_index, article_index, link):
         self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = True
         self.main_item.save_rsshub_json()
+
+        eval_in_emacs("eaf-open-rss-link", [link])
 
     @QtCore.pyqtSlot()
     def mark_feed_as_read(self):

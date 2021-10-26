@@ -15,6 +15,7 @@
    name: "Main",
    data () {
      return {
+       pyobject: null
      };
    },
    computed: {
@@ -27,11 +28,13 @@
    },
    watch: {
     currentFeedIndex: {
+      // eslint-disable-next-line no-unused-vars
       handler: function(val, oldVal) {
         window.pyobject.update_current_feed_index(val);
       }
     },
     currentArticleIndex: {
+      // eslint-disable-next-line no-unused-vars
       handler: function(val, oldVal) {
         window.pyobject.update_current_article_index(val);
       }
@@ -55,6 +58,7 @@
      // eslint-disable-next-line no-undef
      new QWebChannel(qt.webChannelTransport, channel => {
        window.pyobject = channel.objects.pyobject;
+       this.pyobject = window.pyobject;
      });
    },
    methods: {

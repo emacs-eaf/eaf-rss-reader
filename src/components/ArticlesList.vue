@@ -34,7 +34,6 @@
 
 <script>
  import { mapGetters, mapState } from 'vuex';
- import { QWebChannel } from "qwebchannel";
 
  export default {
    name: 'ArticlesList',
@@ -104,12 +103,13 @@
      },
      markArticleAsRead() {
        this.$store.commit('markArticleAsRead');
-       pyobject.mark_article_as_read(this.currentFeedIndex, this.currentArticleIndex);
-       pyobject.eval_emacs_function("eaf-open-rss-link", [this.$store.state.feedsList[this.currentFeedIndex].feed_article_list[this.currentArticleIndex].link])
+       this.pyobject.mark_article_as_read(this.currentFeedIndex,
+                                          this.currentArticleIndex,
+                                          this.$store.state.feedsList[this.currentFeedIndex].feed_article_list[this.currentArticleIndex].link);
      },
      markFeedAsRead() {
        this.$store.commit('markFeedAsRead');
-       pyobject.mark_feed_as_read();
+       this.pyobject.mark_feed_as_read();
      },
      formatDate(article) {
        var date = new Date(article.time);
