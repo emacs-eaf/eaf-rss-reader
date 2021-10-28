@@ -1,15 +1,15 @@
 <template>
   <div class="list-area">
-    <div 
-    class="articles-list" 
-    ref="articlelist" 
+    <div
+    class="articles-list"
+    ref="articlelist"
     :style="{'border-color':lineColor, 'background':backgroundColor}">
       <div
         class="article-item eaf-rss-reader-article-item"
         v-for="article in infolist"
         @click="changeCurrentArticleByIndex(article.index), markArticleAsRead()"
         :style="{
-          'background':itemBackgroundColor(article), 
+          'background':itemBackgroundColor(article),
           'color':itemForegroundColor(article),
           'border-color':lineColor
           }"
@@ -48,6 +48,7 @@
        num: 0,
        backgroundColor:"",
        foregroundColor:"",
+       selectColor: "",
        readColor:"",
        lineColor:"",
      };
@@ -72,23 +73,22 @@
    created() {
    },
    methods: {
-     initArticlesListColor(backgroundColor, foregroundColor, readColor, lineColor) {
+     initArticlesListColor(backgroundColor, foregroundColor, selectColor, readColor, lineColor) {
        this.backgroundColor = backgroundColor;
        this.foregroundColor = foregroundColor;
+       this.selectColor = selectColor;
        this.readColor = readColor;
        this.lineColor = lineColor;
      },
      itemBackgroundColor(article) {
        if (article.index === this.currentArticleIndex) {
-         return this.foregroundColor;
+         return this.selectColor;
        } else {
          return this.backgroundColor;
        }
      },
      itemForegroundColor(article) {
-       if (article.index === this.currentArticleIndex) {
-         return this.backgroundColor;
-       } else if (article.isRead === true) {
+       if (article.isRead === true) {
          return this.readColor;
        } else {
          return this.foregroundColor;

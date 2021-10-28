@@ -12,8 +12,8 @@
         v-for="feed in $store.state.feedsList"
         :key="feed.feed_index"
         :style="{
-          'background':itemBackgroundColor(feed), 
-          'color':itemForegroundColor(feed), 
+          'background':itemBackgroundColor(feed),
+          'color':itemForegroundColor(feed),
           'border-color':lineColor}"
         @click="changeCurrentFeedByIndex(feed.feed_index), cleanArticle()">
         <div class="feed-title">
@@ -44,6 +44,7 @@
      return {
        backgroundColor:"",
        foregroundColor: "",
+       selectColor: "",
        readColor: "",
        lineColor:"",
      };
@@ -62,9 +63,10 @@
    created() {
    },
    methods: {
-     initFeedsListColor(backgroundColor, foregroundColor, readColor, lineColor) {
+     initFeedsListColor(backgroundColor, foregroundColor, selectColor, readColor, lineColor) {
        this.backgroundColor = backgroundColor;
        this.foregroundColor = foregroundColor;
+       this.selectColor = selectColor;
        this.readColor = readColor;
        this.lineColor = lineColor;
      },
@@ -73,15 +75,13 @@
      },
      itemBackgroundColor(feed) {
        if (feed.feed_index === this.currentFeedIndex) {
-         return this.foregroundColor;
+         return this.selectColor;
        } else {
          return this.backgroundColor;
        }
      },
      itemForegroundColor(feed) {
-       if (feed.feed_index === this.currentFeedIndex) {
-         return this.backgroundColor;
-       } else if (feed.feed_article_list.filter(x => !x.isRead).length == 0) {
+       if (feed.feed_article_list.filter(x => !x.isRead).length == 0) {
          return this.readColor;
        } else {
          return this.foregroundColor;

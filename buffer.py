@@ -71,33 +71,39 @@ class AppBuffer(BrowserBuffer):
     def init_var(self):
         if self.theme_mode == "dark":
             if self.theme_foreground_color == "#000000":
+                select_color = "#333333"
                 foreground_color = "#AAAAAA"
                 read_color = QColor(foreground_color).darker(150).name()
-                line_color = QColor(foreground_color).darker(100).name()
+                line_color = QColor(foreground_color).darker(250).name()
             else:
+                select_color = QColor(self.theme_background_color).darker(150).name()
                 foreground_color = QColor(self.theme_foreground_color).name()
                 read_color = QColor(self.theme_foreground_color).darker(150).name()
-                line_color = QColor(self.theme_foreground_color).darker(100).name()
+                line_color = QColor(self.theme_foreground_color).darker(250).name()
         else:
             if self.theme_background_color == "#FFFFFF":
+                select_color = "#EEEEEE"
                 foreground_color = "#333333"
                 read_color = QColor(foreground_color).lighter(150).name()
-                line_color = QColor(foreground_color).darker(100).name()
+                line_color = QColor(foreground_color).darker(250).name()
             else:
+                select_color = QColor(self.theme_background_color).darker(120).name()
                 foreground_color = QColor(self.theme_foreground_color).name()
-                read_color = QColor(self.theme_background_color).darker(150).name()
-                line_color = QColor(self.theme_background_color).darker(130).name()
+                read_color = QColor(self.theme_background_color).darker(200).name()
+                line_color = QColor(self.theme_background_color).darker(200).name()
 
-        self.buffer_widget.eval_js('''initFeedsListColor(\"{}\", \"{}\", \"{}\", \"{}\")'''.format(
+        self.buffer_widget.eval_js('''initFeedsListColor(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\")'''.format(
             self.theme_background_color,
             foreground_color,
+            select_color,
             read_color,
             line_color
         ))
 
-        self.buffer_widget.eval_js('''initArticlesListColor(\"{}\", \"{}\", \"{}\", \"{}\")'''.format(
+        self.buffer_widget.eval_js('''initArticlesListColor(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\")'''.format(
             self.theme_background_color,
             foreground_color,
+            select_color,
             read_color,
             line_color
         ))
