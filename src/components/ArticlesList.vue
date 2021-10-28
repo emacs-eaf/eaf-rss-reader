@@ -79,14 +79,14 @@
        this.lineColor = lineColor;
      },
      itemBackgroundColor(article) {
-       if (article.index == this.currentArticleIndex) {
+       if (article.index === this.currentArticleIndex) {
          return this.foregroundColor;
        } else {
          return this.backgroundColor;
        }
      },
      itemForegroundColor(article) {
-       if (article.index == this.currentArticleIndex) {
+       if (article.index === this.currentArticleIndex) {
          return this.backgroundColor;
        } else if (article.isRead === true) {
          return this.readColor;

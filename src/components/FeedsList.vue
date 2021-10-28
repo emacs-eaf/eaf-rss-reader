@@ -72,14 +72,14 @@
        this.$store.commit('changeCurrentFeedIndex', feed_index);
      },
      itemBackgroundColor(feed) {
-       if (feed.feed_index == this.currentFeedIndex) {
+       if (feed.feed_index === this.currentFeedIndex) {
          return this.foregroundColor;
        } else {
          return this.backgroundColor;
        }
      },
      itemForegroundColor(feed) {
-       if (feed.feed_index == this.currentFeedIndex) {
+       if (feed.feed_index === this.currentFeedIndex) {
          return this.backgroundColor;
        } else if (feed.feed_article_list.filter(x => !x.isRead).length == 0) {
          return this.readColor;
