@@ -1,5 +1,5 @@
 <template>
-  <div class="list-area">
+  <div class="list-area" :style="{'border-color':lineColor, 'background':backgroundColor}">
     <div class="feeds-list" ref="feedlist">
       <div
         v-if="$store.state.feedsList.length === 0"
@@ -11,7 +11,10 @@
         class="feed eaf-rss-reader-feed-item"
         v-for="feed in $store.state.feedsList"
         :key="feed.feed_index"
-        :style="{'background':itemBackgroundColor(feed), 'color':itemFontColor(feed)}"
+        :style="{
+          'background':itemBackgroundColor(feed), 
+          'color':itemForegroundColor(feed), 
+          'border-color':lineColor}"
         @click="changeCurrentFeedByIndex(feed.feed_index), cleanArticle()">
         <div class="feed-title">
           <div class="title">
@@ -39,16 +42,10 @@
    name: 'FeedsList',
    data() {
      return {
-       isAdd:false,
-       newFeedLink: '',
-       backgroundColor:"#FFF",
-       selectColor: "#515e72",
-       selectFontColor:"#cfcfcf",
-       fontColor:"#495464",
-       fontReadColor: "#919fb6",
-       selectRefreshButtonColor:"#5579dd",
-       selectRemoveButtonColor:"#d6382d",
-       buttonColor: "#9E9E9E",
+       backgroundColor:"",
+       foregroundColor: "",
+       readColor: "",
+       lineColor:"",
      };
    },
    computed: {
@@ -60,27 +57,34 @@
    mounted() {
      window.selectFeedByIndex = this.selectFeedByIndex;
      window.changeCurrentFeedByIndex = this.changeCurrentFeedByIndex;
+     window.initFeedsListColor = this.initFeedsListColor;
    },
    created() {
    },
    methods: {
+     initFeedsListColor(backgroundColor, foregroundColor, readColor, lineColor) {
+       this.backgroundColor = backgroundColor;
+       this.foregroundColor = foregroundColor;
+       this.readColor = readColor;
+       this.lineColor = lineColor;
+     },
      changeCurrentFeedByIndex(feed_index) {
        this.$store.commit('changeCurrentFeedIndex', feed_index);
      },
      itemBackgroundColor(feed) {
        if (feed.feed_index == this.currentFeedIndex) {
-         return this.selectColor;
+         return this.foregroundColor;
        } else {
          return this.backgroundColor;
        }
      },
-     itemFontColor(feed) {
+     itemForegroundColor(feed) {
        if (feed.feed_index == this.currentFeedIndex) {
-         return this.selectFontColor;
+         return this.backgroundColor;
        } else if (feed.feed_article_list.filter(x => !x.isRead).length == 0) {
-         return this.fontReadColor;
+         return this.readColor;
        } else {
-         return this.fontColor;
+         return this.foregroundColor;
        }
      },
      keepSelectVisible() {

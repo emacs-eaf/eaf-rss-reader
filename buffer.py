@@ -8,9 +8,9 @@ import time
 import feedparser
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
+from PyQt5.QtGui import QColor
 from pyquery import PyQuery as Pq
 from core.webengine import BrowserBuffer
-
 from html import unescape as html_unescape
 from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch, get_emacs_var
 
@@ -54,11 +54,10 @@ class AppBuffer(BrowserBuffer):
         self.refresh_time = int(get_emacs_var("eaf-rss-reader-refresh-time"))
         self.current_feed_index = -1
         self.current_article_index = -1
-
         self.add_feedlink_threads = []
         self.refresh_feedlink_threads = []
         self.keep_refresh_rss_threads = []
-
+        
         self.main_item = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
         self.keep_refresh_rss(self.refresh_time)
@@ -66,7 +65,42 @@ class AppBuffer(BrowserBuffer):
         self.load_index_html(__file__)
 
     def init_app(self):
+        self.init_var()
         self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+
+    def init_var(self):
+        if self.theme_mode == "dark":
+            if self.theme_foreground_color == "#000000":
+                select_color = "#AAAAAA"
+                read_color = QColor(select_color).darker(150).name()
+                line_color = QColor(select_color).darker(100).name()
+            else:
+                select_color = QColor(self.theme_foreground_color).darker(140).name()
+                read_color = QColor(self.theme_foreground_color).darker(250).name()
+                line_color = QColor(self.theme_foreground_color).darker(200).name()
+        else:
+            if self.theme_background_color == "#FFFFFF":
+                select_color = "#AAAAAA"
+                read_color = QColor(select_color).lighter(150).name()
+                line_color = QColor(select_color).darker(100).name()
+            else:
+                select_color = QColor(self.theme_background_color).darker(250).name()
+                read_color = QColor(self.theme_background_color).darker(150).name()
+                line_color = QColor(self.theme_background_color).darker(130).name()
+        
+        self.buffer_widget.eval_js('''initFeedsListColor(\"{}\", \"{}\", \"{}\", \"{}\")'''.format(
+            self.theme_background_color,
+            select_color,
+            read_color,
+            line_color
+        ))
+
+        self.buffer_widget.eval_js('''initArticlesListColor(\"{}\", \"{}\", \"{}\", \"{}\")'''.format(
+            self.theme_background_color,
+            select_color,
+            read_color,
+            line_color
+        ))
 
     def add_feedlink_thread(self, feedlink, index):
         thread = FetchRssFeedParserThread(feedlink, index)

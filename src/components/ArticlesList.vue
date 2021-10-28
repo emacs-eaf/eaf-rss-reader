@@ -1,13 +1,19 @@
 <template>
   <div class="list-area">
-    <div  class="articles-list" ref="articlelist">
+    <div 
+    class="articles-list" 
+    ref="articlelist" 
+    :style="{'border-color':lineColor, 'background':backgroundColor}">
       <div
         class="article-item eaf-rss-reader-article-item"
         v-for="article in infolist"
         @click="changeCurrentArticleByIndex(article.index), markArticleAsRead()"
-        :style="{'background':itemBackgroundColor(article), 'color':itemFontColor(article)}"
+        :style="{
+          'background':itemBackgroundColor(article), 
+          'color':itemForegroundColor(article),
+          'border-color':lineColor
+          }"
         :key="article.article_index">
-
         <div class="article-title">
           {{ article.title }}
         </div>
@@ -40,13 +46,10 @@
    data () {
      return {
        num: 0,
-       selectColor: "#515e72",
-       backgroundColor:"#FFF",
-       selectFontColor:"#CFCFCF",
-       fontColor:"#495464",
-       fontReadColor: "#919fb6",
-       selectButtonColor:"#5579dd",
-       buttonColor: "#9E9E9E",
+       backgroundColor:"",
+       foregroundColor:"",
+       readColor:"",
+       lineColor:"",
      };
    },
    props: {
@@ -64,24 +67,31 @@
      window.selectArticleByIndex = this.selectArticleByIndex;
      window.markArticleAsRead = this.markArticleAsRead;
      window.markFeedAsRead = this.markFeedAsRead;
+     window.initArticlesListColor = this.initArticlesListColor;
    },
    created() {
    },
    methods: {
+     initArticlesListColor(backgroundColor, foregroundColor, readColor, lineColor) {
+       this.backgroundColor = backgroundColor;
+       this.foregroundColor = foregroundColor;
+       this.readColor = readColor;
+       this.lineColor = lineColor;
+     },
      itemBackgroundColor(article) {
-       if (article.index === this.currentArticleIndex) {
-         return this.selectColor;
+       if (article.index == this.currentArticleIndex) {
+         return this.foregroundColor;
        } else {
          return this.backgroundColor;
        }
      },
-     itemFontColor(article) {
-       if (article.index === this.currentArticleIndex) {
-         return this.selectFontColor;
+     itemForegroundColor(article) {
+       if (article.index == this.currentArticleIndex) {
+         return this.backgroundColor;
        } else if (article.isRead === true) {
-         return this.fontReadColor;
+         return this.readColor;
        } else {
-         return this.fontColor;
+         return this.foregroundColor;
        }
      },
      keepSelectVisible() {
@@ -141,7 +151,6 @@
    display: flex;
    flex-direction: column;
    overflow: hidden;
-   color: #495464;
  }
 
  .articles-list {
@@ -174,13 +183,12 @@
    cursor: pointer;
    margin-bottom: 5px;
    margin-top: 5px;
-   flex: 1;
+   flex: 1 1 auto;
  }
 
  .article-author {
    display: flex;
    font-size: 14px;
-   color: #9E9E9E;
    text-align: left;
    margin-right: 10px;
  }
@@ -189,7 +197,6 @@
    display: flex;
    font-size: 14px;
    text-align: left;
-   color: #9E9E9E;
    flex-shrink:0;
  }
 
