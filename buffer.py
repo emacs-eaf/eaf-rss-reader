@@ -159,15 +159,16 @@ class AppBuffer(BrowserBuffer):
             self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
             self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
 
+        feed_title = self.main_item.rsshub_list[self.current_feed_index]['feed_title']
+        feed_link = self.main_item.rsshub_list[self.current_feed_index]['feed_link']
+        index = self.current_feed_index
         # remove feed in list.json and link.json
         if self.main_item.remove_feedlink_widget(self.current_feed_index):
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
             message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(
-                self.main_item.rsshub_list[self.current_feed_index]['feed_title'],
-                self.main_item.rsshub_list[self.current_feed_index]['feed_link'],
-                self.current_feed_index))
+                feed_title,feed_link,index))
+        # Failed to remove feed, turn back to prev feed and prev article.
         else:
-            # Failed to remove feed, turn back to prev feed and prev article.
             self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
             self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(self.current_article_index)))
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
