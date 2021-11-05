@@ -6,6 +6,7 @@ import sys
 import json
 import time
 import feedparser
+from lxml import etree
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
 from PyQt5.QtGui import QColor
@@ -57,6 +58,7 @@ class AppBuffer(BrowserBuffer):
         self.add_feedlink_threads = []
         self.refresh_feedlink_threads = []
         self.keep_refresh_rss_threads = []
+        self.import_opml_threads = []
 
         self.main_item = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
 
@@ -114,11 +116,20 @@ class AppBuffer(BrowserBuffer):
         self.add_feedlink_threads.append(thread)
         thread.start()
 
+    def import_opml_thread(self, opml_file):
+        thread = ImportRssThread(opml_file)
+        thread.fetch_result.connect(self.import_opml_widget)
+        self.import_opml_threads.append(thread)
+        thread.start()
+
     def keep_refresh_rss(self, refresh_time):
         thread = KeepRefreshRss(self.feedlink_json, self.rsshub_json, self.refresh_time)
         thread.fetch_result.connect(self.auto_refresh_rsshub_list)
         self.keep_refresh_rss_threads.append(thread)
         thread.start()
+
+    def handle_import_opml(self, opml_file):
+        self.import_opml_thread(opml_file)
 
     # call add from emacs
     def handle_add_feed(self, new_feedlink):
@@ -185,6 +196,10 @@ class AppBuffer(BrowserBuffer):
         ''' Remove current selected feed.'''
         self.send_input_message("Are you sure you want to remove this feed?", "remove_feed", "yes-or-no")
 
+    @interactive
+    def import_opml(self):
+        self.send_input_message("import opml file: ", "import_opml")
+
     @PostGui()
     def auto_refresh_rsshub_list(self, article_list, index, diff, is_refresh_finished):
         # all update finished
@@ -204,6 +219,19 @@ class AppBuffer(BrowserBuffer):
             self.main_item.rsshub_list[index]['feed_article_list'] = article_list
             self.main_item.save_rsshub_json()
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+
+    @PostGui()
+    def import_opml_widget(self, new_rss, feed_link):
+        if new_rss == {}:
+            message_to_emacs("Failed to add link '{}'.".format(feed_link))
+        elif feed_link in self.main_item.feedlink_list:
+            message_to_emacs("Feedlink '{}' exists.".format(feed_link))
+        else:
+            new_rss["feed_index"] = self.main_item.last_feed_index + 1
+            self.main_item.add_feedlink_widget(new_rss)
+            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+            self.main_item.save_rsshub_json()
+            message_to_emacs("Successfully add new feedlink '{}'.".format(feed_link))
 
     @PostGui()
     def add_feedlink_widget(self, new_rss, new_feedlink):
@@ -256,6 +284,8 @@ class AppBuffer(BrowserBuffer):
             self.handle_add_feed(result_content)
         elif callback_tag == "remove_feed":
             self.handle_remove_feed()
+        elif callback_tag == "import_opml":
+            self.handle_import_opml(result_content)
         else:
             BrowserBuffer.handle_input_response(self, callback_tag, result_content)
 
@@ -448,3 +478,30 @@ class KeepRefreshRss(QThread):
             is_refresh_finished = True
             self.fetch_result.emit([], -1, -1, is_refresh_finished)
             time.sleep(self.refresh_time)
+
+class ImportRssThread(QThread):
+    fetch_result = QtCore.pyqtSignal(dict, str)
+
+    def __init__(self, opml_file):
+        QThread.__init__(self)
+        self.opml_file = opml_file
+    
+    def get_rss_result(self, link, index):
+        try:
+            return RssFeedParser(link, index).feed_info
+        except AttributeError:
+            return {}
+
+    def run(self):
+        feeds_list = []
+        with open(self.opml_file, encoding='utf-8') as content:
+            outline = etree.parse(content).xpath('/opml/body/outline')
+            for feed in outline:
+                for item in feed.iterchildren():
+                    feeds_list.append(item.get('xmlUrl'))
+        for index, feed in enumerate(feeds_list):
+            new_rss = self.get_rss_result(feed, index)
+            if new_rss == {}:
+                self.fetch_result.emit({}, feed)
+            else:
+                self.fetch_result.emit(new_rss, feed)
