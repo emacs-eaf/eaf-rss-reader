@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-import re
-import sys
 import json
 import time
 import feedparser
@@ -10,15 +8,11 @@ from lxml import etree
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
 from PyQt5.QtGui import QColor
-from pyquery import PyQuery as Pq
 from core.webengine import BrowserBuffer
-from html import unescape as html_unescape
 from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch, get_emacs_var
-
 
 def count_new_rss(old_rss, new_rss):
     count = 0
-    total = len(old_rss)
     old_rss_map = {}
     for item in old_rss:
         old_rss_map[item['title']] = True
@@ -404,7 +398,6 @@ class RssFeedParser:
                 author = item.author
             except AttributeError:
                 author = ""
-
             shortDescription = item.summary
 
             item = {
