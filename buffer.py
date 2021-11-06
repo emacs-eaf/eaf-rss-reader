@@ -8,6 +8,10 @@ from lxml import etree
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
 from PyQt5.QtGui import QColor
+from xml.dom import minidom
+from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import SubElement
+from xml.etree.ElementTree import ElementTree
 from core.webengine import BrowserBuffer
 from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch, get_emacs_var
 
@@ -135,6 +139,10 @@ class AppBuffer(BrowserBuffer):
                 message_to_emacs("Feedlink '{}' exists.".format(feed))
         
         self.import_opml_thread(feeds_list)
+
+    def export_opml(self):
+        exporter = ExportOpml(self.main_item.rsshub_list, os.path.join(self.config_dir, "rss-reader"))
+        exporter.generate_opml()
 
     # call add from emacs
     def handle_add_feed(self, new_feed_link):
@@ -426,6 +434,63 @@ class RssFeedParser:
             article_index += 1
 
         return article_list
+
+
+class ExportOpml:
+    def __init__(self, rss_list, location):
+        self.rss_list = rss_list
+        self.location = location
+
+    def beautify_opml(self, element, indent, newline, level = 0):
+        if element:
+            if element.text == None or element.text.isspace():
+                element.text = newline + indent * (level + 1)
+            else:
+                element.text = newline + indent * (level + 1) + element.text.strip() + newline + indent * (level + 1)     
+        temp = list(element)
+
+        for subelement in temp:
+            if temp.index(subelement) < (len(temp) - 1):     
+                subelement.tail = newline + indent * (level + 1)    
+            else:
+                subelement.tail = newline + indent * level   
+            self.beautify_opml(subelement, indent, newline, level = level + 1)
+
+    def generate_opml(self):
+        message_to_emacs("Exporting...")
+        root = Element('opml')
+        root.set('version', '1.0')
+        head = SubElement(root, 'head')
+        title = SubElement(head, 'title')
+        user_name = get_emacs_var("user-login-name")
+        title.text = "Feeds of {} from eaf-rss-reader".format(user_name)
+        body = SubElement(root, 'body')
+
+        for index, item in enumerate(self.rss_list):
+            outline = SubElement(body, 'outline')
+            outline.set('type', 'rss')
+            outline.set('text', item['feed_title'])
+            outline.set('title', item['feed_title'])
+            outline.set('xmlUrl', item['feed_link'])
+            if 'link' in item:
+                link = item['link']
+            else:
+                try:
+                    link = feedparser.parse(item['feed_link']).feed.link
+                except AttributeError:
+                    link = item['feed_link']
+                message_to_emacs("Failed to export {} {}, please try again later.".format(
+                    item['feed_title']
+                    ,item['feed_link']
+                ))
+            outline.set('htmlUrl', link)
+            
+        tree = ElementTree(root)
+        root = tree.getroot()
+        self.beautify_opml(root, '\t', '\n')
+        file_name = 'eaf-rss-reader-' + time.strftime("%Y-%m-%d-%H%M%S", time.localtime()) + '.opml'
+        tree.write(os.path.join(self.location, file_name), encoding = 'utf-8', xml_declaration=True)
+        message_to_emacs("All feeds have been exported.")
 
 class FetchRssFeedParserThread(QThread):
     fetch_result = QtCore.pyqtSignal(dict, str)

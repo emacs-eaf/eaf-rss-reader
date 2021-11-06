@@ -9,6 +9,7 @@
     ("R" . "remove_feed")
     ("g" . "refresh_feed")
     ("i" . "import_opml")
+    ("o" . "export_opml")
     ("n" . "js_select_next_feed")
     ("p" . "js_select_prev_feed")
     ("j" . "js_select_next_article")
