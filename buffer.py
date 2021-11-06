@@ -53,11 +53,9 @@ class AppBuffer(BrowserBuffer):
         self.refresh_feedlink_threads = []
         self.keep_refresh_rss_threads = []
         self.import_opml_threads = []
-
+        
         self.main_item = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
-
         self.keep_refresh_rss(self.refresh_time)
-
         self.load_index_html(__file__)
 
     def init_app(self):
@@ -397,6 +395,7 @@ class RssFeedParser:
         self.subtitle = self.d.feed.subtitle
         self.article_list = self.get_article_list(self.d.entries)
         self.feed_info = {
+            "link" : self.d.feed.link,
             "feed_link" : self.feed,
             "feed_title" : self.title,
             "feed_subtitle" : self.subtitle,
