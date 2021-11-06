@@ -19,7 +19,7 @@
     ("P" . "js_select_first_feed")
     ("J" . "js_select_last_article")
     ("K" . "js_select_first_article")
-    ("x" . "eaf-rss-reader-close-web-page")
+    ("x" . "eaf-rss-reader-close-page-or-quit")
     ("," . "eaf-rss-reader-scroll-up-web-page")
     ("." . "eaf-rss-reader-scroll-down-web-page")
     ("r" . "eaf-rss-reader-refresh-web-page")
@@ -72,13 +72,15 @@
   ;; Switch back to rss reader buffer.
   (other-window -1))
 
-(defun eaf-rss-reader-close-web-page ()
+(defun eaf-rss-reader-close-page-or-quit ()
   (interactive)
   (save-excursion
     (let ((rss-web-page (eaf-rss-reader-web-page)))
-      (when rss-web-page
-        (switch-to-buffer rss-web-page)
-        (kill-buffer-and-window)))))
+      (if rss-web-page
+          (progn
+            (switch-to-buffer rss-web-page)
+            (kill-buffer-and-window))
+        (eaf-call-async "execute_function" eaf--buffer-id "insert_or_close_buffer" (key-description (this-command-keys-vector)))))))
 
 (defun eaf-rss-reader-run-in-web-page (command)
   (let ((rss-web-page (eaf-rss-reader-web-page)))
