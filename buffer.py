@@ -125,12 +125,18 @@ class AppBuffer(BrowserBuffer):
         thread.start()
 
     def handle_import_opml(self, opml_file):
+        message_to_emacs("Importing...")
+        parser = etree.XMLParser(encoding = "utf-8")
+        tree = etree.parse(opml_file, parser = parser)
+        feeds = tree.xpath('/opml/body/outline')
         feeds_list = []
-        with open(opml_file, encoding='utf-8') as content:
-            outline = etree.parse(content).xpath('/opml/body/outline')
-            for feed in outline:
-                for item in feed.iterchildren():
-                    feeds_list.append(item.get('xmlUrl'))
+        feeds_list = tree.xpath('/opml/body/outline/@xmlUrl')
+
+        # The above method may not be able to obtain xmlUrl.
+        for feed in feeds:
+            for rss in feed.iterchildren():
+                feeds_list.append(rss.get('xmlUrl'))
+        feeds_list = sorted(set(feeds_list), key = feeds_list.index)
         
         # unique feed
         for index, feed in enumerate(feeds_list):
