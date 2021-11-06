@@ -494,9 +494,10 @@ class ExportOpml:
         tree = ElementTree(root)
         root = tree.getroot()
         self.beautify_opml(root, '\t', '\n')
-        file_name = 'eaf-rss-reader-' + time.strftime("%Y-%m-%d-%H%M%S", time.localtime()) + '.opml'
-        tree.write(os.path.join(self.location, file_name), encoding = 'utf-8', xml_declaration=True)
-        message_to_emacs("All feeds have been exported.")
+        file_location = os.path.join(self.location,
+        'eaf-rss-reader-' + time.strftime("%Y-%m-%d-%H%M%S", time.localtime()) + '.opml')
+        tree.write(file_location, encoding = 'utf-8', xml_declaration=True)
+        message_to_emacs("All feeds have been exported. Location is {}".format(file_location))
 
 class FetchRssFeedParserThread(QThread):
     fetch_result = QtCore.pyqtSignal(dict, str)
