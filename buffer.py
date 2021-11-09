@@ -8,7 +8,6 @@ from lxml import etree
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QThread
 from PyQt5.QtGui import QColor
-from xml.dom import minidom
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
@@ -126,7 +125,7 @@ class AppBuffer(BrowserBuffer):
 
     def handle_import_opml(self, opml_file):
         message_to_emacs("Importing...")
-        parser = etree.XMLParser(encoding = "utf-8")
+        parser = etree.XMLParser(encoding = "utf-8", recover = True)
         tree = etree.parse(opml_file, parser = parser)
         feeds = tree.xpath('/opml/body/outline')
         feeds_list = []
