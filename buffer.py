@@ -124,6 +124,10 @@ class AppBuffer(BrowserBuffer):
         thread.start()
 
     def handle_import_opml(self, opml_file):
+        if not os.path.exists(opml_file):
+            message_to_emacs("Can't find {}".format(opml_file))
+            return
+
         message_to_emacs("Importing...")
         parser = etree.XMLParser(encoding = "utf-8", recover = True)
         tree = etree.parse(opml_file, parser = parser)
@@ -485,8 +489,8 @@ class ExportOpml:
                 except AttributeError:
                     link = item['feed_link']
                 message_to_emacs("Failed to export {} {}, please try again later.".format(
-                    item['feed_title']
-                    ,item['feed_link']
+                    item['feed_title'],
+                    item['feed_link']
                 ))
             outline.set('htmlUrl', link)
             
