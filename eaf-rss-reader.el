@@ -20,6 +20,8 @@
     ("P" . "js_select_first_feed")
     ("J" . "js_select_last_article")
     ("K" . "js_select_first_article")
+    ("-" . "zoom_out")
+    ("=" . "zoom_in")
     ("x" . "eaf-rss-reader-close-page-or-quit")
     ("," . "eaf-rss-reader-scroll-up-web-page")
     ("." . "eaf-rss-reader-scroll-down-web-page")
