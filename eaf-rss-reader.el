@@ -1,5 +1,9 @@
 ;;; Code:
 
+(defcustom eaf-rss-reader-web-page-other-window t
+  "Whether open eaf rss webpage in other window"
+  :type 'boolean)
+
 (defcustom eaf-rss-reader-refresh-time "600"
   "The default feed refresh time."
   :type 'int)
@@ -72,8 +76,10 @@
            (eaf-open rss-url "browser")
            (setq-local eaf--buffer-type "eaf-rss-reader"))))
 
-  ;; Switch back to rss reader buffer.
-  (other-window -1))
+  ;; Switch back to rss reader buffer according to `eaf-rss-reader-web-page-other-window'
+  (if eaf-rss-reader-web-page-other-window
+      (other-window -1)
+    (delete-other-windows)))
 
 (defun eaf-rss-reader-close-page-or-quit ()
   (interactive)
