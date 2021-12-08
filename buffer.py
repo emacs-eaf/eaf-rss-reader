@@ -56,7 +56,7 @@ class AppBuffer(BrowserBuffer):
         self.refresh_feedlink_threads = []
         self.keep_refresh_rss_threads = []
         self.import_opml_threads = []
-        
+
         self.main_item = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
         self.keep_refresh_rss(self.refresh_time)
         self.load_index_html(__file__)
@@ -140,13 +140,13 @@ class AppBuffer(BrowserBuffer):
             for rss in feed.iterchildren():
                 feeds_list.append(rss.get('xmlUrl'))
         feeds_list = sorted(set(feeds_list), key = feeds_list.index)
-        
+
         # unique feed
         for index, feed in enumerate(feeds_list):
             if feed in self.main_item.feedlink_list:
                 feeds_list.pop(index)
                 message_to_emacs("Feedlink '{}' exists.".format(feed))
-        
+
         self.import_opml_thread(feeds_list)
 
     def export_opml(self):
@@ -233,15 +233,15 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("All updates have been completed.")
         # updating
         elif article_list == ['refresh_start'] and not is_refresh_finished:
-            message_to_emacs("Updating. It is recommended not to add or delete feeds.")
+            message_to_emacs("Updating, please don't add/delete feeds until I'm finished.")
         # get error when fetch feed
         elif article_list == ['AttributeError']:
             link = self.main_item.feedlink_list[index]
-            message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(link))
+            message_to_emacs("Failed to refresh link '{}', maybe you refreshd too frequently.".format(link))
         # updated one feed
         else:
             title = self.main_item.rsshub_list[index]['feed_title']
-            message_to_emacs("The content of '{}' is up-to-date and {} articles have been updated.".format(title, diff))
+            message_to_emacs("Updated {} article(s) from '{}'.".format(title, diff))
             self.main_item.rsshub_list[index]['feed_article_list'] = article_list
             self.main_item.save_rsshub_json()
             self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
@@ -455,14 +455,14 @@ class ExportOpml:
             if element.text == None or element.text.isspace():
                 element.text = newline + indent * (level + 1)
             else:
-                element.text = newline + indent * (level + 1) + element.text.strip() + newline + indent * (level + 1)     
+                element.text = newline + indent * (level + 1) + element.text.strip() + newline + indent * (level + 1)
         temp = list(element)
 
         for subelement in temp:
-            if temp.index(subelement) < (len(temp) - 1):     
-                subelement.tail = newline + indent * (level + 1)    
+            if temp.index(subelement) < (len(temp) - 1):
+                subelement.tail = newline + indent * (level + 1)
             else:
-                subelement.tail = newline + indent * level   
+                subelement.tail = newline + indent * level
             self.beautify_opml(subelement, indent, newline, level = level + 1)
 
     def generate_opml(self):
@@ -493,7 +493,7 @@ class ExportOpml:
                     item['feed_link']
                 ))
             outline.set('htmlUrl', link)
-            
+
         tree = ElementTree(root)
         root = tree.getroot()
         self.beautify_opml(root, '\t', '\n')
@@ -566,7 +566,7 @@ class ImportRssThread(QThread):
     def __init__(self, feeds_list):
         QThread.__init__(self)
         self.feeds_list = feeds_list
-    
+
     def get_rss_result(self, link, index):
         try:
             return RssFeedParser(link, index).feed_info
