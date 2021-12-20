@@ -1,5 +1,9 @@
 ;;; Code:
 
+(defcustom eaf-rss-reader-split-horizontally t
+  "Split web page horizontally, split web page vertically if this option set with nil."
+  :type 'boolean)
+
 (defcustom eaf-rss-reader-web-page-other-window t
   "Whether open eaf rss webpage in other window"
   :type 'boolean)
@@ -61,7 +65,9 @@
   (interactive "M[EAF/browser] URL: ")
   ;; Try split window to open web pag.
   (when (< (length (cl-remove-if #'window-dedicated-p (window-list))) 2) ;we need remove dedicated window, such as sort-tab window
-    (split-window-right))
+    (if eaf-rss-reader-split-horizontally
+        (split-window-right)
+      (split-window-below)))
   (other-window 1)
 
   ;; Open web page.
