@@ -89,13 +89,13 @@
           (progn
             (switch-to-buffer rss-web-page)
             (kill-buffer-and-window))
-        (eaf-call-async "execute_function" eaf--buffer-id "insert_or_close_buffer" (key-description (this-command-keys-vector)))))))
+        (eaf-call-async "eval_function" eaf--buffer-id "insert_or_close_buffer" (key-description (this-command-keys-vector)))))))
 
 (defun eaf-rss-reader-run-in-web-page (command)
   (let ((rss-web-page (eaf-rss-reader-web-page)))
     (when rss-web-page
       (with-current-buffer rss-web-page
-        (eaf-call-async "execute_function" eaf--buffer-id command (key-description (this-command-keys-vector)))))))
+        (eaf-call-async "eval_function" eaf--buffer-id command (key-description (this-command-keys-vector)))))))
 
 (defun eaf-rss-reader-scroll-up-web-page ()
   (interactive)
