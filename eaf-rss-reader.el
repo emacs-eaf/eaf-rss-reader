@@ -76,8 +76,7 @@
     (cond ((setq rss-web-page (eaf-rss-reader-web-page))
            (switch-to-buffer rss-web-page)
            (with-current-buffer rss-web-page
-             (unless (string= eaf--buffer-url rss-url)
-               (eaf-call-async "execute_function_with_args" eaf--buffer-id "change_url" rss-url))))
+             (eaf-call-async "execute_function_with_args" eaf--buffer-id "change_url" rss-url)))
           (t
            (eaf-open rss-url "browser")
            (setq-local eaf--buffer-type "eaf-rss-reader"))))
