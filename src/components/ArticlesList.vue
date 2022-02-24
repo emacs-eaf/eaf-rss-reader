@@ -224,6 +224,10 @@
    padding-left: 12px;
  }
 
+ .article-short-description ::v-deep img {
+   display: none;
+ }
+
  .article-line {
    display: flex;
    flex-direction: row;
