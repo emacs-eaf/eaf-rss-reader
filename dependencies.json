@@ -1,23 +1,26 @@
 {
-    "pacman": [
-        "python-pyquery"
+  "pacman": [
+    "python-pyquery"
+  ],
+  "emerge": [
+    "dev-python/pyquery"
+  ],
+  "apt": [
+    "python3-pyquery"
+  ],
+  "pip": {
+    "linux": [
+      "pyquery",
+      "feedparser"
     ],
-    "apt": [
-        "python3-pyquery"
+    "win32": [
+      "pyquery",
+      "feedparser"
     ],
-    "pip": {
-        "linux": [
-            "pyquery",
-            "feedparser"
-        ],
-        "win32": [
-            "pyquery",
-            "feedparser"
-        ],
-        "darwin": [
-            "pyquery",
-            "feedparser"
-        ]
-    },
-    "vue_install": true
+    "darwin": [
+      "pyquery",
+      "feedparser"
+    ]
+  },
+  "vue_install": true
 }
