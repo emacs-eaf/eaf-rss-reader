@@ -12,7 +12,10 @@ from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
 from core.webengine import BrowserBuffer
-from core.utils import eval_in_emacs, PostGui, get_emacs_vars, interactive, message_to_emacs, get_emacs_func_result, get_emacs_config_dir, touch, get_emacs_var
+from core.utils import (eval_in_emacs, PostGui, get_emacs_vars, 
+                        interactive, message_to_emacs, 
+                        get_emacs_func_result, get_emacs_config_dir, 
+                        touch, get_emacs_var)
 
 def count_new_rss(old_rss, new_rss):
     count = 0
