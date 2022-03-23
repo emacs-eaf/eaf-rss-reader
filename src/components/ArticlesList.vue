@@ -167,7 +167,6 @@
    display: flex;
    flex-shrink:0;
    flex-direction: column;
-   border-bottom: 1px solid #BBBFCA;
    padding-bottom: 5px;
    padding-top: 5px;
    padding-left: 10px;
@@ -204,7 +203,6 @@
    font-size: 14px;
    text-align: left;
    margin-bottom: 5px;
-   margin-top: 5px;
    display: inline;
  }
 

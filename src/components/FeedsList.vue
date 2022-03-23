@@ -167,7 +167,6 @@
    display: flex;
    flex-shrink:0;
    flex-direction: row;
-   border-bottom: 1px solid #BBBFCA;
    padding-bottom: 5px;
    padding-top: 5px;
    padding-left: 10px;
