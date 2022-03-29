@@ -5,9 +5,9 @@ import json
 import time
 import feedparser
 from lxml import etree
-from PyQt5 import QtCore
-from PyQt5.QtCore import QUrl, QThread
-from PyQt5.QtGui import QColor
+from PyQt6 import QtCore
+from PyQt6.QtCore import QUrl, QThread
+from PyQt6.QtGui import QColor
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
