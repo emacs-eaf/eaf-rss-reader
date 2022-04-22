@@ -66,7 +66,7 @@ class AppBuffer(BrowserBuffer):
 
     def init_app(self):
         self.init_var()
-        self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+        self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
 
     def init_var(self):
         if self.theme_mode == "dark":
@@ -92,21 +92,19 @@ class AppBuffer(BrowserBuffer):
                 read_color = QColor(self.theme_background_color).darker(200).name()
                 line_color = QColor(self.theme_background_color).darker(200).name()
 
-        self.buffer_widget.eval_js('''initFeedsListColor(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\")'''.format(
+        self.buffer_widget.eval_js_function('''initFeedsListColor''', 
             self.theme_background_color,
             foreground_color,
             select_color,
             read_color,
-            line_color
-        ))
+            line_color)
 
-        self.buffer_widget.eval_js('''initArticlesListColor(\"{}\", \"{}\", \"{}\", \"{}\", \"{}\")'''.format(
+        self.buffer_widget.eval_js_function('''initArticlesListColor''', 
             self.theme_background_color,
             foreground_color,
             select_color,
             read_color,
-            line_color
-        ))
+            line_color)
 
     def add_feedlink_thread(self, feedlink, index):
         thread = FetchRssFeedParserThread(feedlink, index)
@@ -182,29 +180,29 @@ class AppBuffer(BrowserBuffer):
         feed_count = len(self.main_item.feedlink_list)
 
         if feed_count == 1:
-            self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(-1)))
-            self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(-1)))
+            self.buffer_widget.eval_js_function('''changeCurrentFeedByIndex''', -1)
+            self.buffer_widget.eval_js_function('''changeCurrentArticleByIndex''', -1)
         # select last feed
         elif feed_count - 1 == self.current_feed_index:
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.current_feed_index - 1)))
-            self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
+            self.buffer_widget.eval_js_function('''selectFeedByIndex''', self.current_feed_index - 1)
+            self.buffer_widget.eval_js_function('''selectArticleByIndex''', 0)
         # select next feed
         else:
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
-            self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
+            self.buffer_widget.eval_js_function('''selectFeedByIndex''', self.current_feed_index)
+            self.buffer_widget.eval_js_function('''selectArticleByIndex''', 0)
 
         feed_title = self.main_item.rsshub_list[self.current_feed_index]['feed_title']
         feed_link = self.main_item.rsshub_list[self.current_feed_index]['feed_link']
         index = self.current_feed_index
         # remove feed in list.json and link.json
         if self.main_item.remove_feedlink_widget(self.current_feed_index):
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+            self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
             message_to_emacs("Feed: \"{}\" \"{}\", index:\"{}\", has been removed".format(
                 feed_title,feed_link,index))
         # Failed to remove feed, turn back to prev feed and prev article.
         else:
-            self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(self.current_feed_index)))
-            self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(self.current_article_index)))
+            self.buffer_widget.eval_js_function('''changeCurrentFeedByIndex''', self.current_feed_index)
+            self.buffer_widget.eval_js_function('''changeCurrentArticleByIndex''', self.current_article_index)
             message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
 
     def jump_to_unread(self):
@@ -213,7 +211,7 @@ class AppBuffer(BrowserBuffer):
             for item in self.main_item.rsshub_list[self.current_feed_index]['feed_article_list']:
                 if not item['isRead']:
                     index = item['index']
-                    self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(index)))
+                    self.buffer_widget.eval_js_function('''selectArticleByIndex''', index)
                     return
 
     @interactive
@@ -247,7 +245,7 @@ class AppBuffer(BrowserBuffer):
             message_to_emacs("Updated {} article(s) from '{}'.".format(title, diff))
             self.main_item.rsshub_list[index]['feed_article_list'] = article_list
             self.main_item.save_rsshub_json()
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+            self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
 
     @PostGui()
     def import_opml_widget(self, new_rss, feed_link):
@@ -258,16 +256,16 @@ class AppBuffer(BrowserBuffer):
         else:
             new_rss["feed_index"] = self.main_item.last_feed_index + 1
             self.main_item.add_feedlink_widget(new_rss)
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
+            self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
             self.main_item.save_rsshub_json()
             message_to_emacs("Successfully add new feedlink '{}'.".format(feed_link))
 
     @PostGui()
     def add_feedlink_widget(self, new_rss, new_feedlink):
         if self.main_item.add_feedlink_widget(new_rss):
-            self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-            self.buffer_widget.eval_js('''selectFeedByIndex({});'''.format(json.dumps(len(self.main_item.feedlink_list)-1)))
-            self.buffer_widget.eval_js('''selectArticleByIndex({});'''.format(json.dumps(0)))
+            self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
+            self.buffer_widget.eval_js_function('''selectFeedByIndex''', len(self.main_item.feedlink_list) - 1)
+            self.buffer_widget.eval_js_function('''selectArticleByIndex''', 0)
             message_to_emacs("Successfully add new feedlink '{}'.".format(new_feedlink))
         else:
             message_to_emacs("Failed to add feed, please check your link {}.".format(new_feedlink))
@@ -286,9 +284,9 @@ class AppBuffer(BrowserBuffer):
                 new_rss = keep_read_status(old_rss, new_rss)
                 self.main_item.rsshub_list[feed_index]["feed_article_list"] = new_rss
                 self.main_item.save_rsshub_json()
-                self.buffer_widget.eval_js('''addFeedsListFiles({});'''.format(json.dumps(self.main_item.rsshub_list)))
-                self.buffer_widget.eval_js('''changeCurrentFeedByIndex({});'''.format(json.dumps(feed_index)))
-                self.buffer_widget.eval_js('''changeCurrentArticleByIndex({});'''.format(json.dumps(0)))
+                self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
+                self.buffer_widget.eval_js_function('''changeCurrentFeedByIndex''', feed_index)
+                self.buffer_widget.eval_js_function('''changeCurrentArticleByIndex''', 0)
             message_to_emacs("The content of '{}' is up-to-date and {} articles have been updated.".format(title, count))
 
     @QtCore.pyqtSlot(int, int, str)
