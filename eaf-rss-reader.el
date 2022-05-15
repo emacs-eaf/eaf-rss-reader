@@ -31,6 +31,7 @@
     ("-" . "zoom_out")
     ("=" . "zoom_in")
     ("x" . "eaf-rss-reader-close-page-or-quit")
+    ("q" . "eaf-rss-reader-close-page-or-quit")
     ("," . "eaf-rss-reader-scroll-up-web-page")
     ("." . "eaf-rss-reader-scroll-down-web-page")
     ("r" . "eaf-rss-reader-refresh-web-page")

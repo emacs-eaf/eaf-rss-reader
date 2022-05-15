@@ -35,6 +35,7 @@ RSS Reader application for the [Emacs Application Framework](https://github.com/
 | `P` | js_select_first_feed |
 | `J` | js_select_last_article |
 | `K` | js_select_first_article |
+| `q` | eaf-rss-reader-close-page-or-quit |
 | `x` | eaf-rss-reader-close-page-or-quit |
 | `,` | eaf-rss-reader-scroll-up-web-page |
 | `.` | eaf-rss-reader-scroll-down-web-page |
