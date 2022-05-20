@@ -57,30 +57,31 @@
 (defun eaf-rss-reader-web-page ()
   (catch 'found-rss-reader-buffer
     (eaf-for-each-eaf-buffer
-     (when (and (boundp 'eaf--buffer-type)
-                (string= eaf--buffer-type "eaf-rss-reader"))
+     (when (string-equal eaf--buffer-url eaf-rss-last-visit-url)
        (throw 'found-rss-reader-buffer buffer)))))
+
+(defvar eaf-rss-last-visit-url nil)
 
 (defun eaf-open-rss-link (url)
   "Open RSS link in other window."
   (interactive "M[EAF/browser] URL: ")
   ;; Try split window to open web pag.
-  (when (< (length (cl-remove-if #'window-dedicated-p (window-list))) 2) ;we need remove dedicated window, such as sort-tab window
-    (if eaf-rss-reader-split-horizontally
-        (split-window-right)
-      (split-window-below)))
+  (delete-other-windows)
+  (if eaf-rss-reader-split-horizontally
+      (split-window-right)
+    (split-window-below))
   (other-window 1)
 
   ;; Open web page.
-  (let ((rss-url (eaf-wrap-url url))
-        rss-web-page)
-    (cond ((setq rss-web-page (eaf-rss-reader-web-page))
+  (let* ((rss-url (eaf-wrap-url url))
+         (rss-web-page (eaf-rss-reader-web-page)))
+    (cond (rss-web-page
            (switch-to-buffer rss-web-page)
            (with-current-buffer rss-web-page
              (eaf-call-async "execute_function_with_args" eaf--buffer-id "change_url" rss-url)))
           (t
-           (eaf-open rss-url "browser")
-           (setq-local eaf--buffer-type "eaf-rss-reader"))))
+           (eaf-open rss-url "browser")))
+    (setq eaf-rss-last-visit-url rss-url))
 
   ;; Switch back to rss reader buffer according to `eaf-rss-reader-web-page-other-window'
   (if eaf-rss-reader-web-page-other-window
@@ -94,7 +95,8 @@
       (if rss-web-page
           (progn
             (switch-to-buffer rss-web-page)
-            (kill-buffer-and-window))
+            (kill-buffer-and-window)
+            (setq eaf-rss-last-visit-url nil))
         (eaf-call-async "eval_function" eaf--buffer-id "insert_or_close_buffer" (key-description (this-command-keys-vector)))))))
 
 (defun eaf-rss-reader-run-in-web-page (command)
