@@ -59,6 +59,9 @@ class AppBuffer(BrowserBuffer):
         self.refresh_feedlink_threads = []
         self.keep_refresh_rss_threads = []
         self.import_opml_threads = []
+        
+        eval_in_emacs('eaf--change-default-directory', [buffer_id, url])
+        self.change_title("EAF RSS Reader")
 
         self.main_item = SaveLoadFeeds(self.feedlink_json, self.rsshub_json)
         self.keep_refresh_rss(self.refresh_time)

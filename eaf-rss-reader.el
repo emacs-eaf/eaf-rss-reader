@@ -52,7 +52,7 @@
 (defun eaf-open-rss-reader ()
   "Open EAF Rss Reader"
   (interactive)
-  (eaf-open "eaf-rss-reader" "rss-reader"))
+  (eaf-open default-directory "rss-reader"))
 
 (defun eaf-rss-reader-web-page ()
   (catch 'found-rss-reader-buffer
