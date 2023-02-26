@@ -6,13 +6,13 @@ import time
 import feedparser
 from lxml import etree
 from PyQt6 import QtCore
-from PyQt6.QtCore import QUrl, QThread
+from PyQt6.QtCore import QThread
 from PyQt6.QtGui import QColor
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
 from core.webengine import BrowserBuffer
-from core.utils import (eval_in_emacs, PostGui, get_emacs_vars, 
+from core.utils import (eval_in_emacs, PostGui,
                         interactive, message_to_emacs, 
                         get_emacs_func_result, get_emacs_config_dir, 
                         touch, get_emacs_var)
@@ -206,7 +206,7 @@ class AppBuffer(BrowserBuffer):
         else:
             self.buffer_widget.eval_js_function('''changeCurrentFeedByIndex''', self.current_feed_index)
             self.buffer_widget.eval_js_function('''changeCurrentArticleByIndex''', self.current_article_index)
-            message_to_emacs("Failed to remove link, please check you current Feed-Index {}.".format(feedlink_index))
+            message_to_emacs("Failed to remove link, please check you current Feed-Index")
 
     def jump_to_unread(self):
         index = self.current_article_index
@@ -276,7 +276,7 @@ class AppBuffer(BrowserBuffer):
     @PostGui()
     def refresh_feedlink_widget(self, new_rss, feedlink):
         if new_rss == {}:
-            message_to_emacs("Failed to refresh link '{}', maybe you refresh too frequently.".format(feedlink_index))
+            message_to_emacs("Failed to refresh link, maybe you refresh too frequently")
         else:
             feed_index = new_rss["feed_index"]
             title = new_rss["feed_title"]
@@ -376,7 +376,7 @@ class SaveLoadFeeds:
             return True
 
     def remove_feedlink_widget(self, feedlink_index):
-        if not feedlink_index in range(0, self.last_feed_index + 1):
+        if feedlink_index not in range(0, self.last_feed_index + 1):
             return False
         else:
             self.feedlink_list.pop(feedlink_index)
@@ -456,7 +456,7 @@ class ExportOpml:
 
     def beautify_opml(self, element, indent, newline, level = 0):
         if element:
-            if element.text == None or element.text.isspace():
+            if element.text is None or element.text.isspace():
                 element.text = newline + indent * (level + 1)
             else:
                 element.text = newline + indent * (level + 1) + element.text.strip() + newline + indent * (level + 1)
