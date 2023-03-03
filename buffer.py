@@ -15,7 +15,9 @@ from core.webengine import BrowserBuffer
 from core.utils import (eval_in_emacs, PostGui,
                         interactive, message_to_emacs, 
                         get_emacs_func_result, get_emacs_config_dir, 
-                        touch, get_emacs_var)
+                        touch, get_emacs_var,
+                        get_emacs_theme_mode,
+                        get_emacs_theme_foreground, get_emacs_theme_background)
 
 def count_new_rss(old_rss, new_rss):
     count = 0
@@ -68,10 +70,19 @@ class AppBuffer(BrowserBuffer):
         self.load_index_html(__file__)
 
     def init_app(self):
-        self.init_var()
+        self.init_vars()
         self.buffer_widget.eval_js_function('''addFeedsListFiles''', self.main_item.rsshub_list)
 
-    def init_var(self):
+    @interactive
+    def update_theme(self):
+        self.theme_mode = get_emacs_theme_mode()
+        self.theme_foreground_color = get_emacs_theme_foreground()
+        self.theme_background_color = get_emacs_theme_background()
+        self.buffer_widget.eval_js("document.body.style.background = '{}'; document.body.style.color = '{}'".format(
+            self.theme_background_color, self.theme_foreground_color))
+        self.init_vars()
+
+    def init_vars(self):
         if self.theme_mode == "dark":
             if self.theme_foreground_color == "#000000":
                 select_color = "#333333"
