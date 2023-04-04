@@ -4,6 +4,7 @@ import os
 import json
 import time
 import feedparser
+import re
 from lxml import etree
 from PyQt6 import QtCore
 from PyQt6.QtCore import QThread
@@ -439,17 +440,19 @@ class RssFeedParser:
                 author = item.author
             except AttributeError:
                 author = ""
+
             shortDescription = item.summary
 
             item = {
                 "title" : item.title,
                 "link" : item.link,
-                "time" : item.published,
+                "time" : item.published if hasattr(item, "published") else "",
                 "author" : author,
                 "index" : article_index,
                 "shortDescription" : shortDescription if len(shortDescription) <= 120 else shortDescription[: 120] + "...",
                 "isRead" : False
             }
+
             article_list.append(item)
             article_index += 1
 
@@ -525,6 +528,8 @@ class FetchRssFeedParserThread(QThread):
         try:
             return RssFeedParser(self.feedlink, self.index).feed_info
         except AttributeError:
+            import traceback
+            traceback.print_exc()
             return {}
 
     def run(self):
