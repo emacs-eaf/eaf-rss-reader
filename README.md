@@ -42,7 +42,8 @@ RSS Reader application for the [Emacs Application Framework](https://github.com/
 | `,` | eaf-rss-reader-scroll-up-web-page |
 | `.` | eaf-rss-reader-scroll-down-web-page |
 | `r` | eaf-rss-reader-refresh-web-page |
-| `;` | eaf-rss-reader-translate-page |
+| `;` | eaf-rss-reader-immersive-translation-web-page |
+| `'` | eaf-rss-reader-translate-web-page |
 | `u` | jump_to_unread |
 | `C-j` | jump_to_unread |
 | `f` | open_link |

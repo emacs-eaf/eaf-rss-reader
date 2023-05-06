@@ -35,7 +35,8 @@
     ("," . "eaf-rss-reader-scroll-up-web-page")
     ("." . "eaf-rss-reader-scroll-down-web-page")
     ("r" . "eaf-rss-reader-refresh-web-page")
-    (";" . "eaf-rss-reader-translate-page")
+    (";" . "eaf-rss-reader-immersive-translation-web-page")
+    ("'" . "eaf-rss-reader-translate-web-page")
     ("u" . "jump_to_unread")
     ("C-j" . "jump_to_unread")
     ("f" . "open_link")
@@ -140,12 +141,16 @@
   (interactive)
   (eaf-rss-reader-run-in-web-page "refresh_page"))
 
-(defun eaf-rss-reader-translate-page ()
+(defun eaf-rss-reader-translate-web-page ()
   (interactive)
   (eaf-rss-reader-run-in-web-page "translate_page")
 
   ;; We need select EAF RSS buffer after open translate page.
   (run-with-timer "2" nil (lambda() (select-window (get-buffer-window (eaf-rss-reader-get-buffer))))))
+
+(defun eaf-rss-reader-immersive-translation-web-page ()
+  (interactive)
+  (eaf-rss-reader-run-in-web-page "immersive_translation"))
 
 (provide 'eaf-rss-reader)
 
