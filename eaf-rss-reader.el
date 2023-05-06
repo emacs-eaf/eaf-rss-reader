@@ -35,6 +35,7 @@
     ("," . "eaf-rss-reader-scroll-up-web-page")
     ("." . "eaf-rss-reader-scroll-down-web-page")
     ("r" . "eaf-rss-reader-refresh-web-page")
+    (";" . "eaf-rss-reader-translate-page")
     ("u" . "jump_to_unread")
     ("C-j" . "jump_to_unread")
     ("f" . "open_link")
@@ -55,10 +56,32 @@
   (eaf-open default-directory "rss-reader"))
 
 (defun eaf-rss-reader-web-page ()
+  (catch 'found-rss-reader-page
+    (eaf-for-each-eaf-buffer
+     (when (or (string-equal eaf--buffer-url eaf-rss-last-visit-url)
+               (string-equal eaf--buffer-url (format "%s/" eaf-rss-last-visit-url)))
+       (throw 'found-rss-reader-page buffer)))))
+
+(defun eaf-rss-reader-get-buffer ()
   (catch 'found-rss-reader-buffer
     (eaf-for-each-eaf-buffer
-     (when (string-equal eaf--buffer-url eaf-rss-last-visit-url)
+     (when (string-equal eaf--buffer-app-name "rss-reader")
        (throw 'found-rss-reader-buffer buffer)))))
+
+(defun eaf-rss-reader-content-page ()
+  (or
+   ;; If blog redirect domain, `eaf--buffer-url' is not equal `eaf-rss-last-visit-url'.
+   (eaf-rss-reader-web-page)
+   ;; Because some blog will redirect domain, so `eaf-rss-reader-web-page' can't works expect.
+   ;; Then we need check window beside EAF RSS buffer, return it if beside buffer is EAF browser buffer.
+   (let ((window-number (length (cl-remove-if #'window-dedicated-p (window-list)))))
+     (when (equal window-number 2)
+       (save-window-excursion
+         (with-selected-window (get-buffer-window (eaf-rss-reader-get-buffer))
+           (other-window 1)
+           (when (and eaf--buffer-url
+                      (string-equal eaf--buffer-app-name "browser"))
+             (current-buffer))))))))
 
 (defvar eaf-rss-last-visit-url nil)
 
@@ -91,7 +114,7 @@
 (defun eaf-rss-reader-close-page-or-quit ()
   (interactive)
   (save-excursion
-    (let ((rss-web-page (eaf-rss-reader-web-page)))
+    (let ((rss-web-page (eaf-rss-reader-content-page)))
       (if rss-web-page
           (progn
             (switch-to-buffer rss-web-page)
@@ -100,7 +123,7 @@
         (eaf-call-async "eval_function" eaf--buffer-id "insert_or_close_buffer" (key-description (this-command-keys-vector)))))))
 
 (defun eaf-rss-reader-run-in-web-page (command)
-  (let ((rss-web-page (eaf-rss-reader-web-page)))
+  (let ((rss-web-page (eaf-rss-reader-content-page)))
     (when rss-web-page
       (with-current-buffer rss-web-page
         (eaf-call-async "eval_function" eaf--buffer-id command (key-description (this-command-keys-vector)))))))
@@ -116,6 +139,13 @@
 (defun eaf-rss-reader-refresh-web-page ()
   (interactive)
   (eaf-rss-reader-run-in-web-page "refresh_page"))
+
+(defun eaf-rss-reader-translate-page ()
+  (interactive)
+  (eaf-rss-reader-run-in-web-page "translate_page")
+
+  ;; We need select EAF RSS buffer after open translate page.
+  (run-with-timer "2" nil (lambda() (select-window (get-buffer-window (eaf-rss-reader-get-buffer))))))
 
 (provide 'eaf-rss-reader)
 
