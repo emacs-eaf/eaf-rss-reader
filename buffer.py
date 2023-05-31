@@ -13,12 +13,7 @@ from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.etree.ElementTree import ElementTree
 from core.webengine import BrowserBuffer
-from core.utils import (eval_in_emacs, PostGui,
-                        interactive, message_to_emacs, 
-                        get_emacs_func_result, get_emacs_config_dir, 
-                        touch, get_emacs_var,
-                        get_emacs_theme_mode,
-                        get_emacs_theme_foreground, get_emacs_theme_background)
+from core.utils import *
 
 def count_new_rss(old_rss, new_rss):
     count = 0
