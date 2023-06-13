@@ -4,7 +4,6 @@ import os
 import json
 import time
 import feedparser
-import re
 from lxml import etree
 from PyQt6 import QtCore
 from PyQt6.QtCore import QThread
@@ -416,7 +415,10 @@ class RssFeedParser:
         except AttributeError:
             message_to_emacs("AttributeError please check your link {}".format(self.feed))
             return
-        self.subtitle = self.d.feed.subtitle
+        if hasattr(self.d.feed, "subtitle"):
+            self.subtitle = self.d.feed.subtitle
+        else:
+            self.subtitle = ""
         self.article_list = self.get_article_list(self.d.entries)
         self.feed_info = {
             "link" : self.d.feed.link,
