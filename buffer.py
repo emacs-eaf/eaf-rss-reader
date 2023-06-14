@@ -318,10 +318,6 @@ class AppBuffer(BrowserBuffer):
         else:
             BrowserBuffer.handle_input_response(self, callback_tag, result_content)
 
-    def resize_view(self):
-        (_, _, width, height) = get_emacs_func_result("eaf-get-window-size-by-buffer-id", [self.buffer_id])
-        self.buffer_widget.resize(width, height)
-
 class SaveLoadFeeds:
     def __init__(self, feedlink_json, rsshub_json):
         self.feedlink_list = []
