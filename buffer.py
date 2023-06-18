@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import json
+import os
 import time
+from xml.etree.ElementTree import Element, ElementTree, SubElement
+
 import feedparser
+from core.utils import *
+from core.webengine import BrowserBuffer
 from lxml import etree
 from PyQt6 import QtCore
 from PyQt6.QtCore import QThread
 from PyQt6.QtGui import QColor
-from xml.etree.ElementTree import Element
-from xml.etree.ElementTree import SubElement
-from xml.etree.ElementTree import ElementTree
-from core.webengine import BrowserBuffer
-from core.utils import *
+
 
 def count_new_rss(old_rss, new_rss):
     count = 0
@@ -56,7 +56,7 @@ class AppBuffer(BrowserBuffer):
         self.refresh_feedlink_threads = []
         self.keep_refresh_rss_threads = []
         self.import_opml_threads = []
-        
+
         eval_in_emacs('eaf--change-default-directory', [buffer_id, url])
         self.change_title("EAF RSS Reader")
 
@@ -97,14 +97,14 @@ class AppBuffer(BrowserBuffer):
                 read_color = QColor(self.theme_background_color).darker(200).name()
                 line_color = QColor(self.theme_background_color).darker(200).name()
 
-        self.buffer_widget.eval_js_function('''initFeedsListColor''', 
+        self.buffer_widget.eval_js_function('''initFeedsListColor''',
             self.theme_background_color,
             foreground_color,
             select_color,
             read_color,
             line_color)
 
-        self.buffer_widget.eval_js_function('''initArticlesListColor''', 
+        self.buffer_widget.eval_js_function('''initArticlesListColor''',
             self.theme_background_color,
             foreground_color,
             select_color,
