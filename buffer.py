@@ -308,6 +308,7 @@ class AppBuffer(BrowserBuffer):
 
         self.main_item.save_rsshub_json()
 
+    @PostGui()
     def handle_input_response(self, callback_tag, result_content):
         if callback_tag == "add_feed":
             self.handle_add_feed(result_content)
