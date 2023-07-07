@@ -406,12 +406,15 @@ class SaveLoadFeeds:
 class RssFeedParser:
     def __init__(self, feed, index):
         self.feed = feed
-        self.d = feedparser.parse(self.feed)
         try:
+            self.d = feedparser.parse(self.feed)
             self.title = self.d.feed.title
-        except AttributeError:
-            message_to_emacs("AttributeError please check your link {}".format(self.feed))
+        except:
+            import traceback
+            traceback.print_exc()
+            message_to_emacs("Failed to parse link {}, please check `*eaf*` buffer.".format(self.feed))
             return
+
         if hasattr(self.d.feed, "subtitle"):
             self.subtitle = self.d.feed.subtitle
         else:
