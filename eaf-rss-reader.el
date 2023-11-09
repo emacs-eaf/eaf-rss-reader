@@ -45,6 +45,11 @@
   "The keybinding of EAF RSS Reader."
   :type 'cons)
 
+(defcustom eaf-rss-reader-phone-agent-list nil
+  "Some site can't show content complete, you can add rss link in this list,
+site can switch to phone style before load url."
+  :type 'list)
+
 ;;;###autoload
 (add-to-list 'eaf-app-binding-alist '("rss-reader" . eaf-rss-reader-keybinding))
 
@@ -86,7 +91,7 @@
 
 (defvar eaf-rss-last-visit-url nil)
 
-(defun eaf-open-rss-link (url)
+(defun eaf-open-rss-link (feed-link url)
   "Open RSS link in other window."
   (interactive "M[EAF/browser] URL: ")
   ;; Try split window to open web pag.
@@ -98,13 +103,14 @@
 
   ;; Open web page.
   (let* ((rss-url (eaf-wrap-url url))
-         (rss-web-page (eaf-rss-reader-web-page)))
+         (rss-web-page (eaf-rss-reader-web-page))
+         (agent (if (member feed-link eaf-rss-reader-phone-agent-list) "phone" "pc")))
     (cond (rss-web-page
            (switch-to-buffer rss-web-page)
            (with-current-buffer rss-web-page
-             (eaf-call-async "execute_function_with_args" eaf--buffer-id "change_url" rss-url)))
+             (eaf-call-async "execute_function_with_args" eaf--buffer-id "load_url_with_agent" rss-url agent)))
           (t
-           (eaf-open rss-url "browser")))
+           (eaf-open rss-url "browser" agent)))
     (setq eaf-rss-last-visit-url rss-url))
 
   ;; Switch back to rss reader buffer according to `eaf-rss-reader-web-page-other-window'

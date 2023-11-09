@@ -296,10 +296,11 @@ class AppBuffer(BrowserBuffer):
 
     @QtCore.pyqtSlot(int, int, str)
     def mark_article_as_read(self, feedlink_index, article_index, link):
+        feed_link = self.main_item.rsshub_list[feedlink_index]["feed_link"]
         self.main_item.rsshub_list[feedlink_index]['feed_article_list'][article_index]['isRead'] = True
         self.main_item.save_rsshub_json()
 
-        eval_in_emacs("eaf-open-rss-link", [link])
+        eval_in_emacs("eaf-open-rss-link", [feed_link, link])
 
     @QtCore.pyqtSlot()
     def mark_feed_as_read(self):
